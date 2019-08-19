@@ -1,0 +1,66 @@
+openapi: 3.0.0
+
+info:
+  title: Qualiry Assurance Platform
+  version: 1.0.0
+
+servers:
+  - url: http://0.0.0.0:8080/api
+
+paths:
+  /jira/sync:
+    post:
+      description: Sync Issue Status From JIRA
+      summary: Sync Issue Status From JIRA
+      tags:
+        - sync
+      operationId: api.sync.launch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                type:
+                  example: jira
+                  type: string
+                host:
+                  example: http://myjira.io
+                  type: string
+                account:
+                  example: jira account
+                  type: string
+                password:
+                  example: jira password
+                  type: string
+              required:
+                - type
+                - host
+                - account
+                - password
+      responses:
+        200:
+          description: Succeed to sync issue status
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    example: succeed
+                    type: string
+                  msg:
+                    example: sync complete
+                    type: string
+                type: object
+        404:
+          description: Failed to sync issue status since wrong JIRA host/user/password
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    example: failed
+                    type: string
+                  msg:
+                    example: sync failed since xxxx
+                    type: string
+                type: object

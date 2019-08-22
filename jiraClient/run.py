@@ -18,14 +18,4 @@ if __name__ == '__main__':
         options=options
     )
     app.add_api("jira-client.yaml")
-
-
-    # 定义 errorhandle 函数
-    # def handle_500(error):
-    #     rsp = jsonify(error.render())
-    #     rsp.status_code = error.status_code
-    #     return rsp
-
-
-    # app.add_error_handler(500, handle_500)
-    app.run(port=8765)
+    app.run(port=6001)

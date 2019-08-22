@@ -1,28 +1,25 @@
 openapi: 3.0.0
 
 info:
-  title: Qualiry Assurance Platform
-  version: 1.0.0
+  title: QAP-JIRA
+  version: 19.10.0
 
 servers:
   - url: http://0.0.0.0:8080/api
 
 paths:
-  /jira/sync:
+  /jira/issue/sync:
     post:
       description: Sync Issue Status From JIRA
       summary: Sync Issue Status From JIRA
       tags:
         - sync
-      operationId: api.sync.launch
+      operationId: api.issue.sync
       requestBody:
         content:
           application/json:
             schema:
               properties:
-                type:
-                  example: jira
-                  type: string
                 host:
                   example: http://myjira.io
                   type: string
@@ -33,7 +30,6 @@ paths:
                   example: jira password
                   type: string
               required:
-                - type
                 - host
                 - account
                 - password
@@ -45,9 +41,12 @@ paths:
               schema:
                 properties:
                   status:
+                    example: 200
+                    type: string
+                  title:
                     example: succeed
                     type: string
-                  msg:
+                  detail:
                     example: sync complete
                     type: string
                 type: object

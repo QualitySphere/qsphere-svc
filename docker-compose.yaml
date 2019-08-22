@@ -1,0 +1,23 @@
+version: "3"
+services:
+  qap-db:
+    container_name: qap-db
+    image: postgres:10
+    restart: always
+    environment:
+      POSTGRES_DB: 'qap'
+      POSTGRES_PASSWORD: 'password'
+    volumes:
+      - ./qap-pgdata:/var/lib/postgresql/data/pgdata
+
+  qap-svc:
+    container_name: qap-svc
+    image: bxwill/qap:svc
+    ports:
+      - 6001:6001
+
+  qap-gf:
+    container_name: qap-gf
+    image: grafana/grafana:6.3.3
+    ports:
+      - 6000:3000

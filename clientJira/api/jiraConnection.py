@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import connexion
+from clientJira.services import jiraConnection
+
+
+def get_connection():
+    return jiraConnection.get_connection()
+
+
+def post_connection(body):
+    return jiraConnection.create_connection(body)
+
+
+def put_connection(body):
+    pass
+
+
+def delete_connection():
+    pass
+

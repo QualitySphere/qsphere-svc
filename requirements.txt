@@ -7,3 +7,4 @@ Pony
 greenlet==0.4.15
 uuid==1.30
 jira==2.0.0
+requests

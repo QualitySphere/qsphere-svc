@@ -10,8 +10,8 @@ services:
     volumes:
       - ./qap-pgdata:/var/lib/postgresql/data/pgdata
 
-  qap-gf:
-    container_name: qap-gf
+  qap-ui:
+    container_name: qap-ui
     image: grafana/grafana:6.3.3
     restart: always
     ports:
@@ -21,7 +21,7 @@ services:
 
   qap-svc:
     container_name: qap-svc
-    image: bxwill/qap:svc
+    image: bxwill/qap-svc
     restart: always
     ports:
       - 6001:6001
@@ -32,11 +32,11 @@ services:
       PG_PASSWORD: 'password'
     depends_on:
       - qap-db
-      - qap-gf
+      - qap-ui
 
   qap-mgmt-ui:
     container_name: qap-mgmt-ui
-    image: bxwill/qap:mui
+    image: bxwill/qap-mui
     restart: always
     ports:
       - 8080:80

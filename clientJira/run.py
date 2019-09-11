@@ -20,4 +20,4 @@ if __name__ == '__main__':
     )
     app.add_api("jira-client.yaml")
     db.generate_mapping(create_tables=True)
-    app.run(port=6001)
+    app.run(port=6001, debug=True)

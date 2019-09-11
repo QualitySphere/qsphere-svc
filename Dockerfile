@@ -4,7 +4,8 @@ MAINTAINER shiwei@baoxian-sz.com
 WORKDIR /workspace
 COPY . .
 
-RUN chmod +x launch.sh
+RUN pip install -r requirements && \
+    chmod +x launch.sh
 
 CMD ./launch.sh
 EXPOSE 6001

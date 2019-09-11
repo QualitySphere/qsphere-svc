@@ -9,9 +9,9 @@ import os
 
 db = Database(
     provider='postgres',
-    user=os.getenv('DB_USER') if os.getenv('DB_USER') else 'postgres',
-    password=os.getenv('DB_PASSWORD') if os.getenv('DB_PORT') else 'password',
-    host=os.getenv('DB_HOST') if os.getenv('DB_HOST') else '127.0.0.1',
-    port=os.getenv('DB_PORT') if os.getenv('DB_PORT') else '5432',
+    user=os.getenv('PG_USER') if os.getenv('PG_USER') else 'postgres',
+    password=os.getenv('PG_PASSWORD') if os.getenv('PG_PORT') else 'password',
+    host=os.getenv('PG_SERVER') if os.getenv('PG_SERVER') else '127.0.0.1',
+    port=os.getenv('PG_PORT') if os.getenv('PG_PORT') else '5432',
     database='qap',
 )

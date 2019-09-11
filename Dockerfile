@@ -4,7 +4,7 @@ MAINTAINER shiwei@baoxian-sz.com
 WORKDIR /workspace
 COPY . .
 
-RUN pip install -r requirements && \
+RUN pip install -r requirements.txt && \
     chmod +x launch.sh
 
 CMD ./launch.sh

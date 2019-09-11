@@ -26,32 +26,30 @@ def get_project(project_id: str):
     with db_session:
         item = get(
             _project for _project in Project if
-            _project.uuid == project_id
+            str(_project.uuid) == project_id
         )
     return {
         'status': 200,
         'title': 'Succeed To Get Project',
-        'detail': item
+        'detail': {
+            "project_name": item.name,
+        }
     }, 200
 
 
-def create_project(project: dict):
+def create_project(item: dict):
     with db_session:
+        _connection = get(c for c in Connection if str(c.uuid) == item.get('connection_id'))
         _project = Project(
-            connection=project.get('connectionId'),
-            name=project.get('projectName'),
-            version=project.get('productVersion'),
-            status=project.get('status') if project.get('status') else 'active'
-            # sprints=project.get('features'),
-            # rcs=project.get('rcs'),
-            # issue_types=project.get('issueTypes'),
-            # issue_categories=project.get('issueCategories')
+            connection=_connection,
+            name=item.get('project_name'),
+            active=item.get('active') if item.get('active') else 'enable'
         )
     return {
         'status': 200,
         'title': 'Succeed To Create Project',
         'detail': {
-            'projectId': _project.uuid
+            'project_id': _project.uuid
         }
     }, 200
 

@@ -5,12 +5,12 @@ import connexion
 from clientJira.services import jiraProject
 
 
-def list_projects(path):
-    return jiraProject.list_project(path.get('connectionId'))
+def list_projects():
+    return jiraProject.list_project()
 
 
-def get_project(path):
-    return jiraProject.get_project(path.get('projectId'))
+def get_project(project_id):
+    return jiraProject.get_project(project_id)
 
 
 def post_project(body):

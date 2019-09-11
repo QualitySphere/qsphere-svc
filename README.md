@@ -33,3 +33,6 @@ uuid | project | name | features | rcs | issue_types | issue_categories | status
 - case_feature
 - case_regression
 
+## API Document
+http://127.0.0.1:6001/api/ui
+

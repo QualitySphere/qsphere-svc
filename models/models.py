@@ -3,7 +3,7 @@
 
 
 from clientJira.db.db import db
-from pony.orm import Database, Required, PrimaryKey, Set, StrArray, IntArray, Json
+from pony.orm import Database, Required, PrimaryKey, Set, StrArray, IntArray, Json, Optional
 import uuid
 from datetime import datetime
 
@@ -25,7 +25,7 @@ class Project(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     connection = Required(Connection)
     name = Required(str)
-    status = Required(str, default='active')
+    active = Required(str, default='enable')
     sprints = Set('Sprint')
 
 
@@ -36,32 +36,34 @@ class Sprint(db.Entity):
     project = Required(Project)
     name = Required(str)
     version = Required(str)
-    features = Required(StrArray)
-    rcs = Required(IntArray)
-    issue_types = Required(StrArray)
-    issue_categories = Required(StrArray)
-    status = Required(str, default='active')
-    issue_overall = Set('IssueProject')
+    issue_types = Required(StrArray)  # Improvement, 缺陷
+    features = Required(StrArray)  # 功能1, 功能2
+    rcs = Required(StrArray)  # rc1,rc2,rc3,rc4,rc5
+    issue_status = Required(Json)  # fixing: '待办, 进行中, 新发现', fixed: '开发完成', verified: '已关闭'
+    issue_categories = Required(StrArray)  # regression, previous, newfeature, others
+    queries = Optional(Json)  # jqls
+    active = Required(str, default='enable')
+    # issue_project = Set('IssueProject')
     issue_sprint = Set('IssueSprint')
     issue_feature = Set('IssueFeature')
 
 
-class IssueProject(db.Entity):
-    _table_ = 'issue_overall'
-
-    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
-    sprint = Required(Sprint)
-    total = Required(int)
-    categories = Required(Json)
-    # category_regression = Required(int)
-    # category_previous = Required(int)
-    # category_code_change = Required(int)
-    # category_others = Required(int)
-    since = Required(Json)
-    # since_improve = Required(int)
-    # since_qa_missed = Required(int)
-    # since_customer = Required(int)
+# class IssueProject(db.Entity):
+#     _table_ = 'issue_project'
+#
+#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+#     capture_at = Required(datetime)
+#     sprint = Required(Sprint)
+#     total = Required(int)
+#     # categories = Required(Json)
+#     # category_regression = Required(int)
+#     # category_previous = Required(int)
+#     # category_code_change = Required(int)
+#     # category_others = Required(int)
+#     # since = Required(Json)
+#     # since_improve = Required(int)
+#     # since_qa_missed = Required(int)
+#     # since_customer = Required(int)
 
 
 class IssueSprint(db.Entity):
@@ -70,21 +72,10 @@ class IssueSprint(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_at = Required(datetime)
     sprint = Required(Sprint)
-    status = Required(Json)
-    # total = Required(int)
-    # fixing = Required(int)
-    # fixed = Required(int)
-    # verified = Required(int)
-    categories = Required(Json)
-    # category_regression = Required(int)
-    # category_previous = Required(int)
-    # category_code_change = Required(int)
-    # category_others = Required(int)
-    since = Required(Json)
-    # since_improve = Required(int)
-    # since_qa_missed = Required(int)
-    # since_customer = Required(int)
-    found_in_rcs = Required(IntArray)
+    status = Required(Json)  # total, fixing, fixed, verified
+    categories = Required(Json)  # regression, previous, code_change, others
+    found_since = Required(Json)  # regression_improve, qa_missed, customer
+    found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
 
 
 class IssueFeature(db.Entity):
@@ -94,9 +85,5 @@ class IssueFeature(db.Entity):
     capture_at = Required(datetime)
     sprint = Required(Sprint)
     name = Required(str)
-    status = Required(Json)
-    # total = Required(int)
-    # fixing = Required(int)
-    # fixed = Required(int)
-    # verified = Required(int)
-    found_in_rcs = Required(IntArray)
+    status = Required(Json)  # total, fixing, fixed, verified
+    found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5

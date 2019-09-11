@@ -6,8 +6,8 @@ from clientJira.services import jiraIssue
 
 
 def get_project_issues():
-    jiraIssue.
-
-
-def get_sprint_issues():
     pass
+
+
+def get_sprint_issues(sprint_id):
+    return jiraIssue.get_sprint_issues(sprint_id)

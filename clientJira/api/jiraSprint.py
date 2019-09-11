@@ -2,25 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import connexion
-from clientJira.services import jiraProject
+from clientJira.services import jiraSprint
 
 
-def list_sprints(path):
-    return jiraProject.list_project(path.get('connectionId'))
+def list_sprints():
+    return jiraSprint.list_sprint()
 
 
-def get_project(path):
-    return jiraProject.get_project(path.get('projectId'))
+def get_sprint(sprint_id):
+    return jiraSprint.get_sprint(sprint_id)
 
 
-def post_project(body):
-    return jiraProject.create_project(body)
+def post_sprint(body):
+    return jiraSprint.create_sprint(body)
 
 
-def put_project(body):
+def put_sprint(body):
     pass
 
 
-def delete_project():
+def delete_sprint():
     pass
 

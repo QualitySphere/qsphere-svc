@@ -16,7 +16,7 @@ def create_connection(server_info: dict):
     with JiraSession(_server, _account, _password) as jira_session:
         _current_user = jira_session.get_user()
         with db_session:
-            Connection(
+            _connection = Connection(
                 type='jira',
                 server=_server,
                 account=_account,
@@ -26,7 +26,8 @@ def create_connection(server_info: dict):
         'status': 200,
         'title': 'Create Connection Succeed',
         'detail': {
-            'jira_user': _current_user,
+            'connection_id': _connection.uuid,
+            'jira_user': _connection.account,
         }
     }, 200
 
@@ -38,7 +39,7 @@ def get_connection():
         'status': 200,
         'title': 'Get Connection Succeed',
         'detail': {
-            'connectionId': _connection.uuid,
+            'connection_id': _connection.uuid,
             'server': _connection.server,
             'account': _connection.account,
         }

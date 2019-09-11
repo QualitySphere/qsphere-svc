@@ -1,0 +1,156 @@
+openapi: 3.0.0
+
+info:
+  title: QAP-JIRA
+  version: 19.10.1
+
+servers:
+  - url: http://0.0.0.0:6001/api
+
+paths:
+  /jira/connection:
+    get:
+      description: Get JIRA connection information
+      summary: Get Connection
+      operationId: api.jiraConnection.get_connection
+      responses:
+        200:
+          description: succeed to get connection info
+    post:
+      description: Create JIRA connection
+      summary: Post Connection
+      operationId: api.jiraConnection.post_connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                server:
+                  type: string
+                account:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: succeed to create connection
+    put:
+      description: Update JIRA connection information
+      summary: Put Connection
+      operationId: api.jiraConnection.put_connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                server:
+                  type: string
+                account:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: succeed to update connection info
+    delete:
+      description: Delte JIRA connection information
+      summary: Delete Connection
+      operationId: api.jiraConnection.delete_connection
+      responses:
+        204:
+          description: succeed to delete connection
+
+  /jira/project:
+    post:
+      operationId: api.jiraProject.post_project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connectionId:
+                  type: string
+                projectName:
+                  type: string
+      responses:
+        200:
+          description: succeed to create project
+
+  /jira/project/{project_id}:
+    get:
+      operationId: api.jiraProject.get_project
+      parameters:
+        - name: project_id
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: succeed to get project
+
+  /jira/sprint:
+    post:
+      operationId: api.jiraSprint.post_sprint
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                sprint_name:
+                  type: string
+                product_version:
+                  type: string
+                issue_types:
+                  type: array
+                features:
+                  type: array
+                rcs:
+                  type: array
+                issue_status:
+                  type: object
+                  properties:
+                    fixing:
+                      type: array
+                    fixed:
+                      type: array
+                    verified:
+                      type: array
+                issue_categories:
+                  type: array
+      responses:
+        200:
+          description: succeed to create sprint
+
+  /jira/sprint/{sprint_id}:
+    get:
+      operationId: api.jiraSprint.get_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: succeed to get sprint
+
+  /jira/sprint/{sprint_id}/issue:
+    get:
+      operationId: api.jiraIssue.get_sprint_issues
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: debug succeed
+
+

@@ -6,6 +6,7 @@ from flask_cors import CORS
 import connexion
 from clientJira.db.db import db
 
+
 if __name__ == '__main__':
     app = Flask(__name__)
     CORS(app)

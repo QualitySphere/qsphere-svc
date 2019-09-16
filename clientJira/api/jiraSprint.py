@@ -6,7 +6,7 @@ from clientJira.services import jiraSprint
 
 
 def list_sprints():
-    return jiraSprint.list_sprint()
+    return jiraSprint.list_sprints()
 
 
 def get_sprint(sprint_id):

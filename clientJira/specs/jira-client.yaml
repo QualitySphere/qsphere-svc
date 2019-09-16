@@ -65,6 +65,11 @@ paths:
           description: succeed to delete connection
 
   /jira/project:
+    get:
+      operationId: api.jiraProject.list_projects
+      responses:
+        200:
+          description: succeed to list projects
     post:
       operationId: api.jiraProject.post_project
       requestBody:
@@ -94,6 +99,11 @@ paths:
           description: succeed to get project
 
   /jira/sprint:
+    get:
+      operationId: api.jiraSprint.list_sprints
+      responses:
+        200:
+          description: succeed to list sprint
     post:
       operationId: api.jiraSprint.post_sprint
       requestBody:
@@ -141,9 +151,9 @@ paths:
         200:
           description: succeed to get sprint
 
-  /jira/sprint/{sprint_id}/issue:
+  /jira/sprint/{sprint_id}/issues:
     get:
-      operationId: api.jiraIssue.get_sprint_issues
+      operationId: api.jiraIssue.get_issues
       parameters:
         - name: sprint_id
           in: path
@@ -151,6 +161,17 @@ paths:
             type: string
       responses:
         200:
-          description: debug succeed
+          description: succeed get issues
 
+  /jira/sprint/{sprint_id}/sync:
+    get:
+      operationId: api.jiraIssue.sync_issues
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: succeed to sync data from JIRA
 

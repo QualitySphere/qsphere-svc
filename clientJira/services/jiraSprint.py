@@ -8,19 +8,33 @@ from pony.orm import db_session, select, get
 from models.models import Connection, Project, Sprint
 from clientJira.utils.jiraClient import JiraSession
 import json
+import logging
 
 
-def list_sprint():
-    with db_session:
-        items = select(
-            _sprint for _sprint in Sprint if
-            _sprint.status == 'active'
-        ).order_by(Sprint.name)
-    return {
-        'status': 200,
-        'title': 'Succeed To List Sprint',
-        'detail': items
-    }, 200
+@db_session
+def list_sprints():
+    items = select(s for s in Sprint if s.active == 'enable').order_by(Sprint.name)
+    if items:
+        logging.info('List %s sprints from DB' % items.count())
+        sprints = list()
+        for item in items:
+            logging.info('Get sprint %s[%s] info' % (item.uuid, item.name))
+            sprints.append({
+                'sprint_id': item.uuid,
+                'sprint_name': item.name
+            })
+        return {
+            'title': 'Succeed To List Sprint',
+            'detail': {
+                'count': items.count(),
+                'results': sprints
+            }
+        }, 200
+    else:
+        logging.info('No sprint in DB')
+        return {
+            'title': 'Sprint Not Found',
+        }, 404
 
 
 def get_sprint(sprint_id: str):
@@ -37,9 +51,11 @@ def get_sprint(sprint_id: str):
             "product_version": item.version,
             "features": item.features,
             "rcs": item.rcs,
+            "issue_found_since": item.issue_found_since,
             "issue_types": item.issue_types,
             "issue_status": item.issue_status,
             "issue_categories": item.issue_categories,
+            'jqls': item.queries.get('jqls'),
         }
     }, 200
 
@@ -64,12 +80,14 @@ def create_sprint(sprint: dict):
                 'issuetype in (%s)' % ', '.join(_sprint.issue_types),
                 'Sprint = "%s"' % _sprint.name,
             ])
+            logging.info('Generate JQL for overall')
             jqls['overall'] = dict()
             for k, v in _sprint.issue_status.items():
                 jqls['overall'][k] = ' AND '.join([
                     jql_base,
                     'status in (%s)' % ', '.join(v)
                 ])
+            logging.info('Generate JQL for features')
             for feature in _sprint.features:
                 jql_feature_base = ' AND '.join([
                     jql_base,
@@ -82,6 +100,7 @@ def create_sprint(sprint: dict):
                         jql_feature_base,
                         'status in (%s)' % ', '.join(v)
                     ])
+            logging.info('Generate JQL for categories')
             jqls['categories'] = dict()
             for category in _sprint.issue_categories:
                 jql_category = ' AND '.join([
@@ -94,6 +113,7 @@ def create_sprint(sprint: dict):
                 jql_base,
                 'labels = "%s"' % _sprint.version,
             ])
+            logging.info('Generate JQL for rcs')
             jqls['rcs'] = dict()
             for rc in _sprint.rcs:
                 jql_rc = ' AND '.join([
@@ -101,14 +121,23 @@ def create_sprint(sprint: dict):
                     'labels = "%s"' % rc,
                 ])
                 jqls['rcs'][rc] = jql_rc
+            logging.info('Generate JQL for issue found since')
+            jqls['issue_found_since'] = dict()
+            for since in _sprint.issue_found_since:
+                jql_issue_found_since = ' AND '.join([
+                    jql_base,
+                    'labels = "%s"' % since,
+                ])
+                jqls['issue_found_since'][since] = jql_issue_found_since
+            logging.info('Complete to generate all JQLs')
             _sprint.queries = {
                 'jqls': jqls
             }
     return {
-        'status': 200,
         'title': 'Succeed To Create Project',
         'detail': {
-            'sprint_id': _sprint.uuid
+            'sprint_id': _sprint.uuid,
+            'jqls': _sprint.queries.get('jqls'),
         }
     }, 200
 

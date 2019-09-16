@@ -6,7 +6,7 @@ from clientJira.services import jiraProject
 
 
 def list_projects():
-    return jiraProject.list_project()
+    return jiraProject.list_projects()
 
 
 def get_project(project_id):

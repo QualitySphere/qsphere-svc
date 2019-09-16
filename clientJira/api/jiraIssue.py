@@ -5,9 +5,13 @@ import connexion
 from clientJira.services import jiraIssue
 
 
-def get_project_issues():
-    pass
+# def get_project_issues():
+#     pass
 
 
-def get_sprint_issues(sprint_id):
-    return jiraIssue.get_sprint_issues(sprint_id)
+def get_issues(sprint_id):
+    return jiraIssue.get_issues(sprint_id)
+
+
+def sync_issues(sprint_id):
+    return jiraIssue.sync_jira_data(sprint_id)

@@ -7,6 +7,7 @@ from flask import current_app
 from pony.orm import db_session, select, get
 from models.models import Connection
 from clientJira.utils.jiraClient import JiraSession
+import logging
 
 
 def create_connection(server_info: dict):
@@ -32,18 +33,24 @@ def create_connection(server_info: dict):
     }, 200
 
 
+@db_session
 def get_connection():
-    with db_session:
-        _connection = get(item for item in Connection if item.type == 'jira')
-    return {
-        'status': 200,
-        'title': 'Get Connection Succeed',
-        'detail': {
-            'connection_id': _connection.uuid,
-            'server': _connection.server,
-            'account': _connection.account,
-        }
-    }, 200
+    item = get(c for c in Connection if c.type == 'jira')
+    if item:
+        logging.info('Get connection info of %s %s' % (item.type, item.server))
+        return {
+            'title': 'Get Connection Succeed',
+            'detail': {
+                'connection_id': item.uuid,
+                'server': item.server,
+                'account': item.account,
+            }
+        }, 200
+    else:
+        logging.info('No Connection info of %s %s' % item.type)
+        return {
+            'title': 'Connection Not Found',
+        }, 404
 
 
 if __name__ == '__main__':

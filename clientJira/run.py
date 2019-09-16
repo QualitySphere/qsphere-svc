@@ -5,6 +5,10 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 import connexion
 from clientJira.db.db import db
+import logging
+
+
+logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
 
 
 if __name__ == '__main__':

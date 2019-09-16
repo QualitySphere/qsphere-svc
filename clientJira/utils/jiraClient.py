@@ -6,6 +6,7 @@ from jira import JIRA
 import connexion
 from flask import current_app
 from pony.orm import *
+import logging
 
 
 class JiraSession(object):
@@ -23,15 +24,15 @@ class JiraSession(object):
         self.jira_session.close()
 
     def search_issues(self, jql):
-        # current_app.logger.info(u'JIRA Search: %s' % jql)
+        logging.info(u'JIRA Search: %s' % jql)
         return self.jira_session.search_issues(jql_str=jql, maxResults=128, json_result=True)
 
     def get_projects(self):
-        # current_app.logger.info(u'Get JIRA Projects')
+        logging.info(u'Get JIRA Projects')
         return self.jira_session.projects()
 
     def get_user(self):
-        # current_app.logger.info(u'Get JIRA Current User')
+        logging.info(u'Get JIRA Current User')
         return self.jira_session.current_user()
 
 

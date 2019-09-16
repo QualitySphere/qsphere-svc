@@ -9,32 +9,43 @@ from models.models import Connection, Project
 from clientJira.utils.jiraClient import JiraSession
 
 
-def list_project():
-    with db_session:
-        items = select(
-            _project for _project in Project if
-            _project.status == 'active'
-        ).order_by(Project.name)
-    return {
-        'status': 200,
-        'title': 'Succeed To Get Project',
-        'detail': items
-    }, 200
+@db_session
+def list_projects():
+    items = select(p for p in Project if p.active == 'enable').order_by(Project.name)
+    if items:
+        projects = list()
+        for item in items:
+            projects.append({
+                'project_id': item.uuid,
+                'project_name': item.name
+            })
+        return {
+            'title': 'Succeed To List Projects',
+            'detail': {
+                'count': items.count(),
+                'results': projects,
+            }
+        }, 200
+    else:
+        return {
+            'title': 'Project Not Found',
+        }, 404
 
 
+@db_session
 def get_project(project_id: str):
-    with db_session:
-        item = get(
-            _project for _project in Project if
-            str(_project.uuid) == project_id
-        )
-    return {
-        'status': 200,
-        'title': 'Succeed To Get Project',
-        'detail': {
-            "project_name": item.name,
-        }
-    }, 200
+    item = get(p for p in Project if str(p.uuid) == project_id)
+    if item:
+        return {
+            'title': 'Succeed To Get Project',
+            'detail': {
+                "project_name": item.name,
+            }
+        }, 200
+    else:
+        return {
+            'title': 'Project Not Found',
+        }, 404
 
 
 def create_project(item: dict):

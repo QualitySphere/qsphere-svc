@@ -27,6 +27,7 @@ class Project(db.Entity):
     name = Required(str)
     active = Required(str, default='enable')
     sprints = Set('Sprint')
+    # issue_projects = Set('IssueProject')
 
 
 class Sprint(db.Entity):
@@ -39,31 +40,25 @@ class Sprint(db.Entity):
     issue_types = Required(StrArray)  # Improvement, 缺陷
     features = Required(StrArray)  # 功能1, 功能2
     rcs = Required(StrArray)  # rc1,rc2,rc3,rc4,rc5
+    issue_found_since = Required(StrArray, default=['regression_improve', 'qa_missed', 'customer'])
     issue_status = Required(Json)  # fixing: '待办, 进行中, 新发现', fixed: '开发完成', verified: '已关闭'
-    issue_categories = Required(StrArray)  # regression, previous, newfeature, others
+    issue_categories = Required(StrArray, default=['regression', 'previous', 'newfeature', 'others'])
     queries = Optional(Json)  # jqls
     active = Required(str, default='enable')
-    # issue_project = Set('IssueProject')
-    issue_sprint = Set('IssueSprint')
-    issue_feature = Set('IssueFeature')
+    issue_projects = Set('IssueProject')
+    issue_sprints = Set('IssueSprint')
+    issue_features = Set('IssueFeature')
 
 
-# class IssueProject(db.Entity):
-#     _table_ = 'issue_project'
-#
-#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-#     capture_at = Required(datetime)
-#     sprint = Required(Sprint)
-#     total = Required(int)
-#     # categories = Required(Json)
-#     # category_regression = Required(int)
-#     # category_previous = Required(int)
-#     # category_code_change = Required(int)
-#     # category_others = Required(int)
-#     # since = Required(Json)
-#     # since_improve = Required(int)
-#     # since_qa_missed = Required(int)
-#     # since_customer = Required(int)
+class IssueProject(db.Entity):
+    _table_ = 'issue_project'
+
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_at = Required(datetime)
+    # project = Required(Project)
+    sprint = Required(Sprint)
+    categories = Required(Json)
+    found_since = Required(Json)
 
 
 class IssueSprint(db.Entity):
@@ -86,4 +81,4 @@ class IssueFeature(db.Entity):
     sprint = Required(Sprint)
     name = Required(str)
     status = Required(Json)  # total, fixing, fixed, verified
-    found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
+    # found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5

@@ -9,3 +9,5 @@ greenlet>=0.4.15
 uuid>=1.30
 jira>=2.0.0
 psycopg2-binary>=2.8.3
+APScheduler>=3.6.1
+Flask-APScheduler>=1.11.0

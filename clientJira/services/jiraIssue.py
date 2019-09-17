@@ -19,12 +19,6 @@ def _get_issue_project_status(server, account, password, project):
     pass
 
 
-# def _get_jira(issues, key1, key2, value):
-#     with JiraSession(server, account, password) as jira_session:
-#     issues[key1] = dict()
-#     issue_sprint_issues[key1][str(key2)] = jira_session.search_issues(value).get('total')
-
-
 def debug_function(sprint_id):
     # DEBUG Start
     # 获取 sprint 信息
@@ -127,14 +121,6 @@ def _get_jira_issues(sprint_id):
         )
     logging.info('Complete update')
     logging.info('Start to update DB for sprint issues status')
-    # issue_sprint = get(s for s in IssueSprint if str(s.sprint.uuid) == sprint_id)
-    # if issue_sprint:
-    #     issue_sprint.capture_at = capture_time
-    #     issue_sprint.status = issues.get('overall')
-    #     issue_sprint.categories = issues.get('categories')
-    #     issue_sprint.found_since = issues.get('issue_found_since')
-    #     issue_sprint.found_in_rcs = issues.get('rcs')
-    # else:
     IssueSprint(
         capture_at=capture_time,
         sprint=sprint,
@@ -147,11 +133,6 @@ def _get_jira_issues(sprint_id):
     logging.info('Start to update DB for feature issues status')
     for key in issues.keys():
         if key not in ['overall', 'categories', 'rcs', 'issue_found_since']:
-            # issue_feature = get(f for f in IssueFeature if str(f.sprint.uuid) == sprint_id and f.name == key)
-            # if issue_feature:
-            #     issue_feature.capture_at = capture_time
-            #     issue_feature.status = issues.get(key)
-            # else:
             IssueFeature(
                 capture_at=capture_time,
                 sprint=sprint,
@@ -162,18 +143,49 @@ def _get_jira_issues(sprint_id):
     return issues
 
 
-def sync_jira_data(sprint_id):
+def sync_jira_sprint_data(sprint_id):
     try:
         _get_jira_issues(sprint_id)
         return {
-            'title': 'Succeed To Sync Issues From JIRA'
+            'title': 'Succeed To Sync Sprint %s Issues From JIRA' % sprint_id
         }, 200
     except Exception as e:
         logging.error(e)
         return {
-            'title': 'Failed to sync data from JIRA',
+            'title': 'Failed To Sync Sprint %s Issues from JIRA' % sprint_id,
             'detail': str(e)
         }, 400
+
+
+@db_session
+def sync_jira_data():
+    sprints = select(s for s in Sprint if s.active == 'enable').order_by(Sprint.name)
+    if sprints:
+        try:
+            threads = list()
+            for sprint in sprints:
+                threads.append(
+                    Thread(
+                        target=_get_jira_issues,
+                        args=(str(sprint.uuid),)
+                    )
+                )
+            for t in threads:
+                t.setDaemon(True)
+                t.start()
+            for t in threads:
+                t.join()
+            return {
+                'title': 'Succeed To Sync All Sprints Issues From JIRA'
+            }, 200
+        except Exception as e:
+            return {
+                'title': 'Failed To Sync Issues From JIRA: %s' % e,
+            }, 400
+    else:
+        return {
+            'title': 'No Sprint Need To Sync'
+        }, 200
 
 
 if __name__ == '__main__':

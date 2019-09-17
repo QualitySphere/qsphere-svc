@@ -165,6 +165,18 @@ paths:
 
   /jira/sprint/{sprint_id}/sync:
     get:
+      operationId: api.jiraIssue.sync_sprint_issues
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        200:
+          description: succeed to sync data from JIRA
+
+  /jira/sprint/sync:
+    get:
       operationId: api.jiraIssue.sync_issues
       parameters:
         - name: sprint_id

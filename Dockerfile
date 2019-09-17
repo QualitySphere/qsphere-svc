@@ -4,7 +4,8 @@ MAINTAINER shiwei@baoxian-sz.com
 WORKDIR /workspace
 COPY . .
 
-RUN apk add --no-cache --update libpq && \
+RUN rm -rf mui && \
+    apk add --no-cache --update libpq && \
     apk add --no-cache --virtual temp-apks \
         gcc musl-dev python-dev postgresql-dev libffi-dev && \
     pip install -r requirements.txt && \

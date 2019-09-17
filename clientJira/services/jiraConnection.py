@@ -24,7 +24,6 @@ def create_connection(server_info: dict):
                 password=_password
             )
     return {
-        'status': 200,
         'title': 'Create Connection Succeed',
         'detail': {
             'connection_id': _connection.uuid,
@@ -47,7 +46,7 @@ def get_connection():
             }
         }, 200
     else:
-        logging.info('No Connection info of %s %s' % item.type)
+        logging.info('No Connection info')
         return {
             'title': 'Connection Not Found',
         }, 404

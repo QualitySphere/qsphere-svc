@@ -78,9 +78,9 @@ paths:
             schema:
               type: object
               properties:
-                connectionId:
+                connection_id:
                   type: string
-                projectName:
+                project_name:
                   type: string
       responses:
         200:

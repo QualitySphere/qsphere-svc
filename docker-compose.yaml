@@ -21,7 +21,7 @@ services:
 
   qap-svc:
     container_name: qap-svc
-    image: bxwill/qap-svc
+    image: bxwill/qap:svc
     restart: always
     ports:
       - 6001:6001
@@ -36,7 +36,7 @@ services:
 
   qap-mgmt-ui:
     container_name: qap-mgmt-ui
-    image: bxwill/qap-mui
+    image: bxwill/qap:mui
     restart: always
     ports:
       - 8080:80

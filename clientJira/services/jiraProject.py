@@ -57,7 +57,6 @@ def create_project(item: dict):
             active=item.get('active') if item.get('active') else 'enable'
         )
     return {
-        'status': 200,
         'title': 'Succeed To Create Project',
         'detail': {
             'project_id': _project.uuid

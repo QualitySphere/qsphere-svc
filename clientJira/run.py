@@ -6,6 +6,7 @@ from flask_cors import CORS
 import connexion
 from clientJira.db.db import db
 import logging
+from pony.orm import set_sql_debug
 
 
 logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
@@ -23,5 +24,6 @@ if __name__ == '__main__':
         options=options
     )
     app.add_api("jira-client.yaml")
+    set_sql_debug(True)
     db.generate_mapping(create_tables=True)
     app.run(port=6001, debug=True)

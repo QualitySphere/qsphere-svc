@@ -7,7 +7,6 @@ from flask import current_app
 from pony.orm import db_session, select, get
 from models.models import Connection, Project, Sprint
 from clientJira.utils.jiraClient import JiraSession
-import json
 import logging
 
 
@@ -43,21 +42,25 @@ def get_sprint(sprint_id: str):
             _sprint for _sprint in Sprint if
             str(_sprint.uuid) == sprint_id
         )
-    return {
-        'status': 200,
-        'title': 'Succeed To Get Sprint',
-        'detail': {
-            "sprint_name": item.name,
-            "product_version": item.version,
-            "features": item.features,
-            "rcs": item.rcs,
-            "issue_found_since": item.issue_found_since,
-            "issue_types": item.issue_types,
-            "issue_status": item.issue_status,
-            "issue_categories": item.issue_categories,
-            'jqls': item.queries.get('jqls'),
-        }
-    }, 200
+    if item:
+        return {
+            'title': 'Succeed To Get Sprint',
+            'detail': {
+                "sprint_name": item.name,
+                "product_version": item.version,
+                "features": item.features,
+                "rcs": item.rcs,
+                "issue_found_since": item.issue_found_since,
+                "issue_types": item.issue_types,
+                "issue_status": item.issue_status,
+                "issue_categories": item.issue_categories,
+                'jqls': item.queries.get('jqls'),
+            }
+        }, 200
+    else:
+        return {
+            'title': 'Sprint Not Found'
+        }, 404
 
 
 def create_sprint(sprint: dict):

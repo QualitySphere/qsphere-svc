@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(
 
 
 def jira_job():
-    requests.get('http://127.0.0.1:6001/api/jira/sprint/sync')
+    requests.get(url='http://127.0.0.1:6001/api/jira/sprint/sync', timeout=30)
 
 
 if __name__ == '__main__':
@@ -34,8 +34,6 @@ if __name__ == '__main__':
     set_sql_debug(True)
     db.generate_mapping(create_tables=True)
     scheduler = APScheduler()
-    # scheduler.init_app(app)
     scheduler.add_job(func=jira_job, id='jira_job', trigger='interval', hours=1, replace_existing=True)
-    # scheduler.add_job(func=jira_job, id='jira_job', trigger='interval', minutes=1, replace_existing=True)
     scheduler.start()
     app.run(port=6001, debug=True)

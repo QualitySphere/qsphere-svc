@@ -45,20 +45,30 @@ class Sprint(db.Entity):
     issue_categories = Required(StrArray, default=['regression', 'previous', 'newfeature', 'others'])
     queries = Optional(Json)  # jqls
     active = Required(str, default='enable')
-    issue_projects = Set('IssueProject')
+    issue_project_latest = Set('IssueProjectLatest')
+    issue_sprint_latest = Set('IssueSprintLatest')
     issue_sprints = Set('IssueSprint')
     issue_features = Set('IssueFeature')
 
 
-class IssueProject(db.Entity):
-    _table_ = 'issue_project'
+class IssueProjectLatest(db.Entity):
+    _table_ = 'issue_project_latest'
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_at = Required(datetime)
-    # project = Required(Project)
     sprint = Required(Sprint)
     categories = Required(Json)
     found_since = Required(Json)
+
+
+class IssueSprintLatest(db.Entity):
+    _table_ = 'issue_sprint_latest'
+
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_at = Required(datetime)
+    sprint = Required(Sprint)
+    feature_name = Required(str)
+    status = Required(Json)  # total, fixing, fixed, verified
 
 
 class IssueSprint(db.Entity):

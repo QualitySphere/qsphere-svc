@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from pony.orm import Database, Required, db_session
-import logging
+from pony.orm import Database
 import os
 
 

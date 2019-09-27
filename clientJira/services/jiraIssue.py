@@ -11,59 +11,32 @@ from datetime import datetime
 import logging
 
 
-def _get_issue_project_status(server, account, password, project):
-    # 从数据库中的 issue sprint 表中获取每个 project 的最后一次数据
-    # with db_session:
-    #     select(_sprints  _sprints )
-    # _issue_types = ', '.join(sprint.issue_types)
-    pass
-
-
-def debug_function(sprint_id):
-    # DEBUG Start
-    # 获取 sprint 信息
-    sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    server = sprint.project.connection.server
-    account = sprint.project.connection.account
-    password = sprint.project.connection.password
-    jqls = sprint.queries.get('jqls')
-    # 登录 JIRA 用 JQL 查询数据
-    issues = dict()
-    threads = list()
-    for key, value in jqls.items():
-        issues[key] = dict()
-        for key_jql, value_jql in value.items():
-            threads.append(
-                Thread(
-                    target=_search_issues,
-                    args=(server, account, password, key_jql, value_jql, issues[key])
-                )
-            )
-    for t in threads:
-        t.setDaemon(True)
-        t.start()
-    for t in threads:
-        t.join()
-    for key, value in jqls.items():
-        issues[key]['total'] = sum(issues[key].values())
-    # 额外对 categories 的数据进行处理, others 中存放的实际是 total 的值
-    categories = issues['categories']
-    categories['total'] = categories['others']
-    categories['others'] = categories['total'] - categories['regression'] - categories['previous'] - categories[
-        'newfeature']
-    return issues
-
-
 @db_session
 def get_issues(sprint_id):
-    # project issues status
-    # sprint issues status
     # feature issues status
-    issues = debug_function(sprint_id)
-    return {
-        'title': 'Succeed To Get Issues',
-        'detail': issues
-    }, 200
+    sprint_issue = select(s for s in IssueSprint
+                          if str(s.sprint.uuid) == sprint_id).order_by(IssueSprint.capture_at).first()
+    feature_issue = select(f for f in IssueFeatureLatest
+                           if str(f.sprint.uuid) == sprint_id)
+    if sprint_issue:
+        detail = {
+                'sprint_id': sprint_issue.sprint.uuid,
+                'status': sprint_issue.status,
+                'categories': sprint_issue.categories,
+                'found_since': sprint_issue.found_since,
+                'found_in_rcs': sprint_issue.found_in_rcs,
+                'features': dict()
+        }
+        for fi in feature_issue:
+            detail['features'][fi.name] = fi.status
+        return {
+            'title': 'Succeed To Get Issues',
+            'detail': detail
+        }, 200
+    else:
+        return {
+            'title': 'No Issues',
+        }, 404
 
 
 def _search_issues(server, account, password, key_jql, value_jql, issues):

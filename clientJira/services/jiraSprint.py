@@ -98,6 +98,14 @@ def _generate_jqls(sprint: dict):
         'issue_found_since': dict(),
     }
 
+    # 定义customer bug jql, 它不应该局限在 sprint 过程
+    jqls['issue_found_since']['customer'] = ' AND '.join([
+        'project = %s' % sprint.get('sprint_name'),
+        'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
+        'labels = "customer"',
+    ])
+
+    # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
         'project = %s' % sprint.get('sprint_name'),
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
@@ -129,12 +137,17 @@ def _generate_jqls(sprint: dict):
     if sprint.get('issue_categories') is None:
         sprint['issue_categories'] = ['regression', 'previous', 'newfeature', 'others']
     for category in sprint.get('issue_categories'):
+        # Others 的类别将在下面进行处理
+        if category == 'others':
+            continue
         jql_category = ' AND '.join([
             jql_base,
             'labels = "%s"' % sprint.get('product_version'),
             'labels = "%s"' % category,
         ])
         jqls['categories'][category] = jql_category
+    # Others 是除了 regression, previous, newfeature 的类别
+    # 实际中可能没有标记，这里不做jql不带任何相关标记，先获取总数，用于后面函数处理时候计算得出 others
     jqls['categories']['others'] = ' AND '.join([
         jql_base,
         'labels = "%s"' % sprint.get('product_version'),
@@ -152,6 +165,9 @@ def _generate_jqls(sprint: dict):
     if sprint.get('issue_found_since') is None:
         sprint['issue_found_since'] = ['regression_improve', 'qa_missed', 'new_feature', 'customer']
     for since in sprint.get('issue_found_since'):
+        # 来自 customer 的缺陷已经在一开始就生成了 jql，所以这里跳过
+        if since == 'customer':
+            continue
         jql_issue_found_since = ' AND '.join([
             jql_base,
             'labels = "%s"' % since,

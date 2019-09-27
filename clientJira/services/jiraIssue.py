@@ -4,7 +4,7 @@
 import connexion
 from flask import current_app
 from pony.orm import db_session, select, get
-from models.models import Connection, Project, Sprint, IssueProjectLatest, IssueSprintLatest, IssueSprint, IssueFeature
+from models.models import *
 from clientJira.utils.jiraClient import JiraSession
 from threading import Thread
 from datetime import datetime
@@ -121,6 +121,25 @@ def _get_jira_issues(sprint_id):
     )
     logging.info('Complete update')
 
+    for rc_key, rc_value in issues.get('rcs').items():
+        if rc_key == 'total':
+            continue
+        logging.info('Start to update DB for latest sprint issues status')
+        issue_sprint = get(s for s in IssueSprintLatest if str(s.sprint.uuid) == sprint_id and s.rc == rc_key)
+        if issue_sprint:
+            issue_sprint.capture_at = capture_time
+            issue_sprint.sprint = sprint
+            issue_sprint.rc = rc_key
+            issue_sprint.count = rc_value
+        else:
+            IssueSprintLatest(
+                capture_at=capture_time,
+                sprint=sprint,
+                rc=rc_key,
+                count=rc_value
+            )
+        logging.info('Complete update')
+
     logging.info('Start to update DB for latest project issues status')
     issue_project = get(p for p in IssueProjectLatest if str(p.sprint.uuid) == sprint_id)
     if issue_project:
@@ -146,17 +165,18 @@ def _get_jira_issues(sprint_id):
                 status=issues.get(key)
             )
             logging.info('Complete update')
-            logging.info('Start to update DB for latest sprint issues status')
-            issue_feature = get(f for f in IssueSprintLatest
-                                if str(f.sprint.uuid) == sprint_id and f.feature_name == key)
+
+            logging.info('Start to update DB for latest feature issues status')
+            issue_feature = get(f for f in IssueFeatureLatest
+                                if str(f.sprint.uuid) == sprint_id and f.name == key)
             if issue_feature:
                 issue_feature.capture_at = capture_time
                 issue_feature.status = issues.get(key)
             else:
-                IssueSprintLatest(
+                IssueFeatureLatest(
                     capture_at=capture_time,
                     sprint=sprint,
-                    feature_name=key,
+                    name=key,
                     status=issues.get(key)
                 )
             logging.info('Complete update')

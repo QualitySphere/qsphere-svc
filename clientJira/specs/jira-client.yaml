@@ -150,6 +150,40 @@ paths:
       responses:
         200:
           description: succeed to get sprint
+    delete:
+      operationId: api.jiraSprint.delete_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        204:
+          description: succeed to delete sprint
+
+  /jira/sprint/{sprint_id}/disable:
+    get:
+      operationId: api.jiraSprint.disable_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        204:
+          description: succeed to disable sprint
+
+  /jira/sprint/{sprint_id}/active:
+    get:
+      operationId: api.jiraSprint.active_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      responses:
+        204:
+          description: succeed to active sprint
 
   /jira/sprint/{sprint_id}/issues:
     get:

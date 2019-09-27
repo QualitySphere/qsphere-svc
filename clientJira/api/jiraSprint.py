@@ -21,6 +21,14 @@ def put_sprint(body):
     pass
 
 
-def delete_sprint():
-    pass
+def delete_sprint(sprint_id):
+    return jiraSprint.delete_sprint(sprint_id)
+
+
+def disable_sprint(sprint_id):
+    return jiraSprint.disable_sprint(sprint_id)
+
+
+def active_sprint(sprint_id):
+    return jiraSprint.active_sprint(sprint_id)
 

@@ -63,6 +63,104 @@ def get_sprint(sprint_id: str):
         }, 404
 
 
+def active_sprint(sprint_id: str):
+    with db_session:
+        item = get(s for s in Sprint if str(s.uuid) == sprint_id)
+        item.active = 'active'
+    return {
+        'title': 'Succeed To Active Sprint'
+    }, 204
+
+
+def disable_sprint(sprint_id: str):
+    with db_session:
+        item = get(s for s in Sprint if str(s.uuid) == sprint_id)
+        item.active = 'disable'
+    return {
+        'title': 'Succeed To Disable Sprint'
+    }, 204
+
+
+def delete_sprint(sprint_id: str):
+    with db_session:
+        item = get(s for s in Sprint if str(s.uuid) == sprint_id)
+        item.active = 'delete'
+    return {
+        'title': 'Succeed To Delete Sprint'
+    }, 204
+
+
+def _generate_jqls(sprint: dict):
+    jqls = {
+        'overall': dict(),
+        'categories': dict(),
+        'rcs': dict(),
+        'issue_found_since': dict(),
+    }
+
+    jql_base = ' AND '.join([
+        'project = %s' % sprint.get('sprint_name'),
+        'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
+        'Sprint = "%s"' % sprint.get('sprint_name'),
+    ])
+
+    logging.info('Generate JQL for overall')
+    for k, v in sprint.get('issue_status').items():
+        jqls['overall'][k] = ' AND '.join([
+            jql_base,
+            'status in (%s)' % ', '.join(v)
+        ])
+
+    logging.info('Generate JQL for features')
+    for feature in sprint.get('features'):
+        jql_feature_base = ' AND '.join([
+            jql_base,
+            'labels = "%s"' % sprint.get('product_version'),
+            'labels = "%s"' % feature,
+        ])
+        jqls[feature] = dict()
+        for k, v in sprint.get('issue_status').items():
+            jqls[feature][k] = ' AND '.join([
+                jql_feature_base,
+                'status in (%s)' % ', '.join(v)
+            ])
+
+    logging.info('Generate JQL for categories')
+    if sprint.get('issue_categories') is None:
+        sprint['issue_categories'] = ['regression', 'previous', 'newfeature', 'others']
+    for category in sprint.get('issue_categories'):
+        jql_category = ' AND '.join([
+            jql_base,
+            'labels = "%s"' % sprint.get('product_version'),
+            'labels = "%s"' % category,
+        ])
+        jqls['categories'][category] = jql_category
+    jqls['categories']['others'] = ' AND '.join([
+        jql_base,
+        'labels = "%s"' % sprint.get('product_version'),
+    ])
+
+    logging.info('Generate JQL for rcs')
+    for rc in sprint.get('rcs'):
+        jql_rc = ' AND '.join([
+            jql_base,
+            'labels = "%s"' % rc,
+        ])
+        jqls['rcs'][rc] = jql_rc
+
+    logging.info('Generate JQL for issue found since')
+    if sprint.get('issue_found_since') is None:
+        sprint['issue_found_since'] = ['regression_improve', 'qa_missed', 'new_feature', 'customer']
+    for since in sprint.get('issue_found_since'):
+        jql_issue_found_since = ' AND '.join([
+            jql_base,
+            'labels = "%s"' % since,
+        ])
+        jqls['issue_found_since'][since] = jql_issue_found_since
+    logging.info('Complete to generate all JQLs')
+    return jqls
+
+
 def create_sprint(sprint: dict):
     with db_session:
         _project = get(p for p in Project if str(p.uuid) == sprint.get('project_id'))
@@ -77,64 +175,8 @@ def create_sprint(sprint: dict):
             issue_categories=sprint.get('issue_categories')
         )
         if _sprint.project.connection.type == 'jira':
-            jqls = dict()
-            jql_base = ' AND '.join([
-                'project = %s' % _sprint.project.name,
-                'issuetype in (%s)' % ', '.join(_sprint.issue_types),
-                'Sprint = "%s"' % _sprint.name,
-            ])
-            logging.info('Generate JQL for overall')
-            jqls['overall'] = dict()
-            for k, v in _sprint.issue_status.items():
-                jqls['overall'][k] = ' AND '.join([
-                    jql_base,
-                    'status in (%s)' % ', '.join(v)
-                ])
-            logging.info('Generate JQL for features')
-            for feature in _sprint.features:
-                jql_feature_base = ' AND '.join([
-                    jql_base,
-                    'labels = "%s"' % _sprint.version,
-                    'labels = "%s"' % feature,
-                ])
-                jqls[feature] = dict()
-                for k, v in _sprint.issue_status.items():
-                    jqls[feature][k] = ' AND '.join([
-                        jql_feature_base,
-                        'status in (%s)' % ', '.join(v)
-                    ])
-            logging.info('Generate JQL for categories')
-            jqls['categories'] = dict()
-            for category in _sprint.issue_categories:
-                jql_category = ' AND '.join([
-                    jql_base,
-                    'labels = "%s"' % _sprint.version,
-                    'labels = "%s"' % category,
-                ])
-                jqls['categories'][category] = jql_category
-            jqls['categories']['others'] = ' AND '.join([
-                jql_base,
-                'labels = "%s"' % _sprint.version,
-            ])
-            logging.info('Generate JQL for rcs')
-            jqls['rcs'] = dict()
-            for rc in _sprint.rcs:
-                jql_rc = ' AND '.join([
-                    jql_base,
-                    'labels = "%s"' % rc,
-                ])
-                jqls['rcs'][rc] = jql_rc
-            logging.info('Generate JQL for issue found since')
-            jqls['issue_found_since'] = dict()
-            for since in _sprint.issue_found_since:
-                jql_issue_found_since = ' AND '.join([
-                    jql_base,
-                    'labels = "%s"' % since,
-                ])
-                jqls['issue_found_since'][since] = jql_issue_found_since
-            logging.info('Complete to generate all JQLs')
             _sprint.queries = {
-                'jqls': jqls
+                'jqls': _generate_jqls(sprint)
             }
     return {
         'title': 'Succeed To Create Project',

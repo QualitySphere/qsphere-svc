@@ -90,7 +90,7 @@ def delete_sprint(sprint_id: str):
     }, 204
 
 
-def _generate_jqls(sprint: dict):
+def _generate_jqls(project_name: str, sprint: dict):
     jqls = {
         'overall': dict(),
         'categories': dict(),
@@ -100,14 +100,14 @@ def _generate_jqls(sprint: dict):
 
     # 定义customer bug jql, 它不应该局限在 sprint 过程
     jqls['issue_found_since']['customer'] = ' AND '.join([
-        'project = %s' % sprint.get('sprint_name'),
+        'project = %s' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
         'labels = "customer"',
     ])
 
     # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
-        'project = %s' % sprint.get('sprint_name'),
+        'project = %s' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
         'Sprint = "%s"' % sprint.get('sprint_name'),
     ])
@@ -192,7 +192,7 @@ def create_sprint(sprint: dict):
         )
         if _sprint.project.connection.type == 'jira':
             _sprint.queries = {
-                'jqls': _generate_jqls(sprint)
+                'jqls': _generate_jqls(_project.name, sprint)
             }
     return {
         'title': 'Succeed To Create Project',

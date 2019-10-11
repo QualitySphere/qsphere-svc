@@ -14,4 +14,4 @@ RUN rm -rf mui && \
 CMD ./launch.sh
 EXPOSE 6001
 
-HEALTHCHECK --interval=10s --timeout=5s --retries=3 CMD ./health_chek.sh
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 CMD ./health_check.sh

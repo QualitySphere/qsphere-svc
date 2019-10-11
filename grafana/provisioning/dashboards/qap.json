@@ -16,7 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "iteration": 1569489133026,
   "links": [],
   "panels": [
@@ -1337,8 +1337,8 @@
     ]
   },
   "time": {
-    "from": "2019-09-25T16:00:00.000Z",
-    "to": "2019-09-27T15:59:00.000Z"
+    "from": "now-30d",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1357,5 +1357,5 @@
   "timezone": "browser",
   "title": "Quality Assurance Platform",
   "uid": "qap",
-  "version": 28
+  "version": 1
 }

@@ -24,12 +24,12 @@ services:
     depends_on:
       - qap-db
 
-  qap-ui:
-    container_name: qap-ui
-    image: bxwill/qap:ui
+  qap-grafana:
+    container_name: qap-grafana
+    image: bxwill/qap:grafana
     restart: always
     ports:
-      - 80:3000
+      - 3000:3000
     environment:
       PG_DB: 'qap'
       PG_SERVER: qap-db
@@ -40,11 +40,12 @@ services:
       - qap-db
       - qap-svc
 
-  qap-mgmt-ui:
-    container_name: qap-mgmt-ui
-    image: bxwill/qap:mui
+  qap-ui:
+    container_name: qap-ui
+    image: bxwill/qap:ui
     restart: always
     ports:
       - 8080:80
     depends_on:
       - qap-svc
+      - qap-grafana

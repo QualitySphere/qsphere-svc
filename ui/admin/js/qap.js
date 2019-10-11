@@ -39,8 +39,7 @@ function qapNavGetProject(){
                     text += "<td><span class='badge badge-secondary'>已删除</span></td>"
                 }
                 else{
-                    // text += "<td><span class='badge badge-secondary'>未知</span></td>"
-                    text += "<td><span class='badge badge-success'>已激活</span></td>"
+                    text += "<td><span class='badge badge-secondary'>未知</span></td>"
                 }
                 text += "<td>"
                 if(data.detail.results[i].active == "enable"){

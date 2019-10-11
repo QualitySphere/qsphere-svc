@@ -1,0 +1,35 @@
+.qap-html {
+    width: 100%;
+    height: 100%;
+}
+
+.qap-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.qap-none-flex {
+    flex: none
+}
+
+.qap-full-width {
+    width: 100%;
+}
+
+.qap-data {
+    flex: 1 1 0;
+    overflow: auto;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.qap-data-detail {
+    padding-top: 15px
+}
+
+.qap-full-iframe {
+    width: 100%;
+    height: 100%;
+}

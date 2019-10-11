@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html class="qap-html">
+<head>
+	<meta charset="utf-8">
+	<title>管理控制台 - Quality Assurance Platform</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/qap.css">
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/qap.js"></script>
+</head>
+<body class="qap-body">
+	<!-- 导航栏 -->
+	<div class="container-fluid qap-none-flex">
+		<div class="row">
+			<nav class="navbar navbar-expand-lg navbar-dark bg-dark qap-full-width">
+				<div class="col col-1"></div>
+				<a class="navbar-brand" href="#">Quality Assurance Platform 管理控制台</a>
+				<button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse" aria-controls="my-nav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div id="my-nav" class="collapse navbar-collapse">
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item dropdown">
+							<a id="project-dropdown" href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">创建</a>
+							<div class="dropdown-menu">
+								<a class="dropdown-item" href="#" id="qap-nav-create-project" data-toggle="modal" data-target="#qap-create-project" onclick="qapGetConnection()">项目</a>
+								<a class="dropdown-item" href="#" id="qap-nav-create-sprint" data-toggle="modal" data-target="#qap-create-sprint" onclick="qapGetProject()">迭代</a>
+							</div>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" href="#" id="qap-nav-project" onclick="qapNavGetProject()">项目信息<span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" id="qap-nav-connection" onclick="qapNavGetConnection()">我的连接<span class="sr-only">(current)</span></a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#" id="qap-nav-dashboard" onclick="qapNavDashboard()">看板<span class="sr-only">(current)</span></a>
+						</li>
+					</ul>
+					<!-- <a class="nav-link" href="#"><span class="badge badge-light">一键同步所有项目信息</span><span class="sr-only">(current)</span></a> -->
+					<!-- <form class="form-inline">
+						<input class="form-control" type="text" name="" placeholder="项目/迭代">
+						<button class="btn btn-light" type="button">查找</button>
+					</form> -->
+				</div>
+				<div class="col col-1"></div>
+			</nav>
+		</div>
+	</div>
+	<!-- 信息 -->
+	<div class="container-fluid qap-data" id="qap-data"></div>
+	<!-- 模态框 -->
+	<div class="container-fluid" id="qap-modal"></div>
+</body>
+</html>

@@ -39,12 +39,9 @@ def list_sprints():
         }, 404
 
 
+@db_session
 def get_sprint(sprint_id: str):
-    with db_session:
-        item = get(
-            _sprint for _sprint in Sprint if
-            str(_sprint.uuid) == sprint_id
-        )
+    item = get(s for s in Sprint if str(s.uuid) == sprint_id)
     if item:
         return {
             'title': 'Succeed To Get Sprint',

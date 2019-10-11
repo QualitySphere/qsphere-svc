@@ -515,7 +515,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'newfeature' AS integer) AS \"New Feature\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
+          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'new_feature' AS integer) AS \"New Feature\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
           "refId": "A",
           "select": [
             [

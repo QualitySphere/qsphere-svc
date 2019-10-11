@@ -39,6 +39,7 @@ def get_project(project_id: str):
         return {
             'title': 'Succeed To Get Project',
             'detail': {
+                "project_id": item.uuid,
                 "project_name": item.name,
             }
         }, 200

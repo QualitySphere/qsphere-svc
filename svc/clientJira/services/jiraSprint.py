@@ -19,8 +19,11 @@ def list_sprints():
         for item in items:
             logging.info('Get sprint %s[%s] info' % (item.uuid, item.name))
             sprints.append({
+                'project_id': item.project.uuid,
+                'project_name': item.project.name,
                 'sprint_id': item.uuid,
-                'sprint_name': item.name
+                'sprint_name': item.name,
+                'active': item.active
             })
         return {
             'title': 'Succeed To List Sprint',
@@ -46,6 +49,9 @@ def get_sprint(sprint_id: str):
         return {
             'title': 'Succeed To Get Sprint',
             'detail': {
+                "project_id": "",
+                "project_name": "",
+                "sprint_id": "",
                 "sprint_name": item.name,
                 "product_version": item.version,
                 "features": item.features,

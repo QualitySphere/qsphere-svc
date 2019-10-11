@@ -138,10 +138,10 @@ def _generate_jqls(project_name: str, sprint: dict):
 
     logging.info('Generate JQL for categories')
     if sprint.get('issue_categories') is None:
-        sprint['issue_categories'] = ['regression', 'previous', 'newfeature', 'others']
+        sprint['issue_categories'] = ['Regression', 'Previous', 'NewFeature', 'others']
     for category in sprint.get('issue_categories'):
         # Others 的类别将在下面进行处理
-        if category == 'others':
+        if category == 'Others':
             continue
         jql_category = ' AND '.join([
             jql_base,
@@ -166,10 +166,10 @@ def _generate_jqls(project_name: str, sprint: dict):
 
     logging.info('Generate JQL for issue found since')
     if sprint.get('issue_found_since') is None:
-        sprint['issue_found_since'] = ['regression_improve', 'qa_missed', 'new_feature', 'customer']
+        sprint['issue_found_since'] = ['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer']
     for since in sprint.get('issue_found_since'):
         # 来自 customer 的缺陷已经在一开始就生成了 jql，所以这里跳过
-        if since == 'customer':
+        if since == 'Customer':
             continue
         jql_issue_found_since = ' AND '.join([
             jql_base,

@@ -103,14 +103,14 @@ def _generate_jqls(project_name: str, sprint: dict):
 
     # 定义customer bug jql, 它不应该局限在 sprint 过程
     jqls['issue_found_since']['customer'] = ' AND '.join([
-        'project = %s' % project_name,
+        'project = "%s"' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
-        'labels = "customer"',
+        'labels = "Customer"',
     ])
 
     # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
-        'project = %s' % project_name,
+        'project = "%s"' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
         'Sprint = "%s"' % sprint.get('sprint_name'),
     ])
@@ -138,7 +138,7 @@ def _generate_jqls(project_name: str, sprint: dict):
 
     logging.info('Generate JQL for categories')
     if sprint.get('issue_categories') is None:
-        sprint['issue_categories'] = ['Regression', 'Previous', 'NewFeature', 'others']
+        sprint['issue_categories'] = ['Regression', 'Previous', 'NewFeature', 'Others']
     for category in sprint.get('issue_categories'):
         # Others 的类别将在下面进行处理
         if category == 'Others':
@@ -148,7 +148,7 @@ def _generate_jqls(project_name: str, sprint: dict):
             'labels = "%s"' % sprint.get('product_version'),
             'labels = "%s"' % category,
         ])
-        jqls['categories'][category] = jql_category
+        jqls['categories'][category.lower()] = jql_category
     # Others 是除了 regression, previous, newfeature 的类别
     # 实际中可能没有标记，这里不做jql不带任何相关标记，先获取总数，用于后面函数处理时候计算得出 others
     jqls['categories']['others'] = ' AND '.join([
@@ -175,7 +175,7 @@ def _generate_jqls(project_name: str, sprint: dict):
             jql_base,
             'labels = "%s"' % since,
         ])
-        jqls['issue_found_since'][since] = jql_issue_found_since
+        jqls['issue_found_since'][since.lower()] = jql_issue_found_since
     logging.info('Complete to generate all JQLs')
     return jqls
 
@@ -201,7 +201,7 @@ def create_sprint(sprint: dict):
         'title': 'Succeed To Create Project',
         'detail': {
             'sprint_id': _sprint.uuid,
-            'jqls': _sprint.queries.get('jqls'),
+            # 'jqls': _sprint.queries.get('jqls'),
         }
     }, 200
 

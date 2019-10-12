@@ -1,0 +1,20 @@
+apiVersion: 1
+deleteDatasources:
+  - name: PgQAP
+    orgId: 1
+
+datasources:
+  - name: PgQAP
+    type: postgres
+    access: proxy
+    orgId: 1
+    url: ${PG_SERVER}:${PG_PORT}
+    user: ${PG_USER}
+    database: ${PG_DB}
+    jsonData:
+      postgresVersion: 1000
+      sslmode: disable
+    secureJsonData:
+      password: ${PG_PASSWORD}
+    version: 1
+    editable: true

@@ -179,7 +179,7 @@ function qapCreateSprint(){
             project_id: $("#qap-create-sprint-project").val(),
             sprint_name: $("#qap-create-sprint-name").val(),
             product_version: $("#qap-create-sprint-product-version").val(),
-            issue_types: $("#qap-create-sprint-product-issue-types").val().split(","),
+            issue_types: $("#qap-create-sprint-issue-types").val().split(","),
             features: $("#qap-create-sprint-features").val().split(","),
             rcs: $("#qap-create-sprint-rcs").val().split(","),
             issue_status: {
@@ -190,7 +190,7 @@ function qapCreateSprint(){
             issue_categories: $("#qap-create-sprint-categories").val().split(","),
         }),
         success: function(data, status){
-            $("#qap-create-project").modal("hide")
+            $("#qap-create-sprint").modal("hide")
             $("#qap-create-success").modal("show")
             setTimeout(function(){
                 $("#qap-create-success").modal("hide")

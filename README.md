@@ -2,37 +2,22 @@
 
 ## Screenshots
 
+![define project](specs/project.png)
+![define sprint](specs/sprint.png)
+![quality dashboard](specs/dashboard.png)
+
 ## Values
 
 ## Framework
-Leverage Grafana | Bootstrap | Flask | PostgresQL
-
 ![](specs/framework.png)
 
-## Tables
-- Connection 
-
-uuid | type | server | account | password | projects 
---- | --- | --- | --- | --- | --- 
-
-- project 
-
-uuid | connection | name | version | status | sprints 
---- | --- | --- | --- | --- | --- 
-
-- sprint 
-
-uuid | project | name | features | rcs | issue_types | issue_categories | status | issues_overall | issue_sprint | issue_feature
---- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- 
-
-- issue_overall
-- issue_sprint
-- issue_feature
-- case_overall
-- case_sprint
-- case_feature
-- case_regression
-
 ## API Document
-http://127.0.0.1:6001/api/ui
+http://{qap-server}/api/ui
+
+## Installation
+```bash
+wget https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/svc/docker-compose.yaml
+docker-compose -f docker-compose.yaml pull
+docker-compose -f docker-compose.yaml up -d
+```
 

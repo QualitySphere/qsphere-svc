@@ -1,0 +1,117 @@
+<!-- 创建项目 -->
+<div id="qap-create-project" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qap-create-project-title">创建项目</h5>
+                <button class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="">
+                <input id="qap-create-project-id" type="hidden" name="" value="">
+                <form>
+                    <div class="form-group">
+                        <label for="qap-create-project-connection">服务器</label>
+                        <select id="qap-create-project-connection" class="form-control" name=""></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-project-name">项目名称</label>
+                        <input id="qap-create-project-name" class="form-control" type="text" name="" value="">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" type="button" onclick="qapCreateProject()">提交</button>
+                <button class="btn btn-secondary float-right" type="button" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创建迭代 -->
+<div id="qap-create-sprint" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qap-create-sprint-title">创建迭代</h5>
+                <button class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="">
+                <input id="qap-create-sprint-id" type="hidden" name="" value="">
+                <form>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-project">项目</label>
+                        <select id="qap-create-sprint-project" class="form-control" name=""></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-name">迭代名称</label>
+                        <input id="qap-create-sprint-name" class="form-control" type="text" name="" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-product-version">产品版本</label>
+                        <input id="qap-create-sprint-product-version" class="form-control" type="text" name="" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-issue-types">问题类型</label>
+                        <input id="qap-create-sprint-issue-types" class="form-control" type="text" name="" value="Improvement,缺陷">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-features">功能列表</label>
+                        <input id="qap-create-sprint-features" class="form-control" type="text" name="" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-rcs">RC列表</label>
+                        <input id="qap-create-sprint-rcs" class="form-control" type="text" name="" value="">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-issue-status-fixing">待修复问题状态列表</label>
+                        <input id="qap-create-sprint-issue-status-fixing" class="form-control" type="text" name="" value="待办,进行中,新发现">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-issue-status-fixed">已修复问题状态列表</label>
+                        <input id="qap-create-sprint-issue-status-fixed" class="form-control" type="text" name="" value="开发完成">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-issue-status-verified">待验证问题状态列表</label>
+                        <input id="qap-create-sprint-issue-status-verified" class="form-control" type="text" name="" value="已关闭">
+                    </div>
+                    <div class="form-group">
+                        <label for="qap-create-sprint-categories">类别列表</label>
+                        <input id="qap-create-sprint-categories" class="form-control" type="text" name="" value="Regression,Previous,NewFeature,Others">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" type="button" onclick="qapCreateSprint()">提交</button>
+                <button class="btn btn-secondary float-right" type="button" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 创建成功 -->
+<div id="qap-create-success" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="alert alert-success" role="alert">
+            <strong>创建成功</strong>
+        </div>
+    </div>
+</div>
+<!-- 同步开始 -->
+<div id="qap-sync-start" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="alert alert-success" role="alert">
+            <strong>开始同步</strong>
+        </div>
+    </div>
+</div>
+<!-- 同步完成 -->
+<div id="qap-sync-complete" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="alert alert-success" role="alert">
+            <strong>同步完成</strong>
+        </div>
+    </div>
+</div>

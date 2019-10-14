@@ -5,6 +5,12 @@ import connexion
 from clientJira.services import jiraConnection
 
 
+def health_check():
+    return {
+        'Status': 'Healthy'
+    }, 200
+
+
 def get_connection():
     return jiraConnection.get_connection()
 

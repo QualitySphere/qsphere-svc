@@ -1,0 +1,52 @@
+version: "3"
+services:
+  qap-db:
+    container_name: qap-db
+    image: postgres:10
+    restart: always
+    environment:
+      POSTGRES_DB: 'qap'
+      POSTGRES_PASSWORD: 'password'
+    volumes:
+      - ./qap-pgdata:/var/lib/postgresql/data
+    command: ["-c", "max_connections=2000"]
+
+  qap-svc:
+    container_name: qap-svc
+    image: bxwill/qap:svc
+    restart: always
+    ports:
+      - 6001:6001
+    environment:
+      PG_DB: 'qap'
+      PG_SERVER: qap-db
+      PG_USER: 'postgres'
+      PG_PASSWORD: 'password'
+    depends_on:
+      - qap-db
+
+  qap-grafana:
+    container_name: qap-grafana
+    image: bxwill/qap:grafana
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      PG_DB: 'qap'
+      PG_SERVER: qap-db
+      PG_PORT: '5432'
+      PG_USER: 'postgres'
+      PG_PASSWORD: 'password'
+    depends_on:
+      - qap-db
+      - qap-svc
+
+  qap-ui:
+    container_name: qap-ui
+    image: bxwill/qap:ui
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - qap-svc
+      - qap-grafana

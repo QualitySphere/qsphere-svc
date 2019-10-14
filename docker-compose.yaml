@@ -8,7 +8,8 @@ services:
       POSTGRES_DB: 'qap'
       POSTGRES_PASSWORD: 'password'
     volumes:
-      - ./qap-pgdata:/var/lib/postgresql/data/pgdata
+      - ./qap-pgdata:/var/lib/postgresql/data
+    command: ["-c", "max_connections=2000"]
 
   qap-svc:
     container_name: qap-svc

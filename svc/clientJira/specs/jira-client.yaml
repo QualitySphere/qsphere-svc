@@ -8,6 +8,15 @@ servers:
   - url: http://0.0.0.0:6001/api
 
 paths:
+  /jira/status:
+    get:
+      description: Check Health Status
+      summary: Get JIRA Health Status
+      operationId: api.jiraConnection.health_check
+      responses:
+        200:
+          description: Status is healthy
+
   /jira/connection:
     get:
       description: Get JIRA connection information

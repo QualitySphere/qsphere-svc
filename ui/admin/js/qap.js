@@ -103,18 +103,27 @@ function qapNavGetConnection(){
     )
 }
 
+function qapGetConnection(){
+    $.get(
+        "/api/jira/connection",
+        function(data, status){
+            var text = '<option value="' + data.detail.connection_id + '">' + data.detail.server + '</option>'
+            $("#qap-create-project-connection").html(text)
+        }
+    )
+}
+
 function qapSubmitConnection(){
-    var request_data = JSON.stringify({
-        server: $("#qap-connection-server").val(),
-        account: $("#qap-connection-account").val(),
-        password: $("#qap-connection-password").val()
-    })
     if($("#qap-connection-id").val() == "" || undefined || null) {
         $.ajax({
             type: "post",
             url: "/api/jira/connection",
             contentType: "application/json",
-            data: request_data,
+            data: JSON.stringify({
+                server: $("#qap-connection-server").val(),
+                account: $("#qap-connection-account").val(),
+                password: $("#qap-connection-password").val()
+            }),
             success: function(data, status){
                 createSuccess()
             },
@@ -125,11 +134,16 @@ function qapSubmitConnection(){
     }
     else {
         $.ajax({
-            type: "post",
-            _method: "PUT",
+            type: "POST",
             url: "/api/jira/connection",
             contentType: "application/json",
-            data: request_data,
+            data: JSON.stringify({
+                _method: "PUT",
+                connection_id: $("#qap-connection-id").val(),
+                server: $("#qap-connection-server").val(),
+                account: $("#qap-connection-account").val(),
+                password: $("#qap-connection-password").val()
+            }),
             success: function(data, status){
                 updateSuccess()
             },
@@ -170,16 +184,6 @@ function qapCreateProject(){
             checkResponse(data)
         }
     })
-}
-
-function qapGetConnection(){
-    $.get(
-        "/api/jira/connection",
-        function(data, status){
-            var text = '<option value="' + data.detail.connection_id + '">' + data.detail.server + '</option>'
-            $("#qap-create-project-connection").html(text)
-        }
-    )
 }
 
 function listTags(tags){
@@ -258,18 +262,18 @@ function qapUpdateSprint(){
             $("#qap-sprint-issue-status-fixed").val(data.detail.issue_status.fixed)
             $("#qap-sprint-issue-status-verified").val(data.detail.issue_status.verified)
             $("#qap-sprint-categories").val(data.detail.issue_categories)
-            $("#qap-sprint-submit").attr("onclick", "qapUpdateSprintSubmit(" + sprint_id + ")")
+            $("#qap-sprint-submit").attr("onclick", "qapUpdateSprintSubmit('" + sprint_id + "')")
         }
     )
 }
 
 function qapUpdateSprintSubmit(sprint_id){
     $.ajax({
-        type: "post",
-        _method: "PUT",
+        type: "POST",
         url: "/api/jira/sprint/" + sprint_id,
         contentType: "application/json",
         data: JSON.stringify({
+            _method: "PUT",
             project_id: $("#qap-sprint-project").val(),
             sprint_name: $("#qap-sprint-name").val(),
             product_version: $("#qap-sprint-product-version").val(),

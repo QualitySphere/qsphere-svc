@@ -8,6 +8,34 @@ function checkResponse(data){
     else{alert("致命错误")}
 }
 
+function createSuccess(){
+    $("#qap-create-success").modal("show")
+    setTimeout(function(){
+        $("#qap-create-success").modal("hide")
+    }, 1000)
+}
+
+function updateSuccess(){
+    $("#qap-update-success").modal("show")
+    setTimeout(function(){
+        $("#qap-update-success").modal("hide")
+    }, 1000)
+}
+
+function syncStart(){
+    $("#qap-sync-start").modal("show")
+    setTimeout(function(){
+        $("#qap-sync-start").modal("hide")
+    }, 1000)
+}
+
+function syncComplete(){
+    $("#qap-sync-complete").modal("show")
+    setTimeout(function(){
+        $("#qap-sync-complete").modal("hide")
+    }, 1000)
+}
+
 function qapNavDashboard(){
     $("#qap-nav-project").attr('class', "nav-link")
     $("#qap-nav-connection").attr('class', "nav-link")
@@ -88,6 +116,25 @@ function qapGetProject(){
     )
 }
 
+function qapCreateProject(){
+    $.ajax({
+        type: "post",
+        url: "/api/jira/project",
+        contentType: "application/json",
+        data: JSON.stringify({
+            connection_id: $("#qap-create-project-connection").val(),
+            project_name: $("#qap-create-project-name").val()
+        }),
+        success: function(data, status){
+            $("#qap-create-project").modal("hide")
+            createSuccess()
+        },
+        error: function(data, status){
+            checkResponse(data)
+        }
+    })
+}
+
 function qapGetConnection(){
     $.get(
         "/api/jira/connection",
@@ -132,37 +179,45 @@ function qapUpdateSprint(sprint_id){
     $.get(
         "/api/jira/sprint/" + sprint_id,
         function(data, status){
-            $("#qap-create-sprint").modal("show")
-            $("#qap-create-sprint-title").text("迭代信息")
-            $("#qap-create-sprint-project").val(data.detail.project_id)
-            $("#qap-create-sprint-name").val(data.detail.sprint_name)
-            $("#qap-create-sprint-product-version").val(data.detail.product_version)
-            $("#qap-create-sprint-product-issue-types").val(data.detail.issue_types)
-            $("#qap-create-sprint-features").val(data.detail.features)
-            $("#qap-create-sprint-rcs").val(data.detail.rcs)
-            $("#qap-create-sprint-issue-status-fixing").val(data.detail.issue_status.fixing)
-            $("#qap-create-sprint-issue-status-fixed").val(data.detail.issue_status.fixed)
-            $("#qap-create-sprint-issue-status-verified").val(data.detail.issue_status.verified)
-            $("#qap-create-sprint-categories").val(data.detail.issue_categories)
+            $("#qap-sprint").modal("show")
+            $("#qap-sprint-title").text("迭代信息")
+            $("#qap-sprint-project").val(data.detail.project_id)
+            $("#qap-sprint-name").val(data.detail.sprint_name)
+            $("#qap-sprint-product-version").val(data.detail.product_version)
+            $("#qap-sprint-product-issue-types").val(data.detail.issue_types)
+            $("#qap-sprint-features").val(data.detail.features)
+            $("#qap-sprint-rcs").val(data.detail.rcs)
+            $("#qap-sprint-issue-status-fixing").val(data.detail.issue_status.fixing)
+            $("#qap-sprint-issue-status-fixed").val(data.detail.issue_status.fixed)
+            $("#qap-sprint-issue-status-verified").val(data.detail.issue_status.verified)
+            $("#qap-sprint-categories").val(data.detail.issue_categories)
         }
     )
 }
 
-function qapCreateProject(){
+function qapUpdateSprintSubmit(sprint_id){
     $.ajax({
         type: "post",
-        url: "/api/jira/project",
+        _method: "PUT",
+        url: "/api/jira/sprint/" + sprint_id,
         contentType: "application/json",
         data: JSON.stringify({
-            connection_id: $("#qap-create-project-connection").val(),
-            project_name: $("#qap-create-project-name").val()
+            project_id: $("#qap-sprint-project").val(),
+            sprint_name: $("#qap-sprint-name").val(),
+            product_version: $("#qap-sprint-product-version").val(),
+            issue_types: $("#qap-sprint-issue-types").val().split(","),
+            features: $("#qap-sprint-features").val().split(","),
+            rcs: $("#qap-sprint-rcs").val().split(","),
+            issue_status: {
+                fixing: $("#qap-sprint-issue-status-fixing").val().split(","),
+                fixed: $("#qap-sprint-issue-status-fixed").val().split(","),
+                verified: $("#qap-sprint-issue-status-verified").val().split(",")
+            },
+            issue_categories: $("#qap-sprint-categories").val().split(","),
         }),
         success: function(data, status){
-            $("#qap-create-project").modal("hide")
-            $("#qap-create-success").modal("show")
-            setTimeout(function(){
-                $("#qap-create-success").modal("hide")
-            }, 1000)
+            $("#qap-sprint").modal("hide")
+            updateSuccess()
         },
         error: function(data, status){
             checkResponse(data)
@@ -176,25 +231,22 @@ function qapCreateSprint(){
         url: "/api/jira/sprint",
         contentType: "application/json",
         data: JSON.stringify({
-            project_id: $("#qap-create-sprint-project").val(),
-            sprint_name: $("#qap-create-sprint-name").val(),
-            product_version: $("#qap-create-sprint-product-version").val(),
-            issue_types: $("#qap-create-sprint-issue-types").val().split(","),
-            features: $("#qap-create-sprint-features").val().split(","),
-            rcs: $("#qap-create-sprint-rcs").val().split(","),
+            project_id: $("#qap-sprint-project").val(),
+            sprint_name: $("#qap-sprint-name").val(),
+            product_version: $("#qap-sprint-product-version").val(),
+            issue_types: $("#qap-sprint-issue-types").val().split(","),
+            features: $("#qap-sprint-features").val().split(","),
+            rcs: $("#qap-sprint-rcs").val().split(","),
             issue_status: {
-                fixing: $("#qap-create-sprint-issue-status-fixing").val().split(","),
-                fixed: $("#qap-create-sprint-issue-status-fixed").val().split(","),
-                verified: $("#qap-create-sprint-issue-status-verified").val().split(",")
+                fixing: $("#qap-sprint-issue-status-fixing").val().split(","),
+                fixed: $("#qap-sprint-issue-status-fixed").val().split(","),
+                verified: $("#qap-sprint-issue-status-verified").val().split(",")
             },
-            issue_categories: $("#qap-create-sprint-categories").val().split(","),
+            issue_categories: $("#qap-sprint-categories").val().split(","),
         }),
         success: function(data, status){
-            $("#qap-create-sprint").modal("hide")
-            $("#qap-create-success").modal("show")
-            setTimeout(function(){
-                $("#qap-create-success").modal("hide")
-            }, 1000)
+            $("#qap-sprint").modal("hide")
+            createSuccess()
         },
         error: function(data, status){
             checkResponse(data)
@@ -203,26 +255,17 @@ function qapCreateSprint(){
 }
 
 function qapSyncSprint(sprint_id){
-    $("#qap-sync-start").modal("show")
-    setTimeout(function(){
-        $("#qap-sync-start").modal("hide")
-    }, 1000)
+    syncStart()
     $.get(
         "/api/jira/sprint/" + sprint_id + "/sync",
         function(data, status){
-            $("#qap-sync-complete").modal("show")
-            setTimeout(function(){
-                $("#qap-sync-complete").modal("hide")
-            }, 1000)
+            syncComplete()
         }
     )
 }
 
 function qapSyncAllSprint(){
-    $("#qap-sync-start").modal("show")
-    setTimeout(function(){
-        $("#qap-sync-start").modal("hide")
-    }, 1000)
+    syncStart()
     $.get(
         "/api/jira/sprint/sync",
         function(data, status){

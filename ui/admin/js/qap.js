@@ -8,31 +8,12 @@ function checkResponse(data){
     else{alert("致命错误")}
 }
 
-function createSuccess(){
-    $("#qap-create-success").modal("show")
+function actionResponse(alert, msg){
+    $("#qap-action-response").modal("show")
+    $("#qap-action-response-alert").attr("class", "alert alert-" + alert)
+    $("#qap-action-response-msg").text(msg)
     setTimeout(function(){
-        $("#qap-create-success").modal("hide")
-    }, 1000)
-}
-
-function updateSuccess(){
-    $("#qap-update-success").modal("show")
-    setTimeout(function(){
-        $("#qap-update-success").modal("hide")
-    }, 1000)
-}
-
-function syncStart(){
-    $("#qap-sync-start").modal("show")
-    setTimeout(function(){
-        $("#qap-sync-start").modal("hide")
-    }, 1000)
-}
-
-function syncComplete(){
-    $("#qap-sync-complete").modal("show")
-    setTimeout(function(){
-        $("#qap-sync-complete").modal("hide")
+        $("#qap-action-response").modal("hide")
     }, 1000)
 }
 
@@ -125,9 +106,10 @@ function qapSubmitConnection(){
                 password: $("#qap-connection-password").val()
             }),
             success: function(data, status){
-                createSuccess()
+                actionResponse("success", "创建成功")
             },
             error: function(data, status){
+                actionResponse("error", "创建失败")
                 checkResponse(data)
             }
         })
@@ -144,7 +126,7 @@ function qapSubmitConnection(){
                 password: $("#qap-connection-password").val()
             }),
             success: function(data, status){
-                updateSuccess()
+                actionResponse("success", "更新成功")
             },
             error: function(data, status){
                 checkResponse(data)
@@ -177,9 +159,10 @@ function qapCreateProject(){
         }),
         success: function(data, status){
             $("#qap-create-project").modal("hide")
-            createSuccess()
+            actionResponse("success", "项目创建成功")
         },
         error: function(data, status){
+            actionResponse("error", "项目创建失败")
             checkResponse(data)
         }
     })
@@ -235,9 +218,10 @@ function qapCreateSprint(){
         }),
         success: function(data, status){
             $("#qap-sprint").modal("hide")
-            createSuccess()
+            actionResponse("success", "迭代创建成功")
         },
         error: function(data, status){
+            actionResponse("error", "迭代创建失败")
             checkResponse(data)
         }
     })
@@ -287,7 +271,8 @@ function qapUpdateSprintSubmit(sprint_id){
         }),
         success: function(data, status){
             $("#qap-sprint").modal("hide")
-            updateSuccess()
+            actionResponse("success", "迭代更新成功")
+            qapGetSprint(sprint_id)
         },
         error: function(data, status){
             checkResponse(data)
@@ -296,21 +281,21 @@ function qapUpdateSprintSubmit(sprint_id){
 }
 
 function qapSyncSprint(sprint_id){
-    syncStart()
+    actionResponse("success", "开始同步")
     $.get(
         "/api/jira/sprint/" + sprint_id + "/sync",
         function(data, status){
-            syncComplete()
+            actionResponse("success", "同步完成")
         }
     )
 }
 
 function qapSyncAllSprint(){
-    syncStart()
+    actionResponse("success", "开始更新同步所有迭代信息")
     $.get(
         "/api/jira/sprint/sync",
         function(data, status){
-            alert("所有迭代信息同步完成")
+            actionResponse("success", "所有迭代信息同步完成")
         }
     )
 }

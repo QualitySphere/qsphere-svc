@@ -148,6 +148,7 @@ paths:
         200:
           description: succeed to create sprint
 
+
   /jira/sprint/{sprint_id}:
     get:
       operationId: api.jiraSprint.get_sprint
@@ -169,6 +170,45 @@ paths:
       responses:
         204:
           description: succeed to delete sprint
+    put:
+      operationId: api.jiraSprint.put_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                project_id:
+                  type: string
+                sprint_name:
+                  type: string
+                product_version:
+                  type: string
+                issue_types:
+                  type: array
+                features:
+                  type: array
+                rcs:
+                  type: array
+                issue_status:
+                  type: object
+                  properties:
+                    fixing:
+                      type: array
+                    fixed:
+                      type: array
+                    verified:
+                      type: array
+                issue_categories:
+                  type: array
+      responses:
+        200:
+          description: succeed to update sprint
 
   /jira/sprint/{sprint_id}/disable:
     get:

@@ -17,8 +17,8 @@ def post_sprint(body):
     return jiraSprint.create_sprint(body)
 
 
-def put_sprint(body):
-    pass
+def put_sprint(sprint_id, body):
+    return jiraSprint.update_sprint(sprint_id, body)
 
 
 def delete_sprint(sprint_id):

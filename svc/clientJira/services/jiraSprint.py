@@ -195,11 +195,35 @@ def create_sprint(sprint: dict):
                 'jqls': _generate_jqls(_project.name, sprint)
             }
     return {
-        'title': 'Succeed To Create Project',
+        'title': 'Succeed To Create Sprint',
         'detail': {
             'sprint_id': _sprint.uuid,
-            # 'jqls': _sprint.queries.get('jqls'),
         }
+    }, 200
+
+
+def update_sprint(sprint_id: str, sprint: dict):
+    with db_session:
+        _project = get(p for p in Project if str(p.uuid) == sprint.get('project_id'))
+        _sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
+        _sprint.project = _project
+        _sprint.name = sprint.get('sprint_name')
+        _sprint.version = sprint.get('product_version')
+        _sprint.features = sprint.get('features')
+        _sprint.rcs = sprint.get('rcs')
+        _sprint.issue_types = sprint.get('issue_types')
+        _sprint.issue_status = sprint.get('issue_status')
+        _sprint.issue_categories = sprint.get('issue_categories')
+
+        if _sprint.project.connection.type == 'jira':
+            _sprint.queries = {
+                'jqls': _generate_jqls(_project.name, sprint)
+            }
+    return {
+       'title': 'Succeed To Update Sprint',
+       'detail': {
+           'sprint_id': _sprint.uuid,
+       }
     }, 200
 
 

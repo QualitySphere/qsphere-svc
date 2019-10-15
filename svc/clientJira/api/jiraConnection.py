@@ -20,7 +20,7 @@ def post_connection(body):
 
 
 def put_connection(body):
-    pass
+    return jiraConnection.update_connection(body)
 
 
 def delete_connection():

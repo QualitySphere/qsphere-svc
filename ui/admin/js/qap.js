@@ -95,10 +95,10 @@ function qapNavGetConnection(){
     $.get(
         "/api/jira/connection", 
         function(data, status){
-            $("#qap-connection-server").val("value", data.detail.server)
-            $("#qap-connection-account").attr("value", data.detail.account)
-            $("#qap-connection-password").attr("value", data.detail.password)
-            $("#qap-connection-id").attr("value", data.detail.connection_id)
+            $("#qap-connection-server").val(data.detail.server)
+            $("#qap-connection-account").val(data.detail.account)
+            $("#qap-connection-password").val(data.detail.password)
+            $("#qap-connection-id").val(data.detail.connection_id)
         }
     )
 }
@@ -240,8 +240,8 @@ function qapCreateSprint(){
     })
 }
 
-function qapUpdateSprint(sprint_id){
-    var sprint_id = 
+function qapUpdateSprint(){
+    var sprint_id = $("#qap-sprint-id").attr("value")
     qapGetProject()
     $.get(
         "/api/jira/sprint/" + sprint_id,
@@ -258,7 +258,7 @@ function qapUpdateSprint(sprint_id){
             $("#qap-sprint-issue-status-fixed").val(data.detail.issue_status.fixed)
             $("#qap-sprint-issue-status-verified").val(data.detail.issue_status.verified)
             $("#qap-sprint-categories").val(data.detail.issue_categories)
-            $("#qap-sprint-submit").attr("onclick", "qapUpdateSprintSubmit()")
+            $("#qap-sprint-submit").attr("onclick", "qapUpdateSprintSubmit(" + sprint_id + ")")
         }
     )
 }

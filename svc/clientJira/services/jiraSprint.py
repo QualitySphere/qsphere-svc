@@ -105,14 +105,16 @@ def _generate_jqls(project_name: str, sprint: dict):
     jqls['issue_found_since']['customer'] = ' AND '.join([
         'project = "%s"' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
+        'labels = "%s"' % sprint.get('product_version'),
         'labels = "Customer"',
-    ])
+        ])
 
     # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
         'project = "%s"' % project_name,
         'issuetype in (%s)' % ', '.join(sprint.get('issue_types')),
         'Sprint = "%s"' % sprint.get('sprint_name'),
+        'labels = "%s"' % sprint.get('product_version'),
     ])
 
     logging.info('Generate JQL for overall')
@@ -126,7 +128,6 @@ def _generate_jqls(project_name: str, sprint: dict):
     for feature in sprint.get('features'):
         jql_feature_base = ' AND '.join([
             jql_base,
-            'labels = "%s"' % sprint.get('product_version'),
             'labels = "%s"' % feature,
         ])
         jqls[feature] = dict()
@@ -145,16 +146,12 @@ def _generate_jqls(project_name: str, sprint: dict):
             continue
         jql_category = ' AND '.join([
             jql_base,
-            'labels = "%s"' % sprint.get('product_version'),
             'labels = "%s"' % category,
         ])
         jqls['categories'][category.lower()] = jql_category
     # Others 是除了 regression, previous, newfeature 的类别
     # 实际中可能没有标记，这里不做jql不带任何相关标记，先获取总数，用于后面函数处理时候计算得出 others
-    jqls['categories']['others'] = ' AND '.join([
-        jql_base,
-        'labels = "%s"' % sprint.get('product_version'),
-    ])
+    jqls['categories']['others'] = jql_base
 
     logging.info('Generate JQL for rcs')
     for rc in sprint.get('rcs'):

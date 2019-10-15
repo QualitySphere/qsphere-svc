@@ -116,7 +116,7 @@ function qapGetConnection(){
 function qapSubmitConnection(){
     if($("#qap-connection-id").val() == "" || undefined || null) {
         $.ajax({
-            type: "post",
+            type: "POST",
             url: "/api/jira/connection",
             contentType: "application/json",
             data: JSON.stringify({
@@ -134,11 +134,10 @@ function qapSubmitConnection(){
     }
     else {
         $.ajax({
-            type: "POST",
+            type: "PUT",
             url: "/api/jira/connection",
             contentType: "application/json",
             data: JSON.stringify({
-                _method: "PUT",
                 connection_id: $("#qap-connection-id").val(),
                 server: $("#qap-connection-server").val(),
                 account: $("#qap-connection-account").val(),
@@ -269,11 +268,10 @@ function qapUpdateSprint(){
 
 function qapUpdateSprintSubmit(sprint_id){
     $.ajax({
-        type: "POST",
+        type: "PUT",
         url: "/api/jira/sprint/" + sprint_id,
         contentType: "application/json",
         data: JSON.stringify({
-            _method: "PUT",
             project_id: $("#qap-sprint-project").val(),
             sprint_name: $("#qap-sprint-name").val(),
             product_version: $("#qap-sprint-product-version").val(),

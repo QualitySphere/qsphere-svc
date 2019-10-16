@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import connexion
-from flask import current_app
 from pony.orm import db_session, select, get
-from models.models import *
+from svcClient.models.models import *
 from clientJira.utils.jiraClient import JiraSession
 from threading import Thread
 from datetime import datetime

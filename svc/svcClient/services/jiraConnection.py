@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-import connexion
-from flask import current_app
-from pony.orm import db_session, select, get
-from models.models import Connection
+from pony.orm import db_session, get
+from svcClient.models.models import Connection
 from clientJira.utils.jiraClient import JiraSession
 import logging
 

@@ -1,86 +1,191 @@
-openapi: 3.0.0
+openapi: "3.0.0"
 
 info:
-  title: QAP Service
-  version: 19.10.2
+  title: "QAP Service"
+  version: "1.0.0"
 
 servers:
   - url: http://0.0.0.0:6001/api
 
+tags:
+  - name: "status"
+    description: "/api/status"
+  - name: "connection"
+    description: "/api/connection"
+  - name: "project"
+    description: "/api/project"
+  - name: "sprint"
+    description: "/api/sprint"
+  - name: "issue"
+    description: "/api/issue"
+
+
 paths:
+  # STATUS
   /status:
+
     get:
+      tags:
+        - "status"
       description: Check Health Status
-      summary: Get QAP-SVC Health Status
       operationId: api.apiHealth.health_check
       responses:
         200:
           description: Status is healthy
 
-  /jira/connection:
+  # CONNECTION
+  /connection:
+
     get:
-      description: Get JIRA connection information
-      summary: Get Connection
-      operationId: api.jiraConnection.get_connection
+      tags:
+        - "connection"
+      description: List All Connection
+      operationId: api.apiConnection.list_connection
       responses:
         200:
-          description: succeed to get connection info
+          description: succeed to list all connection
+
     post:
-      description: Create JIRA connection
-      summary: Post Connection
-      operationId: api.jiraConnection.post_connection
+      tags:
+        - "connection"
+      description: Create connection
+      summary: Create Connection
+      operationId: api.apiConnection.create_connection
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                server:
+                connection_name:
                   type: string
-                account:
+                  example: 'MyConnection'
+                issue_server_type:
                   type: string
-                password:
+                  example: 'jira'
+                issue_server_host:
                   type: string
+                  example: 'https://www.baoxian-sz.com'
+                issue_server_account:
+                  type: string
+                  example: 'will'
+                issue_server_password:
+                  type: string
+                  example: 'password'
+                case_server_type:
+                  type: string
+                  example: 'jira'
+                case_server_host:
+                  type: string
+                  example: 'https://www.baoxian-sz.com'
+                case_server_account:
+                  type: string
+                  example: 'will'
+                case_server_password:
+                  type: string
+                  example: 'password'
       responses:
         200:
           description: succeed to create connection
+
+  # CONNECTION ID
+  /connection/{connection_id}:
+
+    get:
+      tags:
+        - "connection"
+      description: Get connection information
+      operationId: api.apiConnection.get_connection
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: succeed to get connection
+
     put:
-      description: Update JIRA connection information
-      summary: Put Connection
-      operationId: api.jiraConnection.put_connection
+      tags:
+        - "connection"
+      description: Update connection information
+      operationId: api.apiConnection.update_connection
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                id:
+                issue_server_type:
                   type: string
-                server:
+                  example: 'jira'
+                issue_server_host:
                   type: string
-                account:
+                  example: 'https://www.baoxian-sz.com'
+                issue_server_account:
                   type: string
-                password:
+                  example: 'will'
+                issue_server_password:
                   type: string
+                  example: 'password'
+                case_server_type:
+                  type: string
+                  example: 'jira'
+                case_server_host:
+                  type: string
+                  example: 'https://www.baoxian-sz.com'
+                case_server_account:
+                  type: string
+                  example: 'will'
+                case_server_password:
+                  type: string
+                  example: 'password'
       responses:
         200:
           description: succeed to update connection info
+
     delete:
-      description: Delte JIRA connection information
-      summary: Delete Connection
-      operationId: api.jiraConnection.delete_connection
+      tags:
+        - "connection"
+      description: Delete connection information
+      operationId: api.apiConnection.delete_connection
+      parameters:
+        - name: connection_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         204:
           description: succeed to delete connection
 
-  /jira/project:
+  # PROJECT
+  /project:
+
     get:
-      operationId: api.jiraProject.list_projects
+      tags:
+        - "project"
+      description: List All Projects
+      operationId: api.apiProject.list_project
       responses:
         200:
-          description: succeed to list projects
+          description: succeed to list project
+
     post:
-      operationId: api.jiraProject.post_project
+      tags:
+        - "project"
+      description: Create Project
+      operationId: api.apiProject.create_project
       requestBody:
         content:
           application/json:
@@ -89,32 +194,94 @@ paths:
               properties:
                 connection_id:
                   type: string
+                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
                 project_name:
                   type: string
+                  example: 'qap'
       responses:
         200:
           description: succeed to create project
 
-  /jira/project/{project_id}:
+  # PROJECT ID
+  /project/{project_id}:
+
     get:
-      operationId: api.jiraProject.get_project
+      tags:
+        - "project"
+      description: Get Project
+      operationId: api.apiProject.get_project
       parameters:
         - name: project_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
           description: succeed to get project
 
-  /jira/sprint:
+    put:
+      tags:
+        - "project"
+      description: Update Project
+      operationId: api.apiProject.update_project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                connection_id:
+                  type: string
+                  example: 'e095781f-b145-4df7-agfa-0412fci2ea88'
+                project_name:
+                  type: string
+                  example: 'qap'
+      responses:
+        200:
+          description: succeed to get project
+
+    delete:
+      tags:
+        - "project"
+      description: Delete Project
+      operationId: api.apiProject.delete_project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        204:
+          description: succeed to delete project
+
+  # SPRINT
+  /sprint:
+
     get:
-      operationId: api.jiraSprint.list_sprints
+      tags:
+        - "sprint"
+      description: List All Sprints
+      operationId: api.apiSprint.list_sprint
       responses:
         200:
           description: succeed to list sprint
+
     post:
-      operationId: api.jiraSprint.post_sprint
+      tags:
+        - "sprint"
+      description: Create Sprint
+      operationId: api.apiSprint.create_sprint
       requestBody:
         content:
           application/json:
@@ -123,60 +290,91 @@ paths:
               properties:
                 project_id:
                   type: string
+                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
                 sprint_name:
                   type: string
+                  example: 'qap 1.0'
                 product_version:
                   type: string
+                  example: 'qap1.0'
                 issue_types:
                   type: array
+                  example: 'Improvement,Defect'
                 features:
                   type: array
+                  example: 'IssueManage,CaseManage'
                 rcs:
                   type: array
+                  example: 'RC1,RC2,RC3'
+                issue_found_since:
+                  type: array
+                  example: 'RegressionImprove,QAMissed,NewFeature,Customer'
                 issue_status:
                   type: object
                   properties:
                     fixing:
                       type: array
+                      example: 'new,fixing'
                     fixed:
                       type: array
+                      example: 'fixed'
                     verified:
                       type: array
+                      example: 'verified'
                 issue_categories:
                   type: array
+                  example: 'Regression,Previous,NewFeature,Others'
       responses:
         200:
           description: succeed to create sprint
 
+  # SPRINT ID
+  /sprint/{sprint_id}:
 
-  /jira/sprint/{sprint_id}:
     get:
-      operationId: api.jiraSprint.get_sprint
+      tags:
+        - "sprint"
+      description: Get Sprint
+      operationId: api.apiSprint.get_sprint
       parameters:
         - name: sprint_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
           description: succeed to get sprint
+
     delete:
-      operationId: api.jiraSprint.delete_sprint
+      tags:
+        - "sprint"
+      description: Delete Sprint
+      operationId: api.apiSprint.delete_sprint
       parameters:
         - name: sprint_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         204:
           description: succeed to delete sprint
+
     put:
-      operationId: api.jiraSprint.put_sprint
+      tags:
+        - "sprint"
+      description: Update Sprint
+      operationId: api.apiSprint.update_sprint
       parameters:
         - name: sprint_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       requestBody:
         content:
           application/json:
@@ -185,88 +383,100 @@ paths:
               properties:
                 project_id:
                   type: string
+                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
                 sprint_name:
                   type: string
+                  example: 'qap 1.0'
                 product_version:
                   type: string
+                  example: 'qap1.0'
                 issue_types:
                   type: array
+                  example: 'Improvement,Defect'
                 features:
                   type: array
+                  example: 'IssueManage,CaseManage'
                 rcs:
                   type: array
+                  example: 'RC1,RC2,RC3'
+                issue_found_since:
+                  type: array
+                  example: 'RegressionImprove,QAMissed,NewFeature,Customer'
                 issue_status:
                   type: object
                   properties:
                     fixing:
                       type: array
+                      example: 'new,fixing'
                     fixed:
                       type: array
+                      example: 'fixed'
                     verified:
                       type: array
+                      example: 'verified'
                 issue_categories:
                   type: array
+                  example: 'Regression,Previous,NewFeature,Others'
       responses:
         200:
           description: succeed to update sprint
 
-  /jira/sprint/{sprint_id}/disable:
-    get:
-      operationId: api.jiraSprint.disable_sprint
+  # SPRINT ID ACTIVE
+  /sprint/{sprint_id}/active:
+
+    put:
+      tags:
+        - "sprint"
+      description: Active / Disable Sprint
+      operationId: api.apiSprint.active_sprint
       parameters:
         - name: sprint_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                active:
+                  type: string
+                  example: 'enable/disable'
       responses:
-        204:
+        200:
           description: succeed to disable sprint
 
-  /jira/sprint/{sprint_id}/active:
-    get:
-      operationId: api.jiraSprint.active_sprint
-      parameters:
-        - name: sprint_id
-          in: path
-          schema:
-            type: string
-      responses:
-        204:
-          description: succeed to active sprint
+  # ISSUE SPRINT SYNC
+  /issue/{sprint_id}/sync:
 
-  /jira/sprint/{sprint_id}/issues:
     get:
-      operationId: api.jiraIssue.get_issues
+      tags:
+        - "issue"
+      description: Sync Sprint Issues
+      operationId: api.apiIssue.sync_sprint_issue
       parameters:
         - name: sprint_id
           in: path
+          required: true
           schema:
             type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
-          description: succeed get issues
+          description: succeed to sync data from issue manage server
 
-  /jira/sprint/{sprint_id}/sync:
+  # ISSUE SYNC
+  /issue/sync:
+
     get:
-      operationId: api.jiraIssue.sync_sprint_issues
-      parameters:
-        - name: sprint_id
-          in: path
-          schema:
-            type: string
+      tags:
+        - "issue"
+      description: Sync All Sprints Issues
+      operationId: api.apiIssue.sync_issue
       responses:
         200:
-          description: succeed to sync data from JIRA
-
-  /jira/sprint/sync:
-    get:
-      operationId: api.jiraIssue.sync_issues
-      parameters:
-        - name: sprint_id
-          in: path
-          schema:
-            type: string
-      responses:
-        200:
-          description: succeed to sync data from JIRA
+          description: succeed to sync data from issue manage server
 

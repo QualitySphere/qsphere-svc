@@ -31,7 +31,7 @@ function qapNavGetProject(){
     $("#qap-data").load("project.html #qap-data-project")
     
     $.get(
-        "/api/jira/sprint", 
+        "/api/sprint", 
         function(data, status){
             var text = ""
             for(var i=0;i<data.detail.count;i++){
@@ -74,21 +74,28 @@ function qapNavGetConnection(){
     $("#qap-data").load("connection.html #qap-connection")
     
     $.get(
-        "/api/jira/connection", 
+        "/api/connection", 
         function(data, status){
-            $("#qap-connection-server").val(data.detail.server)
-            $("#qap-connection-account").val(data.detail.account)
-            $("#qap-connection-password").val(data.detail.password)
-            $("#qap-connection-id").val(data.detail.connection_id)
+            $("#qap-connection-id").val(data.detail.results[0].connection_id)
+            $("#qap-connection-name").val(data.detail.results[0].connection_name)
+            $("#qap-connection-issue-server-type").val(data.detail.results[0].issue_server.type)
+            $("#qap-connection-issue-server-host").val(data.detail.results[0].issue_server.host)
+            $("#qap-connection-issue-server-account").val(data.detail.results[0].issue_server.account)
+            $("#qap-connection-case-server-type").val(data.detail.results[0].case_server.type)
+            $("#qap-connection-case-server-host").val(data.detail.results[0].case_server.host)
+            $("#qap-connection-case-server-account").val(data.detail.results[0].case_server.account)
         }
     )
 }
 
 function qapGetConnection(){
     $.get(
-        "/api/jira/connection",
+        "/api/connection",
         function(data, status){
-            var text = '<option value="' + data.detail.connection_id + '">' + data.detail.server + '</option>'
+            var text = ""
+            for(i in data.detail.results){
+                text += '<option value="' + data.detail.results[i].connection_id + '">' + data.detail.results[i].connection_name + '</option>'
+            }
             $("#qap-create-project-connection").html(text)
         }
     )
@@ -98,12 +105,22 @@ function qapSubmitConnection(){
     if($("#qap-connection-id").val() == "" || undefined || null) {
         $.ajax({
             type: "POST",
-            url: "/api/jira/connection",
+            url: "/api/connection",
             contentType: "application/json",
             data: JSON.stringify({
-                server: $("#qap-connection-server").val(),
-                account: $("#qap-connection-account").val(),
-                password: $("#qap-connection-password").val()
+                connection_name: $("#qap-connection-name").val(),
+                issue_server: {
+                    type: $("#qap-connection-issue-server-type").val(),
+                    host: $("#qap-connection-issue-server-host").val(),
+                    account: $("#qap-connection-issue-server-account").val(),
+                    password: $("#qap-connection-issue-server-password").val(),
+                },
+                case_server: {
+                    type: $("#qap-connection-case-server-type").val(),
+                    host: $("#qap-connection-case-server-host").val(),
+                    account: $("#qap-connection-case-server-account").val(),
+                    password: $("#qap-connection-case-server-password").val()
+                }
             }),
             success: function(data, status){
                 actionResponse("success", "创建成功")
@@ -117,13 +134,22 @@ function qapSubmitConnection(){
     else {
         $.ajax({
             type: "PUT",
-            url: "/api/jira/connection",
+            url: "/api/connection/" + $("#qap-connection-id").val(),
             contentType: "application/json",
             data: JSON.stringify({
-                connection_id: $("#qap-connection-id").val(),
-                server: $("#qap-connection-server").val(),
-                account: $("#qap-connection-account").val(),
-                password: $("#qap-connection-password").val()
+                connection_name: $("#qap-connection-name").val(),
+                issue_server: {
+                    type: $("#qap-connection-issue-server-type").val(),
+                    host: $("#qap-connection-issue-server-host").val(),
+                    account: $("#qap-connection-issue-server-account").val(),
+                    password: $("#qap-connection-issue-server-password").val(),
+                },
+                case_server: {
+                    type: $("#qap-connection-case-server-type").val(),
+                    host: $("#qap-connection-case-server-host").val(),
+                    account: $("#qap-connection-case-server-account").val(),
+                    password: $("#qap-connection-case-server-password").val()
+                }
             }),
             success: function(data, status){
                 actionResponse("success", "更新成功")
@@ -137,10 +163,10 @@ function qapSubmitConnection(){
 
 function qapGetProject(){
     $.get(
-        "/api/jira/project",
+        "/api/project",
         function(data, status){
             var text = ""
-            for(var i=0;i<data.detail.count;i++){
+            for(i in data.detail.results){
                 text += '<option value="' + data.detail.results[i].project_id + '">' + data.detail.results[i].project_name + '</option>'
             }
             $('#qap-sprint-project').html(text)
@@ -151,7 +177,7 @@ function qapGetProject(){
 function qapCreateProject(){
     $.ajax({
         type: "post",
-        url: "/api/jira/project",
+        url: "/api/project",
         contentType: "application/json",
         data: JSON.stringify({
             connection_id: $("#qap-create-project-connection").val(),
@@ -179,7 +205,7 @@ function listTags(tags){
 function qapGetSprint(sprint_id){
     $("#qap-data").load("sprint.html #qap-data-sprint")
     $.get(
-        "/api/jira/sprint/" + sprint_id,
+        "/api/sprint/" + sprint_id,
         function(data, status){
             var text = ""
             text += "<tr><td>项目</td><td id='qap-sprint-project-id' value='" + data.detail.project_id + "'>" + data.detail.project_name + "</td></tr>"
@@ -200,7 +226,7 @@ function qapGetSprint(sprint_id){
 function qapCreateSprint(){
     $.ajax({
         type: "post",
-        url: "/api/jira/sprint",
+        url: "/api/sprint",
         contentType: "application/json",
         data: JSON.stringify({
             project_id: $("#qap-sprint-project").val(),
@@ -231,7 +257,7 @@ function qapUpdateSprint(){
     var sprint_id = $("#qap-sprint-id").attr("value")
     qapGetProject()
     $.get(
-        "/api/jira/sprint/" + sprint_id,
+        "/api/sprint/" + sprint_id,
         function(data, status){
             $("#qap-sprint").modal("show")
             $("#qap-sprint-title").text("迭代信息")
@@ -253,7 +279,7 @@ function qapUpdateSprint(){
 function qapUpdateSprintSubmit(sprint_id){
     $.ajax({
         type: "PUT",
-        url: "/api/jira/sprint/" + sprint_id,
+        url: "/api/sprint/" + sprint_id,
         contentType: "application/json",
         data: JSON.stringify({
             project_id: $("#qap-sprint-project").val(),
@@ -283,7 +309,7 @@ function qapUpdateSprintSubmit(sprint_id){
 function qapSyncSprint(sprint_id){
     actionResponse("success", "开始同步")
     $.get(
-        "/api/jira/sprint/" + sprint_id + "/sync",
+        "/api/issue/" + sprint_id + "/sync",
         function(data, status){
             actionResponse("success", "同步完成")
         }
@@ -293,7 +319,7 @@ function qapSyncSprint(sprint_id){
 function qapSyncAllSprint(){
     actionResponse("success", "开始更新同步所有迭代信息")
     $.get(
-        "/api/jira/sprint/sync",
+        "/api/issue/sync",
         function(data, status){
             actionResponse("success", "所有迭代信息同步完成")
         }

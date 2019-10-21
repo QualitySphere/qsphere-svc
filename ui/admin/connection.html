@@ -4,28 +4,50 @@
     <div class="col col-10">
         <div class="card">
             <div class="card-header">
-                <strong>我的连接</strong>
+                <strong>服务器信息</strong>
             </div>
             <div class="card-body">
-                <input id="qap-connection-id" type="hidden" name="" value="">
                 <div class="form-group">
-                    <label for="qap-connection-server-type">服务器类型</label>
-                    <select id="qap-connection-server-type" class="form-control" name="">
-                        <option>JIRA</option>
-                    </select>
+                    <input id="qap-connection-id" class="form-control" type="text" name="" value="" hidden>
+                    <label>配置名称</label>
+                    <input id="qap-connection-name" class="form-control" type="text" name="" value="">
                 </div>
                 <div class="form-group">
-                    <label for="qap-connection-server">服务器</label>
-                    <input id="qap-connection-server" class="form-control" type="text" name="" value="">
+                    <div class="form-group">
+                        <label>缺陷管理服务器</label>
+                        <select id="qap-connection-issue-server-type" class="form-control" name="">
+                            <!-- <option>-- 选择服务器类型 --</option> -->
+                            <option value="jira">JIRA</option>
+                            <!-- <option value="zentao">禅道</option> -->
+                            <!-- <option value="bugzilla">Bugzilla</option> -->
+                        </select>
+                        <label></label>
+                        <input id="qap-connection-issue-server-host" class="form-control" type="text" name="" value="" placeholder="服务器地址">
+                        <label></label>
+                        <input id="qap-connection-issue-server-account" class="form-control" type="text" name="" value="" placeholder="账号">
+                        <label></label>
+                        <input id="qap-connection-issue-server-password" class="form-control" type="password" name="" value="" placeholder="密码">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="qap-connection-account">账号</label>
-                    <input id="qap-connection-account" class="form-control" type="text" name="" value="">
-                </div>
-                <div class="form-group">
-                    <label for="qap-connection-password">密码</label>
-                    <input id="qap-connection-password" class="form-control" type="password" name="" value="">
-                </div>
+                <!-- <div class="form-group">
+                    <div class="form-group">
+                        <label>用例管理服务器</label>
+                        <select id="qap-connection-case-server-type" class="form-control" name="">
+                            <option>-- 选择服务器类型 --</option>
+                            <option value="jira">JIRA</option>
+                            <option value="zentao">禅道</option>
+                            <option value="testlink">TestLink</option>
+                        </select>
+                        <label></label>
+                        <input id="qap-connection-issue-server-type" class="form-control" type="text" name="" value="" placeholder="服务器类型: jira/zentao/testlink">
+                        <label></label>
+                        <input id="qap-connection-case-server-host" class="form-control" type="text" name="" value="" placeholder="服务器地址">
+                        <label></label>
+                        <input id="qap-connection-case-server-account" class="form-control" type="text" name="" value="" placeholder="账号">
+                        <label></label>
+                        <input id="qap-connection-case-server-password" class="form-control" type="text" name="" value="" placeholder="密码">
+                    </div>
+                </div> -->
             </div>
             <div class="card-footer ">
                 <button class="btn btn-info" type="button" onclick="qapSubmitConnection()">提交</button>

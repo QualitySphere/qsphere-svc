@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from svcClient.db.db import db
+from db.db import db
 from pony.orm import Database, Required, PrimaryKey, Set, StrArray, IntArray, Json, Optional
 import uuid
 from datetime import datetime
@@ -13,11 +13,10 @@ class Connection(db.Entity):
     _table_ = 'connection'
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    type = Required(str, default='issue')  # issue/case
-    server_type = Required(str, default='jira')  # jira/zentao/testlink/bugzilla
-    server = Required(str)
-    account = Required(str)
-    password = Required(str)
+    name = Required(str)
+    issue_server = Optional(Json)  # {type: jira/zentao/bugzilla, host: '', account: '', password: ''}
+    case_server = Optional(Json)  # {type: jira/zentao/testlink, host: '', account: '', password: ''}
+    active = Required(str, default='enable')
     projects = Set('Project')
 
 
@@ -43,9 +42,9 @@ class Sprint(db.Entity):
     issue_types = Required(StrArray)  # 问题筛选类型: Improvement, 缺陷
     features = Required(StrArray)  # 功能标签列表: 功能1, 功能2, ...
     rcs = Required(StrArray)  # RC标签列表: rc1,rc2,rc3,rc4,rc5, ...
-    issue_found_since = Required(StrArray, default=['regression_improve', 'qa_missed', 'new_feature', 'customer'])  # 问题发现来源标签列表
+    issue_found_since = Required(StrArray, default=['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer'])  # 问题发现来源标签列表
     issue_status = Required(Json)  # 问题状态: fixing: '', fixed: '', verified: ''
-    issue_categories = Required(StrArray, default=['regression', 'previous', 'newfeature', 'others'])  # 问题类别标签列表
+    issue_categories = Required(StrArray, default=['Regression', 'Previous', 'NewFeature', 'Others'])  # 问题类别标签列表
     queries = Optional(Json)  # 查询语句集: jql/././.
     active = Required(str, default='enable')  # 该迭代的激活状态: enable, disable, delete
     issue_project_latest = Set('IssueProjectLatest')

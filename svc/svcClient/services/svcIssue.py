@@ -2,44 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from pony.orm import db_session, select, get
-from svcClient.models.models import *
-from clientJira.utils.jiraClient import JiraSession
+from models.models import *
+from utils.jiraClient import JiraSession
 from threading import Thread
 from datetime import datetime
 import logging
 
 
-@db_session
-def get_issues(sprint_id):
-    # feature issues status
-    sprint_issue = select(s for s in IssueSprint
-                          if str(s.sprint.uuid) == sprint_id).order_by(IssueSprint.capture_at).first()
-    feature_issue = select(f for f in IssueFeatureLatest
-                           if str(f.sprint.uuid) == sprint_id)
-    if sprint_issue:
-        detail = {
-                'sprint_id': sprint_issue.sprint.uuid,
-                'status': sprint_issue.status,
-                'categories': sprint_issue.categories,
-                'found_since': sprint_issue.found_since,
-                'found_in_rcs': sprint_issue.found_in_rcs,
-                'features': dict()
-        }
-        for fi in feature_issue:
-            detail['features'][fi.name] = fi.status
-        return {
-            'title': 'Succeed To Get Issues',
-            'detail': detail
-        }, 200
-    else:
-        return {
-            'title': 'No Issues',
-        }, 404
-
-
-def _search_issues(server, account, password, key_jql, value_jql, issues):
+def _search_jira_issues(server, account, password, key_jql, value_jql, issues):
     """
-
+    INTERNAL FUNCTION: Search JIRA Issues
     :param server: JIRA server
     :param account: JIRA account
     :param password: JIRA password
@@ -54,14 +26,19 @@ def _search_issues(server, account, password, key_jql, value_jql, issues):
 
 
 @db_session
-def _get_jira_issues(sprint_id):
+def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
+    """
+    INTERNAL FUNCTION: Sync Sprint All Issues From JIRA Server
+    :param sprint_id:
+    :return:
+    """
     capture_time = datetime.utcnow()
 
     # 获取 sprint 信息
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    server = sprint.project.connection.server
-    account = sprint.project.connection.account
-    password = sprint.project.connection.password
+    server = sprint.project.connection.issue_server.get('host')
+    account = sprint.project.connection.issue_server.get('account')
+    password = sprint.project.connection.issue_server.get('password')
     jqls = sprint.queries.get('jqls')
 
     # 多线程登录 JIRA 用 JQL 收集所有数据
@@ -72,7 +49,7 @@ def _get_jira_issues(sprint_id):
         for key_jql, value_jql in value.items():
             threads.append(
                 Thread(
-                    target=_search_issues,
+                    target=_search_jira_issues,
                     args=(server, account, password, key_jql, value_jql, issues[key])
                 )
             )
@@ -187,14 +164,19 @@ def _get_jira_issues(sprint_id):
 
 
 @db_session
-def _get_jira_issues_only_from_customer(sprint_id: str):
+def _sync_jira_data_for_sprint_customer_issue(sprint_id: str):
+    """
+    INTERNAL FUNCTION: Sync Sprint Customer Issue From JIRA Server
+    :param sprint_id:
+    :return:
+    """
     capture_time = datetime.utcnow()
 
     # 获取 sprint, connection 以及 bug from customer 的 JQL
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    server = sprint.project.connection.server
-    account = sprint.project.connection.account
-    password = sprint.project.connection.password
+    server = sprint.project.connection.issue_server.get('host')
+    account = sprint.project.connection.issue_server.get('account')
+    password = sprint.project.connection.issue_server.get('password')
     jql = sprint.queries.get('jqls').get('issue_found_since').get('customer')
 
     # JQL 从 JIRA 中获取查询结果数量
@@ -218,62 +200,63 @@ def _get_jira_issues_only_from_customer(sprint_id: str):
     return True
 
 
-def sync_jira_sprint_data(sprint_id):
-    try:
-        _get_jira_issues(sprint_id)
-        return {
-            'title': 'Succeed To Sync Sprint %s Issues From JIRA' % sprint_id
-        }, 200
-    except Exception as e:
-        logging.error(e)
-        return {
-            'title': 'Failed To Sync Sprint %s Issues from JIRA' % sprint_id,
-            'detail': str(e)
-        }, 400
+@db_session
+def sync_sprint_issue_data(sprint_id: str):
+    """
+    Sync Sprint Issue Data
+    :param sprint_id:
+    :return:
+    """
+    sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
+    if sprint.active == 'enable':
+        if sprint.project.connection.issue_server.get('type') == 'jira':
+            _sync_jira_data_for_sprint_all_issue(sprint_id)
+    elif sprint.active == 'disable':
+        if sprint.project.connection.issue_server.get('type') == 'jira':
+            _sync_jira_data_for_sprint_customer_issue(sprint_id)
 
 
 @db_session
-def sync_jira_data():
+def sync_issue_data():
+    """
+    Sync All Sprints Issue Data
+    :return:
+    """
     # 同步数据库中所有存在的迭代
     sprints = select(s for s in Sprint if s.active != 'delete')
-    if sprints:
-        threads = list()
-        for sprint in sprints:
-            logging.info('Start to sync data for sprint %s' % sprint.name)
-            # 激活状态的迭代，同步所有数据
-            if sprint.active == 'enable':
-                threads.append(
-                    Thread(
-                        target=_get_jira_issues,
-                        args=(str(sprint.uuid),)
-                    )
-                )
-            # 非激活状态的迭代，只同步 bug from customer 数据
-            elif sprint.active == 'disable':
-                threads.append(
-                    Thread(
-                        target=_get_jira_issues_only_from_customer,
-                        args=(str(sprint.uuid),)
-                    )
-                )
-        try:
-            for t in threads:
-                t.setDaemon(True)
-                t.start()
-            for t in threads:
-                t.join()
-        except Exception as e:
-            return {
-                'title': 'Failed To Sync Issues From JIRA: %s' % e,
-            }, 400
-    else:
-        return {
-            'title': 'No Sprint In Platform'
-        }, 200
-    return {
-        'title': 'Succeed To Sync All Sprints Issues From JIRA'
-    }, 200
+    threads = list()
+    for sprint in sprints:
+        logging.info('Start to sync data for sprint %s' % sprint.name)
+        threads.append(
+            Thread(
+                target=sync_sprint_issue_data,
+                args=(str(sprint.uuid),)
+            )
+        )
+    for t in threads:
+        t.setDaemon(True)
+        t.start()
+    for t in threads:
+        t.join()
+    return True
+
+
+def sync_sprint_case_data(sprint_id: str):
+    """
+    Sync Sprint Case Data
+    :param sprint_id:
+    :return:
+    """
+    pass
+
+
+def sync_case_data():
+    """
+    Sync All Sprint Case Data
+    :return:
+    """
+    pass
 
 
 if __name__ == '__main__':
-    print(u'This is a service of JIRA issue')
+    print(u'This is a service of issue')

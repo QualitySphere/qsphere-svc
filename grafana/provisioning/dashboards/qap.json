@@ -17,7 +17,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1569489133026,
+  "iteration": 1571720750103,
   "links": [],
   "panels": [
     {
@@ -284,7 +284,7 @@
       "id": 13,
       "panels": [],
       "repeat": null,
-      "title": "Sprint $SPRINT",
+      "title": "Sprint $SPRINT ( $START_DATE ~ $END_DATE )",
       "type": "row"
     },
     {
@@ -1209,6 +1209,7 @@
         "allFormat": "glob",
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "DP",
           "value": "DP"
         },
@@ -1235,6 +1236,7 @@
         "allFormat": "glob",
         "allValue": null,
         "current": {
+          "tags": [],
           "text": "DX Pilot QA Sprint",
           "value": "DX Pilot QA Sprint"
         },
@@ -1261,7 +1263,6 @@
         "allFormat": "glob",
         "allValue": null,
         "current": {
-          "tags": [],
           "text": "DXDCS",
           "value": "DXDCS"
         },
@@ -1287,12 +1288,12 @@
       {
         "allValue": null,
         "current": {
-          "text": "2019-09-26",
-          "value": "2019-09-26"
+          "text": "2019-09-27",
+          "value": "2019-09-27"
         },
         "datasource": "PgQAP",
         "definition": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
@@ -1312,12 +1313,12 @@
       {
         "allValue": null,
         "current": {
-          "text": "2019-09-26",
-          "value": "2019-09-26"
+          "text": "2019-10-22",
+          "value": "2019-10-22"
         },
         "datasource": "PgQAP",
         "definition": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 DESC limit 1",
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,

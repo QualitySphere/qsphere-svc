@@ -1,2 +1,30 @@
 <!-- 看板 -->
 <iframe class="qap-full-width qap-full-height" src="/dashboard/d/qap/quality-assurance-platform?orgId=1" frameborder="0" sandbox="allow-scripts allow-same-origin"></iframe>
+<script>
+var frame = $('iframe')[0];
+var hideSideMenuTimeout;
+var hideNavbarTimeout;
+
+var hideSideMenue = function(){
+    var sidemenu = frame.contentWindow.document.getElementsByTagName('sidemenu')[0];
+    if(isdemenu){
+        clearTimeout(hideSideMenuTimeout);
+        sidemenu.hidden = true;
+        return ;
+    }
+    hideSideMenuTimeout = setTimeout(hideSideMenu, 100);
+}
+
+var hideNavbar = function(){
+    var navbar = frame.contentWindow.document.getElementsByClassName('navbar')[0];
+    if(navbar){
+        clearTimeout(hideNavbarTimeout);
+        navbar.hidden = true;
+        return ;
+    }
+    hideNavbarTimeout = setTimeout(hideNavbar, 100)
+}
+
+hideSideMenu();
+hideNavbar();
+</script>

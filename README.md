@@ -1,14 +1,15 @@
-<img src="https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/qap.png" align=center style="width=800px;height=auto" />
+![Quality Assurance Platform](https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/qap.png)
+
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/project.png" align=center style="width=800px;height=auto" />
-<img src="https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/sprint.png" align=center style="width=800px;height=auto" />
-<img src="https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/dashboard.png" align=center style="width=800px;height=auto" />
+![Project](https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/project.png)
+![Sprint](https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/sprint.png)
+![Dashboard](https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/dashboard.png)
 
 ## Values
 
 ## Framework
-<img src="https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/framework.png" align=center style="width=800px;height=auto" />
+![Framework](https://raw.githubusercontent.com/Quality-Assurance-Platform/qap/master/docs/framework.png)
 
 ## API Document
 http://{qap-server}/api/ui

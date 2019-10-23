@@ -4,10 +4,10 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import connexion
-from clientJira.db.db import db
+from db.db import db
+
 import logging
 from pony.orm import set_sql_debug
-# from flask_apscheduler import APScheduler
 from apscheduler.schedulers.background import BackgroundScheduler as APScheduler
 import requests
 
@@ -15,9 +15,9 @@ import requests
 logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
 
 
-def jira_job():
+def svc_job():
     # 调用同步接口
-    requests.get(url='http://127.0.0.1:6001/api/jira/sprint/sync', timeout=30)
+    requests.get(url='http://127.0.0.1:6001/api/issue/sync', timeout=30)
 
 
 if __name__ == '__main__':
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         specification_dir='specs/',
         options=options
     )
-    app.add_api("jira-client.yaml")
+    app.add_api("svc-client.yaml")
 
     # 关联数据库
     set_sql_debug(True)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     # 创建定时任务, 每小时执行一次同步
     scheduler = APScheduler()
-    scheduler.add_job(func=jira_job, id='jira_job', trigger='interval', hours=1, replace_existing=True)
+    scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
     scheduler.start()
 
     app.run(port=6001, debug=True)

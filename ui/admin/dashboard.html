@@ -5,9 +5,9 @@ var frame = $('iframe')[0];
 var hideSideMenuTimeout;
 var hideNavbarTimeout;
 
-var hideSideMenue = function(){
+var hideSideMenu = function(){
     var sidemenu = frame.contentWindow.document.getElementsByTagName('sidemenu')[0];
-    if(isdemenu){
+    if(sidemenu){
         clearTimeout(hideSideMenuTimeout);
         sidemenu.hidden = true;
         return ;
@@ -15,16 +15,39 @@ var hideSideMenue = function(){
     hideSideMenuTimeout = setTimeout(hideSideMenu, 100);
 }
 
-var hideNavbar = function(){
-    var navbar = frame.contentWindow.document.getElementsByClassName('navbar')[0];
-    if(navbar){
-        clearTimeout(hideNavbarTimeout);
-        navbar.hidden = true;
+var hideNavbarPageBtn = function(){
+    var narbarpagebtn = frame.contentWindow.document.getElementsByClassName('navbar-page-btn')[0];
+    if(narbarpagebtn){
+        clearTimeout(hideNavbarPageBtnTimeout);
+        narbarpagebtn.hidden = true;
         return ;
     }
-    hideNavbarTimeout = setTimeout(hideNavbar, 100)
+    hideNavbarPageBtnTimeout = setTimeout(hideNavbarPageBtn, 100);
 }
 
+var hideNavbarButtonShare = function(){
+    var narbarbuttonshare = frame.contentWindow.document.getElementsByClassName('btn navbar-button navbar-button--share')[0];
+    if(narbarbuttonshare){
+        clearTimeout(hideNavbarButtonShareTimeout);
+        narbarbuttonshare.hidden = true;
+        return ;
+    }
+    hideNavbarButtonShareTimeout = setTimeout(hideNavbarButtonShare, 100);
+}
+
+
+// var hideNavbar = function(){
+//     var navbar = frame.contentWindow.document.getElementsByClassName('navbar')[0];
+//     if(navbar){
+//         clearTimeout(hideNavbarTimeout);
+//         navbar.hidden = true;
+//         return ;
+//     }
+//     hideNavbarTimeout = setTimeout(hideNavbar, 100)
+// }
+
 hideSideMenu();
-hideNavbar();
+hideNavbarPageBtn();
+hideNavbarButtonShare();
+// hideNavbar();
 </script>

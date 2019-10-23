@@ -1,3 +1,3 @@
 #!/bin/sh
 export PYTHONPATH=$PWD
-python3 clientJira/run.py
+python3 svcClient/run.py

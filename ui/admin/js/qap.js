@@ -41,11 +41,11 @@ function qapNavGetProject(){
                 text += "<td>"
                 if(data.detail.results[i].active == "enable"){
                     text += "<span class='badge badge-success'>已激活</span> "
-                    text += "<span class='glyphicon glyphicon-pause' onclick='qapActiveSprint(\'" + data.detail.results[i].sprint_id + "\',\'disable\')'></span>"
+                    text += '<span class="el-icon-video-pause btn" onclick="qapActiveSprint(\'' + data.detail.results[i].sprint_id + '\',\'disable\')"></span>'
                 }
                 else if(data.detail.results[i].active == "disable"){
                     text += "<span class='badge badge-secondary'>已暂停</span> "
-                    text += "<span class='glyphicon glyphicon-play' onclick='qapActiveSprint(\'" + data.detail.results[i].sprint_id + "\',\'enable\')'></span>"
+                    text += '<span class="el-icon-video-play btn" onclick="qapActiveSprint(\'' + data.detail.results[i].sprint_id + '\',\'enable\')"></span>'
                 }
                 else if(data.detail.results[i].active == "delete"){
                     text += "<span class='badge badge-secondary'>已删除</span> "

@@ -4,6 +4,7 @@
 	<meta charset="utf-8">
 	<title>管理控制台 - Quality Assurance Platform</title>
 	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.11.1/lib/theme-chalk/icon.css">
 	<link rel="stylesheet" href="css/qap.css">
 	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
@@ -23,20 +24,20 @@
 				<div id="my-nav" class="collapse navbar-collapse">
 					<ul class="navbar-nav mr-auto">
 						<li class="nav-item dropdown">
-							<a id="project-dropdown" href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-folder-open"></span> 创建</a>
+							<a id="project-dropdown" href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="el-icon-folder-opened"></span> 创建</a>
 							<div class="dropdown-menu">
 								<a class="dropdown-item" href="#" id="qap-nav-create-project" data-toggle="modal" data-target="#qap-create-project" onclick="qapGetConnection()">项目</a>
 								<a class="dropdown-item" href="#" id="qap-nav-create-sprint" data-toggle="modal" data-target="#qap-sprint" onclick="qapGetProject()">迭代</a>
 							</div>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link active" href="#" id="qap-nav-project" onclick="qapNavGetProject()"><span class="glyphicon glyphicon-tasks"></span> 项目信息<span class="sr-only">(current)</span></a>
+							<a class="nav-link active" href="#" id="qap-nav-project" onclick="qapNavGetProject()"><span class="el-icon-tickets"></span> 项目信息<span class="sr-only">(current)</span></a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" id="qap-nav-connection" onclick="qapNavGetConnection()"><span class="glyphicon glyphicon-cog"></span> 我的配置<span class="sr-only">(current)</span></a>
+							<a class="nav-link" href="#" id="qap-nav-connection" onclick="qapNavGetConnection()"><span class="el-icon-setting"></span> 我的配置<span class="sr-only">(current)</span></a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#" id="qap-nav-dashboard" onclick="qapNavDashboard()"><span class="glyphicon glyphicon-folder-globe"></span> 看板<span class="sr-only">(current)</span></a>
+							<a class="nav-link" href="#" id="qap-nav-dashboard" onclick="qapNavDashboard()"><span class="el-icon-pie-chart"></span> 看板<span class="sr-only">(current)</span></a>
 						</li>
 					</ul>
 					<!-- <a class="nav-link" href="#"><span class="badge badge-light">一键同步所有项目信息</span><span class="sr-only">(current)</span></a> -->

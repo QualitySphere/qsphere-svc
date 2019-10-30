@@ -91,15 +91,15 @@ def delete_sprint(sprint_id):
         raise DefaultError(title='Delete Sprint Failed', detail=str(e))
 
 
-def active_sprint(sprint_id, active):
+def active_sprint(sprint_id, body):
     """
     PUT /api/sprint/{sprint_id}/active
     :param sprint_id:
-    :param active:
+    :param body:
     :return:
     """
     try:
-        status = svcSprint.active_sprint(sprint_id, active)
+        status = svcSprint.active_sprint(sprint_id, body.get('active'))
         return {
             'title': 'Change Sprint Active Status Succeed',
             'detail': {

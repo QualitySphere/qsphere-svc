@@ -36,18 +36,18 @@ var hideNavbarButtonShare = function(){
 }
 
 
-// var hideNavbar = function(){
-//     var navbar = frame.contentWindow.document.getElementsByClassName('navbar')[0];
-//     if(navbar){
-//         clearTimeout(hideNavbarTimeout);
-//         navbar.hidden = true;
-//         return ;
-//     }
-//     hideNavbarTimeout = setTimeout(hideNavbar, 100)
-// }
+var hideNavbar = function(){
+    var navbar = frame.contentWindow.document.getElementsByClassName('navbar')[0];
+    if(navbar){
+        clearTimeout(hideNavbarTimeout);
+        navbar.hidden = true;
+        return ;
+    }
+    hideNavbarTimeout = setTimeout(hideNavbar, 100)
+}
 
 hideSideMenu();
-hideNavbarPageBtn();
-hideNavbarButtonShare();
-// hideNavbar();
+// hideNavbarPageBtn();
+// hideNavbarButtonShare();
+hideNavbar();
 </script>

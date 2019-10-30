@@ -38,18 +38,22 @@ function qapNavGetProject(){
                 text += "<tr>"
                 text += "<td>" + data.detail.results[i].project_name + "</td>"
                 text += "<td>" + data.detail.results[i].sprint_name + "</td>"
+                text += "<td>"
                 if(data.detail.results[i].active == "enable"){
-                    text += "<td><span class='badge badge-success'>已激活</span></td>"
+                    text += "<span class='badge badge-success'>已激活</span> "
+                    text += "<span class='glyphicon glyphicon-pause' onclick='qapActiveSprint(\'" + data.detail.results[i].sprint_id + "\',\'disable\')'></span>"
                 }
                 else if(data.detail.results[i].active == "disable"){
-                    text += "<td><span class='badge badge-secondary'>已暂停</span></td>"
+                    text += "<span class='badge badge-secondary'>已暂停</span> "
+                    text += "<span class='glyphicon glyphicon-play' onclick='qapActiveSprint(\'" + data.detail.results[i].sprint_id + "\',\'enable\')'></span>"
                 }
                 else if(data.detail.results[i].active == "delete"){
-                    text += "<td><span class='badge badge-secondary'>已删除</span></td>"
+                    text += "<span class='badge badge-secondary'>已删除</span> "
                 }
                 else{
                     text += "<td><span class='badge badge-secondary'>未知</span></td>"
                 }
+                text += "</td>"
                 text += "<td>"
                 if(data.detail.results[i].active == "enable"){
                     text += '<span class="badge badge-info btn" onclick="qapGetSprint(\'' + data.detail.results[i].sprint_id + '\')">查看</span> '
@@ -299,6 +303,30 @@ function qapUpdateSprintSubmit(sprint_id){
             $("#qap-sprint").modal("hide")
             actionResponse("success", "迭代更新成功")
             qapGetSprint(sprint_id)
+        },
+        error: function(data, status){
+            checkResponse(data)
+        }
+    })
+}
+
+function qapActiveSprint(sprint_id, active_action){
+    var active_action_info = ""
+    if(active_action == "disable"){
+        active_action_info = "停止" 
+    }
+    else if(active_action == "enable"){
+        active_action_info = "激活"
+    }
+    $.ajax({
+        type: "PUT",
+        url: "/api/sprint/" + sprint_id + "/active",
+        contentType: "application/json",
+        data: JSON.stringify({
+            "active": active_action
+        }),
+        success: function(data, status){
+            actionResponse("success", active_action_info + "成功")
         },
         error: function(data, status){
             checkResponse(data)

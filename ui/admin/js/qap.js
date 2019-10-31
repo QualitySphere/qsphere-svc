@@ -20,6 +20,7 @@ function actionResponse(alert, msg){
 function qapNavDashboard(){
     $("#qap-nav-project").attr('class', "nav-link")
     $("#qap-nav-connection").attr('class', "nav-link")
+    $("#qap-nav-machine").attr('class', "nav-link")
     $("#qap-nav-dashboard").attr('class', "nav-link active")
     $("#qap-data").load("dashboard.html")
 }
@@ -27,6 +28,7 @@ function qapNavDashboard(){
 function qapNavGetProject(){
     $("#qap-nav-project").attr('class', "nav-link active")
     $("#qap-nav-connection").attr('class', "nav-link")
+    $("#qap-nav-machine").attr('class', "nav-link")
     $("#qap-nav-dashboard").attr('class', "nav-link")
     $("#qap-data").load("project.html #qap-data-project")
     
@@ -74,6 +76,7 @@ function qapNavGetProject(){
 function qapNavGetConnection(){
     $("#qap-nav-project").attr('class', "nav-link")
     $("#qap-nav-connection").attr('class', "nav-link active")
+    $("#qap-nav-machine").attr('class', "nav-link")
     $("#qap-nav-dashboard").attr('class', "nav-link")
     $("#qap-data").load("connection.html #qap-connection")
     
@@ -88,6 +91,34 @@ function qapNavGetConnection(){
             $("#qap-connection-case-server-type").val(data.detail.results[0].case_server.type)
             $("#qap-connection-case-server-host").val(data.detail.results[0].case_server.host)
             $("#qap-connection-case-server-account").val(data.detail.results[0].case_server.account)
+        }
+    )
+}
+
+function qapNavGetMachine(){
+    $("#qap-nav-project").attr('class', "nav-link")
+    $("#qap-nav-connection").attr('class', "nav-link")
+    $("#qap-nav-machine").attr('class', "nav-link active")
+    $("#qap-nav-dashboard").attr('class', "nav-link")
+    $("#qap-data").load("machine.html #qap-data-machine")
+    
+    $.get(
+        "/api/machine",
+        function(data){
+            var text = '';
+            for(i in data){
+                text += '<tr>';
+                text += '<td>' + data[i].name + '</td>';
+                text += '<td>' + data[i].ip + '</td>';
+                if(data[i].status == "ONLINE"){
+                    text += '<td><span class="badge badge-success">' + data[i].status + '</span></td>';
+                }
+                else{
+                    text += '<td><span class="badge badge-error">' + data[i].status + '</span></td>';
+                }
+                text += '</tr>';
+            }
+            $('#qap-data-machine-table').html(text)
         }
     )
 }
@@ -350,6 +381,28 @@ function qapSyncAllSprint(){
         "/api/issue/sync",
         function(data, status){
             actionResponse("success", "所有迭代信息同步完成")
+        }
+    )
+}
+
+function qapCheckMachine(){
+    $.get(
+        "/api/machine",
+        function(data){
+            var text = '';
+            for(i in data){
+                text += '<tr>';
+                text += '<td>' + data[i].name + '</td>';
+                text += '<td>' + data[i].ip + '</td>';
+                if(data[i].status == "ONLINE"){
+                    text += '<td><span class="el-icon-video-success btn">' + data[i].status + '</span></td>';
+                }
+                else{
+                    text += '<td><span class="el-icon-video-error btn">' + data[i].status + '</span></td>';
+                }
+                text += '</tr>';
+            }
+            $('#qap-data-machine-table').html(text)
         }
     )
 }

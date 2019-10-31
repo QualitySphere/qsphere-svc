@@ -114,7 +114,7 @@ function qapNavGetMachine(){
                     text += '<td><span class="badge badge-success">' + data[i].status + '</span></td>';
                 }
                 else{
-                    text += '<td><span class="badge badge-error">' + data[i].status + '</span></td>';
+                    text += '<td><span class="badge badge-danger">' + data[i].status + '</span></td>';
                 }
                 text += '</tr>';
             }

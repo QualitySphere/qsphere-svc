@@ -33,6 +33,17 @@ paths:
         200:
           description: Status is healthy
 
+  /machine:
+
+    get:
+      tags:
+        - "status"
+      description: Get Machine Status
+      operationId: api.apiHealth.machine_check
+      responses:
+        200:
+          description: succeed to list all machines status
+
   # CONNECTION
   /connection:
 
@@ -479,4 +490,3 @@ paths:
       responses:
         200:
           description: succeed to sync data from issue manage server
-

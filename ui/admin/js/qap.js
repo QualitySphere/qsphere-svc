@@ -1,8 +1,3 @@
-$(document).ready(function(){
-    $("#qap-modal").load("modal.html")
-    qapNavGetProject()
-})
-
 function checkResponse(data){
     if(data.status != 500){alert(data.status + "\n" + JSON.stringify(data.responseJSON.detail))}
     else{alert("致命错误")}

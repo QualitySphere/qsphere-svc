@@ -1,5 +1,58 @@
+<!DOCTYPE html>
+<html class="qap-full-width qap-full-height">
+<head>
+	<meta charset="utf-8">
+	<title>管理控制台 - Quality Assurance Platform</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.11.1/lib/theme-chalk/icon.css">
+	<link rel="stylesheet" href="css/qap.css">
+	<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/qap.js"></script>
+</head>
+<body class="qap-body qap-full-height">
+	<!-- 导航栏 -->
+	<div class="container-fluid qap-none-flex" id="qap-navbar"></div>
+	<script>
+		$("#qap-navbar").load("navbar.html")
+	</script>
+	<!-- 信息 -->
+	<div class="container-fluid qap-data" id="qap-data">
+        <div class="row qap-data-detail" id="qap-data-machine">
+            <div class="col col-1"></div>
+            <div class="col col-10">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>主机信息</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-light table-hover ">
+                            <thead>
+                                <tr>
+                                    <th>主机</th>
+                                    <th>IP</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qap-data-machine-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col col-1"></div>
+        </div>
+    </div>
+	<!-- 模态框 -->
+    <div class="container-fluid" id="qap-modal"></div>
+    <script>
+        $("#qap-modal").load("modal.html")
+    </script>
+</body>
+</html>
+
 <!-- 主机信息 -->
-<div class="row qap-data-detail" id="qap-data-machine">
+<!-- <div class="row qap-data-detail" id="qap-data-machine">
     <div class="col col-1"></div>
     <div class="col col-10">
         <div class="card">
@@ -21,4 +74,4 @@
         </div>
     </div>
     <div class="col col-1"></div>
-</div>
+</div> -->

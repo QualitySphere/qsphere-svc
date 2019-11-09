@@ -243,7 +243,7 @@ def sync_issue_data():
 
 @db_session
 def get_active_sprint_issue_status():
-    sprints = select(s for s in Sprint if s.active == 'active')
+    sprints = select(s for s in Sprint if s.active == 'enable')
     items = list()
     bugs = list()
     for sprint in sprints:

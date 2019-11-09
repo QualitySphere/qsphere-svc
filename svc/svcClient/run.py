@@ -27,10 +27,10 @@ def _generate_bug_status_markdown_text(bug_info: dict):
     bug_info.get('sprint_name')
     bug_markdown_text = '\n'.join([
         '#### %s 缺陷最新状态' % bug_info.get('sprint_name'),
-        "- <font color=red>待修复: %s<font>" % bug_info.get('issue_status').get('fixing'),
-        "- <font color=blue>待验证: %s<font>" % bug_info.get('issue_status').get('fixed'),
-        "- <font color=green>已验证: %s<font>" % bug_info.get('issue_status').get('verified'),
-        "\n"
+        '- <font color=\"warning\">待修复: %s</font>' % bug_info.get('issue_status').get('fixing'),
+        '- <font color=\"comment\">待验证: %s</font>' % bug_info.get('issue_status').get('fixed'),
+        '- <font color=\"info\">已验证: %s</font>' % bug_info.get('issue_status').get('verified'),
+        '\n'
     ])
     return bug_markdown_text
 

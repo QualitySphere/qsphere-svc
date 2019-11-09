@@ -490,3 +490,15 @@ paths:
       responses:
         200:
           description: succeed to sync data from issue manage server
+
+  # BUG STATUS
+  /issue/status:
+
+    get:
+      tags:
+        - "issue"
+      description: Get All Active Sprints Bug Verification
+      operationId: api.apiIssue.get_active_sprint_issue_status
+      responses:
+        200:
+          description: succeed to get active sprint issue status

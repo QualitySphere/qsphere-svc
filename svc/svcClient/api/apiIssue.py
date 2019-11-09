@@ -32,3 +32,18 @@ def sync_issue():
         }, 200
     except Exception as e:
         raise DefaultError(title='Sync All Sprints Issue Failed', detail=str(e))
+
+
+def get_active_sprint_issue_status():
+    """
+    GET /api/issue/status
+    :return:
+    """
+    try:
+        bugs = svcIssue.get_active_sprint_issue_status()
+        return {
+            'title': 'Get All Active Sprints Bug Status Succeed',
+            'detail': bugs
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Get All Active Sprints Bug Status Failed', detail=str(e))

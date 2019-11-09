@@ -241,6 +241,21 @@ def sync_issue_data():
     return True
 
 
+@db_session
+def get_active_sprint_issue_status():
+    sprints = select(s for s in Sprint if s.active == 'active')
+    items = list()
+    bugs = list()
+    for sprint in sprints:
+        items.append(select(i for i in IssueSprint if i.sprint.uuid == sprint.uuid).order_by(IssueSprint.capture_at).first())
+    for item in items:
+        bugs.append({
+            'sprint_name': item.sprint.name,
+            'issue_status': item.status,
+        })
+    return bugs
+
+
 def sync_sprint_case_data(sprint_id: str):
     """
     Sync Sprint Case Data

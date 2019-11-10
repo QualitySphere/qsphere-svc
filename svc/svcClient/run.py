@@ -96,7 +96,7 @@ if __name__ == '__main__':
     scheduler = APScheduler()
     scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
     scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
-    scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=9, minute=30, replace_existing=True)
+    scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
     scheduler.start()
 
     app.run(port=6001, debug=True)

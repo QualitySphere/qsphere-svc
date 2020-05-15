@@ -4,28 +4,20 @@
       <el-col :span="3">
         <el-dropdown trigger="click">
           <el-button plain round type="primary" size="small">
-            <i class="el-icon-circle-plus el-icon--left"></i>New Tracker
+            <i class="el-icon-plus el-icon--left"></i>New Tracker
           </el-button>
           <el-dropdown-menu>
-            <el-dropdown-item>
-              <router-link :to="{path: 'tracker', query: {type: 'jira'}}" tag="span" append>
-                Jira
-              </router-link>
+            <el-dropdown-item @click.native="dialogTrackerVisible = true">
+              Jira
             </el-dropdown-item>
             <el-dropdown-item disabled>
-              <router-link :to="{path: 'tracker', query: {type: 'zentao'}}" tag="span" append>
-                Zentao
-              </router-link>
+              Zentao
             </el-dropdown-item>
             <el-dropdown-item disabled>
-              <router-link :to="{path: 'tracker', query: {type: 'testlink'}}" tag="span" append>
-                TestLink
-              </router-link>
+              Bugzilla
             </el-dropdown-item>
             <el-dropdown-item disabled>
-              <router-link :to="{path: 'tracker', query: {type: 'bugzilla'}}" tag="span" append>
-                Bugzilla
-              </router-link>
+              TestLink
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -49,22 +41,37 @@
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>
+    <el-dialog
+      title="Tracker"
+      :visible.sync="dialogTrackerVisible"
+      width="30%">
+      <InfoTracker/>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogTrackerVisible = false" size="small">Cancel</el-button>
+        <el-button type="primary" @click="dialogTrackerVisible = false" size="small">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import InfoTracker from '@/components/InfoTracker.vue'
 export default {
   data () {
     return {
       tableData: [
       ],
       loading: false,
+      dialogTrackerVisible: false,
       content: `
       <h3>Tracker<h3>
       This is Qsphere tracker help document<br/>
       Only for you<br/>
       `
     }
+  },
+  components: {
+    InfoTracker
   }
 }
 </script>

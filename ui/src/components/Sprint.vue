@@ -2,11 +2,9 @@
   <div>
     <el-row style="margin-bottom: 15px">
       <el-col :span="3">
-        <router-link to="sprint" append>
-          <el-button plain round type="primary" size="small">
-            <i class="el-icon-circle-plus el-icon--left"></i>New Sprint
-          </el-button>
-        </router-link>
+        <el-button plain round type="primary" size="small" @click="dialogSprintVisible = true">
+          <i class="el-icon-plus el-icon--left"></i>New Sprint
+        </el-button>
         <el-tooltip placement="bottom-start">
           <div slot="content" v-html="content"></div>
           <i class="el-icon-question el-icon--right"></i>
@@ -26,10 +24,21 @@
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>
+    <el-dialog
+      title="Sprint"
+      :visible.sync="dialogSprintVisible"
+      width="30%">
+      <InfoSprint/>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogSprintVisible = false" size="small">Cancel</el-button>
+        <el-button type="primary" @click="dialogSprintVisible = false" size="small">Confirm</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import InfoSprint from '@/components/InfoSprint.vue'
 export default {
   data () {
     return {
@@ -38,8 +47,12 @@ export default {
       loading: false,
       content: `
       Hello, Sprint
-      `
+      `,
+      dialogSprintVisible: false
     }
+  },
+  components: {
+    InfoSprint
   }
 }
 </script>

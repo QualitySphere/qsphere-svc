@@ -1,12 +1,12 @@
 <template>
   <el-menu :router="true" background-color="#EDEDED" text-color="#909399" active-text-color="#212529">
-    <el-menu-item index="./overview">
+    <el-menu-item index="/overview">
       <span>Overview</span>
     </el-menu-item>
-    <el-menu-item index="2">
+    <el-menu-item index="/project">
       <span>Project</span>
     </el-menu-item>
-    <el-menu-item index="3">
+    <el-menu-item index="/sprint">
       <span>Sprint</span>
     </el-menu-item>
   </el-menu>

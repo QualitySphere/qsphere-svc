@@ -1,7 +1,6 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 15px">
-      <el-col :span="3">
+    <el-row style="margin-bottom: 15px" type="flex">
         <el-button plain round type="primary" size="small" @click="dialogProjectVisible = true">
           <i class="el-icon-plus el-icon--left"></i>New Project
         </el-button>
@@ -9,7 +8,6 @@
           <div slot="content" v-html="content"></div>
           <i class="el-icon-question el-icon--right"></i>
         </el-tooltip>
-      </el-col>
     </el-row>
     <el-row>
       <el-table

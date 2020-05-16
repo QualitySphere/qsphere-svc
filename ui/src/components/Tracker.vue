@@ -1,14 +1,13 @@
 <template>
   <div>
-    <el-row style="margin-bottom: 15px">
-      <el-col :span="3">
+    <el-row style="margin-bottom: 15px" type="flex">
         <el-dropdown trigger="click">
           <el-button plain round type="primary" size="small">
             <i class="el-icon-plus el-icon--left"></i>New Tracker
           </el-button>
           <el-dropdown-menu>
             <el-dropdown-item @click.native="dialogTrackerVisible = true">
-              Jira
+              <router-link to="/settings?tracker=jira" tag="span">Jira</router-link>
             </el-dropdown-item>
             <el-dropdown-item disabled>
               Zentao
@@ -16,16 +15,15 @@
             <el-dropdown-item disabled>
               Bugzilla
             </el-dropdown-item>
-            <el-dropdown-item disabled>
-              TestLink
-            </el-dropdown-item>
+              <el-dropdown-item @click.native="dialogTrackerVisible = true">
+                <router-link to="/settings?tracker=testlink" tag="span">TestLink</router-link>
+              </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <el-tooltip placement="bottom-start">
           <div slot="content" v-html="content"></div>
           <i class="el-icon-question el-icon--right"></i>
         </el-tooltip>
-      </el-col>
     </el-row>
     <el-row>
       <el-table
@@ -47,8 +45,8 @@
       width="30%">
       <InfoTracker/>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogTrackerVisible = false" size="small">Cancel</el-button>
         <el-button type="primary" @click="dialogTrackerVisible = false" size="small">Confirm</el-button>
+        <el-button @click="dialogTrackerVisible = false" size="small">Cancel</el-button>
       </span>
     </el-dialog>
   </div>

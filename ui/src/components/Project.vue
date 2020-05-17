@@ -27,8 +27,8 @@
       width="30%">
       <InfoProject/>
       <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogProjectVisible = false" size="small">Save</el-button>
         <el-button @click="dialogProjectVisible = false" size="small">Cancel</el-button>
-        <el-button type="primary" @click="dialogProjectVisible = false" size="small">Confirm</el-button>
       </span>
     </el-dialog>
   </div>

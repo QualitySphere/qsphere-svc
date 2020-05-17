@@ -28,8 +28,8 @@
       width="30%">
       <InfoSprint/>
       <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogSprintVisible = false" size="small">Save</el-button>
         <el-button @click="dialogSprintVisible = false" size="small">Cancel</el-button>
-        <el-button type="primary" @click="dialogSprintVisible = false" size="small">Confirm</el-button>
       </span>
     </el-dialog>
   </div>

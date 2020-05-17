@@ -12,11 +12,11 @@
         <i class="el-icon-pie-chart" style="display: inline-block; color: #fff; font-size: 1.25em;"></i>sphere
       </a>
     </el-menu-item>
-    <el-menu-item index="/">
+    <el-menu-item index="1" route="/">
       <i class="el-icon-odometer" style="font-size: 1.25em"></i>
       <span>Dashboard</span>
     </el-menu-item>
-    <el-menu-item index="/settings">
+    <el-menu-item index="2" route="/settings">
       <i class="el-icon-setting" style="font-size: 1.25em"></i>
       <span>Settings</span>
     </el-menu-item>

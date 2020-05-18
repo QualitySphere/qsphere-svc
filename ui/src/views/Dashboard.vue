@@ -65,7 +65,9 @@
 </template>
 
 <script>
-import axios from 'axios'
+import trackerSvc from '@/services/trackerSvc'
+import projectSvc from '@/services/projectSvc'
+import sprintSvc from '@/services/sprintSvc'
 export default {
   data () {
     return {
@@ -87,7 +89,7 @@ export default {
       this.url = this.baseUrl + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
     },
     listTracker () {
-      axios.get('/api/connection')
+      trackerSvc.listTracker()
         .then((response) => {
           console.log(response)
           this.trackers = response.data.detail.results
@@ -97,7 +99,7 @@ export default {
         })
     },
     listProject () {
-      axios.get('/api/project')
+      projectSvc.listProject()
         .then((response) => {
           console.log(response)
           this.projects = response.data.detail.results
@@ -107,7 +109,7 @@ export default {
         })
     },
     listSprint () {
-      axios.get('/api/sprint')
+      sprintSvc.listSprint()
         .then((response) => {
           console.log(response)
           this.sprints = response.data.detail.results

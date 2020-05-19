@@ -5,7 +5,7 @@
     :model="trackerData"
     label-width="120px"
     style="width: 100%;">
-    <el-form-item label="Project">
+    <el-form-item label="Project Name">
       <el-input v-model="projectData.name" placeholder="Provide Project Name"></el-input>
     </el-form-item>
     <el-form-item label="Issue Tracker">

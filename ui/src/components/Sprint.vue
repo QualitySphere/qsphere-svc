@@ -15,10 +15,10 @@
         :data="sprintTableData"
         :border="true"
         style="width: 100%;">
-        <el-table-column prop="sprint" label="Sprint" width="200"></el-table-column>
-        <el-table-column prop="project" label="Project" width="200"></el-table-column>
+        <el-table-column prop="sprint_name" label="Sprint" width="200"></el-table-column>
+        <el-table-column prop="project_name" label="Project" width="200"></el-table-column>
         <el-table-column prop="tracker" label="Tracker" width="200"></el-table-column>
-        <el-table-column prop="status" label="Status" width=""></el-table-column>
+        <el-table-column prop="active" label="Status" width=""></el-table-column>
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>

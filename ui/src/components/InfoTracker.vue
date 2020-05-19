@@ -5,10 +5,10 @@
     :model="trackerData"
     label-width="120px"
     style="width: 100%;">
-    <el-form-item label="Tracker">
+    <el-form-item label="Tracker Name">
       <el-input v-model="trackerData.name" placeholder="Provide Tracker Name"></el-input>
     </el-form-item>
-    <el-form-item label="Type">
+    <el-form-item label="Tracker Type">
       <el-select
         v-model="trackerData.type"
         placeholder="Select Tracker Type"
@@ -64,9 +64,6 @@ export default {
         types: [{
           type: 'jira',
           label: 'Jira'
-        }, {
-          type: 'testlink',
-          label: 'TestLink'
         }],
         jira: {
           server: '',

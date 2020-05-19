@@ -9,7 +9,6 @@
           <i class="el-icon-question el-icon--right"></i>
         </el-tooltip>
     </el-row>
-    <div>{{ projectTableLoading}} </div>
     <el-row>
       <el-table
         v-loading="projectTableLoading"

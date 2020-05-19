@@ -11,15 +11,21 @@
     </el-row>
     <el-row>
       <el-table
-        v-loading="loading"
-        :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+        v-loading="trackerTableLoading"
+        :data="trackerTableData"
         :border="true"
         style="width: 100%;">
-        <el-table-column prop="tracker" label="Tracker" width="200"></el-table-column>
-        <el-table-column prop="type" label="Type" width="100"></el-table-column>
-        <el-table-column prop="url" label="URL" width="300"></el-table-column>
-        <el-table-column prop="account" label="Account" width="200"></el-table-column>
-        <el-table-column prop="status" label="Status" width=""></el-table-column>
+        <!-- <el-table-column prop="tracker" label="Tracker" width="200"></el-table-column> -->
+        <!-- <el-table-column prop="type" label="Type" width="100"></el-table-column> -->
+        <!-- <el-table-column prop="url" label="URL" width="300"></el-table-column> -->
+        <!-- <el-table-column prop="account" label="Account" width="200"></el-table-column> -->
+        <!-- <el-table-column prop="status" label="Status" width=""></el-table-column> -->
+        <!-- <el-table-column prop="action" label="Action" width="150"></el-table-column> -->
+        <el-table-column prop="connection_name" label="Tracker" width="200"></el-table-column>
+        <el-table-column prop="issue_server.type" label="Type" width="100"></el-table-column>
+        <el-table-column prop="issue_server.host" label="URL" width="200"></el-table-column>
+        <el-table-column prop="issue_server.account" label="Account" width="200"></el-table-column>
+        <el-table-column prop="active" label="Status" width=""></el-table-column>
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>
@@ -38,17 +44,23 @@
 
 <script>
 import InfoTracker from '@/components/InfoTracker.vue'
+// import trackerSvc from '@/services/trackerSvc'
 export default {
+  props: {
+    trackerTableData: {
+      type: Array
+    },
+    trackerTableLoading: {
+      type: Boolean
+    }
+  },
   data () {
     return {
-      tableData: [
-      ],
-      loading: false,
       dialogTrackerVisible: false,
       content: `
-      <h3>Tracker<h3>
-      This is Qsphere tracker help document<br/>
-      Only for you<br/>
+        <h3>Tracker<h3>
+        This is Qsphere tracker help document<br/>
+        Only for you<br/>
       `
     }
   },

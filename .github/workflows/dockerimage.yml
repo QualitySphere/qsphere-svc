@@ -57,3 +57,4 @@ jobs:
                     docker push ${IMG}:${retag}
                 done
             done
+        fi

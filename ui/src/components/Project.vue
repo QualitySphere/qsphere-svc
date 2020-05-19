@@ -9,15 +9,16 @@
           <i class="el-icon-question el-icon--right"></i>
         </el-tooltip>
     </el-row>
+    <div>{{ projectTableLoading}} </div>
     <el-row>
       <el-table
-        v-loading="loading"
-        :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+        v-loading="projectTableLoading"
+        :data="projectTableData"
         :border="true"
         style="width: 100%;">
-        <el-table-column prop="project" label="Project" width="200"></el-table-column>
-        <el-table-column prop="tracker" label="Tracker" width="200"></el-table-column>
-        <el-table-column prop="status" label="Status" width=""></el-table-column>
+        <el-table-column prop="project_name" label="Project" width="200"></el-table-column>
+        <el-table-column prop="connection_id" label="Tracker" width="200"></el-table-column>
+        <el-table-column prop="active" label="Status" width=""></el-table-column>
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>
@@ -36,12 +37,18 @@
 
 <script>
 import InfoProject from '@/components/InfoProject.vue'
+// import projectSvc from '@/services/projectSvc'
 export default {
+  props: {
+    projectTableData: {
+      type: Array
+    },
+    projectTableLoading: {
+      type: Boolean
+    }
+  },
   data () {
     return {
-      tableData: [
-      ],
-      loading: false,
       dialogProjectVisible: false,
       content: `
       Hello, Project

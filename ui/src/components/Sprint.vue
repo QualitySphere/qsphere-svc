@@ -11,8 +11,8 @@
     </el-row>
     <el-row>
       <el-table
-        v-loading="loading"
-        :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+        v-loading="sprintTableLoading"
+        :data="sprintTableData"
         :border="true"
         style="width: 100%;">
         <el-table-column prop="sprint" label="Sprint" width="200"></el-table-column>
@@ -38,13 +38,18 @@
 <script>
 import InfoSprint from '@/components/InfoSprint.vue'
 export default {
+  props: {
+    sprintTableData: {
+      type: Array
+    },
+    sprintTableLoading: {
+      type: Boolean
+    }
+  },
   data () {
     return {
-      tableData: [
-      ],
-      loading: false,
       content: `
-      Hello, Sprint
+        Hello, Sprint
       `,
       dialogSprintVisible: false
     }

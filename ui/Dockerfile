@@ -1,6 +1,6 @@
 FROM node AS npm-build
 COPY . .
-RUN npm run install && \
+RUN npm install && \
     npm run build
 
 FROM nginx:1.17-alpine

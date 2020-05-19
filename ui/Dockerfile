@@ -1,6 +1,7 @@
 FROM node AS npm-build
 COPY . .
-RUN npm run build
+RUN npm run install && \
+    npm run build
 
 FROM nginx:1.17-alpine
 LABEL maintainer="shiwei@baoxian-sz.com" \

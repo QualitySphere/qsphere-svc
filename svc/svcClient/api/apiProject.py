@@ -39,14 +39,14 @@ def get_project(project_id):
         raise DefaultError(title='Get Project Failed', detail=str(e))
 
 
-def create_project(body):
+def add_project(body):
     """
     POST /api/project
     :param body:
     :return:
     """
     try:
-        project_id = svcProject.create_project(body)
+        project_id = svcProject.add_project(body)
         return {
             'title': 'Create Project Succeed',
             'detail': {
@@ -83,10 +83,39 @@ def delete_project(project_id):
     :return:
     """
     try:
-        svcProject.delete_project(project_id)
+        svcProject.set_project_status(project_id, 'delete')
         return {
-                   'title': 'Delete Project Succeed',
-               }, 204
+            'title': 'Delete Project Succeed',
+        }, 204
     except Exception as e:
         raise DefaultError(title='Delete Project Failed', detail=str(e))
 
+
+def disable_project(project_id):
+    """
+    PUT /api/project/{project_id}/disable
+    :param project_id:
+    :return:
+    """
+    try:
+        svcProject.set_project_status(project_id, 'disable')
+        return {
+                   'title': 'Disable Project Succeed',
+               }, 204
+    except Exception as e:
+        raise DefaultError(title='Disable Project Failed', detail=str(e))
+
+
+def active_project(project_id):
+    """
+    PUT /api/project/{project_id}/active
+    :param project_id:
+    :return:
+    """
+    try:
+        svcProject.set_project_status(project_id, 'active')
+        return {
+                   'title': 'Active Project Succeed',
+               }, 204
+    except Exception as e:
+        raise DefaultError(title='Active Project Failed', detail=str(e))

@@ -8,45 +8,45 @@ import uuid
 from datetime import datetime
 
 
-class Connection(db.Entity):
-    # 连接缺陷/用例管理工具的地址和帐密信息
-    _table_ = 'connection'
+class Tracker(db.Entity):
+    # Tracker Information
+    _table_ = 'tracker'
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    issue_server = Optional(Json)  # {type: jira/zentao/bugzilla, host: '', account: '', password: ''}
-    case_server = Optional(Json)  # {type: jira/zentao/testlink, host: '', account: '', password: ''}
-    active = Required(str, default='enable')
-    projects = Set('Project')
+    type = Required(str)
+    info = Optional(Json)  # JIRA: {host: '', account: '', password: ''}
+    status = Required(str, default='active')  # active, disable, delete
 
 
 class Project(db.Entity):
-    # 项目名称和激活状态
+    # Project Information
     _table_ = 'project'
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    connection = Required(Connection)
     name = Required(str)
-    active = Required(str, default='enable')  # enable, disable, delete
+    tracker = Optional(Json)    # {'issue': 'UUID', 'case': 'UUID'}
+    project = Optional(Json)    # {'issue': {'key': 'value'}, 'case': {'key': 'value'}}
+    status = Required(str, default='active')  # active, disable, delete
     sprints = Set('Sprint')
 
 
 class Sprint(db.Entity):
-    # 迭代循环的信息
+    # Sprint Information
     _table_ = 'sprint'
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    project = Required(Project)
     name = Required(str)  # 名称
+    project = Required(Project)
     version = Required(str)  # 迭代版本
     issue_types = Required(StrArray)  # 问题筛选类型: Improvement, 缺陷
-    features = Required(StrArray)  # 功能标签列表: 功能1, 功能2, ...
+    requirements = Required(StrArray)  # 需求标签列表: 功能1, 功能2, ...
     rcs = Required(StrArray)  # RC标签列表: rc1,rc2,rc3,rc4,rc5, ...
     issue_found_since = Required(StrArray, default=['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer'])  # 问题发现来源标签列表
     issue_status = Required(Json)  # 问题状态: fixing: '', fixed: '', verified: ''
     issue_categories = Required(StrArray, default=['Regression', 'Previous', 'NewFeature', 'Others'])  # 问题类别标签列表
     queries = Optional(Json)  # 查询语句集: jql/././.
-    active = Required(str, default='enable')  # 该迭代的激活状态: enable, disable, delete
+    status = Required(str, default='active')  # 该迭代的激活状态: enable, disable, delete
     issue_project_latest = Set('IssueProjectLatest')
     issue_customer_latest = Set('IssueCustomerLatest')
     issue_sprint_latest = Set('IssueSprintLatest')

@@ -74,7 +74,7 @@ class IssueSprint(db.Entity):
     # 迭代版本维度 缺陷数据
     _table_ = 'issue_sprint'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
     categories = Required(Json)  # 缺陷类别: regression: '', previous: '', new_feature: '', others: ''
@@ -86,28 +86,28 @@ class IssueSprintLatest(db.Entity):
     # 迭代版本维度 最新缺陷数据
     _table_ = 'issue_sprint_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     rc = Required(str)  # 迭代版本 RC
     count = Required(int)  # 缺陷数量
 
 
-class IssueFeature(db.Entity):
-    # 迭代版本功能维度 缺陷数据
+class IssueReq(db.Entity):
+    # 迭代版本需求维度 缺陷数据
     _table_ = 'issue_feature'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     name = Required(str)  # 功能名称
     status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
     # found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
 
 
-class IssueFeatureLatest(db.Entity):
+class IssueReqLatest(db.Entity):
     # 迭代版本功能维度 最新缺陷数据
     _table_ = 'issue_feature_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     name = Required(str)  # 功能名称
     status = Required(Json)  # 缺陷状态: total: '', fixing: '', fixed: '', verified: ''

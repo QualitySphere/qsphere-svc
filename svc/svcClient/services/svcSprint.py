@@ -8,7 +8,7 @@ import logging
 
 
 @db_session
-def list_sprint():
+def list_sprint(sprint_status=None):
     """
     List ALl Sprints
     :return:

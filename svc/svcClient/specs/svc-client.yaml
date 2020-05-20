@@ -52,8 +52,7 @@ paths:
               'type': 'String',
               'info': {
                 'host': 'String',
-                'account': 'String',
-                'password': 'String'
+                'account': 'String'
               },
               'status': 'String'
             }]
@@ -79,9 +78,11 @@ paths:
                   type: object
                   example: "{
                     host: 'http://bx.baoxian-sz.com',
-                    account: 'baoxian-sz',
-                    password: 'password'
+                    account: 'baoxian-sz'
                   }"
+                secret:
+                  type: string
+                  example: 'password'
       responses:
         200:
           description: succeed to add tracker and return tracker ID
@@ -130,9 +131,11 @@ paths:
                   type: object
                   example: "{
                       host: 'http://bx.baoxian-sz.com',
-                      account: 'baoxian-sz',
-                      password: 'password'
+                      account: 'baoxian-sz'
                   }"
+                secret:
+                  type: string
+                  example: 'password'
                 status:
                   type: string
                   example: 'disable'
@@ -250,7 +253,7 @@ paths:
       responses:
         200:
           description: succeed to list project and return project info object
-    post:
+    post:  # POST project
       tags:
         - "project"
       description: Add Project
@@ -292,10 +295,8 @@ paths:
         200:
           description: "succeed to add project and return project ID"
 
-  # PROJECT ID
   /project/{project_id}:
-
-    get:
+    get:  # GET project ID
       tags:
         - "project"
       description: Get Project
@@ -310,8 +311,7 @@ paths:
       responses:
         200:
           description: succeed to get project
-
-    put:
+    put:  # PUT project ID
       tags:
         - "project"
       description: Update Project
@@ -334,12 +334,11 @@ paths:
                   example: 'e095781f-b145-4df7-agfa-0412fci2ea88'
                 project_name:
                   type: string
-                  example: 'qap'
+                  example: 'qsphere'
       responses:
         200:
           description: succeed to get project
-
-    delete:
+    delete:  # DELETE project ID
       tags:
         - "project"
       description: Delete Project
@@ -354,6 +353,41 @@ paths:
       responses:
         204:
           description: succeed to delete project
+
+  /project/{project_id}/disable:
+    put:  # PUT project status as disable
+      tags:
+        - "project"
+      description: Disable Project
+      operationId: api.apiProject.disable_project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: succeed to disable project
+
+  /project/{project_id}/active:
+    put:  # PUT project status as active
+      tags:
+        - "project"
+      description: Active Project
+      operationId: api.apiProject.active_project
+      parameters:
+        - name: project_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: succeed to active project
+
 
   # SPRINT
   /sprint:

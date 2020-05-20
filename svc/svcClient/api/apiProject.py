@@ -11,7 +11,7 @@ def list_project():
     :return:
     """
     try:
-        projects = svcProject.list_project()
+        projects = svcProject.list_project(project_status=['active', 'disable'])
         return {
             'title': 'List Projects Succeed',
             'detail': {
@@ -50,7 +50,7 @@ def add_project(body):
         return {
             'title': 'Create Project Succeed',
             'detail': {
-                'project_id': project_id
+                'id': project_id
             }
         }, 200
     except Exception as e:
@@ -69,7 +69,7 @@ def update_project(project_id, body):
         return {
             'title': 'Update Project Succeed',
             'detail': {
-                'project_id': project_id
+                'id': project_id
             }
         }, 200
     except Exception as e:
@@ -101,7 +101,7 @@ def disable_project(project_id):
         svcProject.set_project_status(project_id, 'disable')
         return {
                    'title': 'Disable Project Succeed',
-               }, 204
+               }, 200
     except Exception as e:
         raise DefaultError(title='Disable Project Failed', detail=str(e))
 
@@ -116,6 +116,6 @@ def active_project(project_id):
         svcProject.set_project_status(project_id, 'active')
         return {
                    'title': 'Active Project Succeed',
-               }, 204
+               }, 200
     except Exception as e:
         raise DefaultError(title='Active Project Failed', detail=str(e))

@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 
 info:
-  title: "QAP Service"
+  title: "Quality Sphere"
   version: "1.0.0"
 
 servers:
@@ -9,21 +9,13 @@ servers:
 
 tags:
   - name: "status"
-    description: "/api/status"
-  - name: "connection"
-    description: "/api/connection"
+  - name: "tracker"
   - name: "project"
-    description: "/api/project"
   - name: "sprint"
-    description: "/api/sprint"
   - name: "issue"
-    description: "/api/issue"
-
 
 paths:
-  # STATUS
-  /status:
-
+  /status:  # GET status
     get:
       tags:
         - "status"
@@ -33,8 +25,8 @@ paths:
         200:
           description: Status is healthy
 
-  /machine:
 
+  /machine:
     get:
       tags:
         - "status"
@@ -44,71 +36,64 @@ paths:
         200:
           description: succeed to list all machines status
 
-  # CONNECTION
-  /connection:
 
-    get:
+  /tracker:
+    get:  # GET tracker
       tags:
-        - "connection"
-      description: List All Connection
-      operationId: api.apiConnection.list_connection
+        - "tracker"
+      description: List All Trackers
+      operationId: api.apiTracker.list_tracker
       responses:
         200:
-          description: succeed to list all connection
-
-    post:
+          description: "succeed to list all trackers and return tracker info object
+            [{
+              'id': 'UUID',
+              'name': 'String',
+              'type': 'String',
+              'info': {
+                'host': 'String',
+                'account': 'String',
+                'password': 'String'
+              },
+              'status': 'String'
+            }]
+          "
+    post: # POST tracker
       tags:
-        - "connection"
-      description: Create connection
-      summary: Create Connection
-      operationId: api.apiConnection.create_connection
+        - "tracker"
+      description: Add Tracker
+      operationId: api.apiTracker.add_tracker
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                connection_name:
+                name:
                   type: string
-                  example: 'MyConnection'
-                issue_server_type:
-                  type: string
-                  example: 'jira'
-                issue_server_host:
-                  type: string
-                  example: 'https://www.baoxian-sz.com'
-                issue_server_account:
-                  type: string
-                  example: 'will'
-                issue_server_password:
-                  type: string
-                  example: 'password'
-                case_server_type:
+                  example: 'MyTracker'
+                type:
                   type: string
                   example: 'jira'
-                case_server_host:
-                  type: string
-                  example: 'https://www.baoxian-sz.com'
-                case_server_account:
-                  type: string
-                  example: 'will'
-                case_server_password:
-                  type: string
-                  example: 'password'
+                info:
+                  type: object
+                  example: "{
+                    host: 'http://bx.baoxian-sz.com',
+                    account: 'baoxian-sz',
+                    password: 'password'
+                  }"
       responses:
         200:
-          description: succeed to create connection
+          description: succeed to add tracker and return tracker ID
 
-  # CONNECTION ID
-  /connection/{connection_id}:
-
-    get:
+  /tracker/{tracker_id}:
+    get:  # GET tracker ID
       tags:
-        - "connection"
-      description: Get connection information
-      operationId: api.apiConnection.get_connection
+        - "tracker"
+      description: Get tracker information
+      operationId: api.apiTracker.get_tracker
       parameters:
-        - name: connection_id
+        - name: tracker_id
           in: path
           required: true
           schema:
@@ -116,15 +101,14 @@ paths:
             example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
-          description: succeed to get connection
-
-    put:
+          description: succeed to get tracker and return tracker info object
+    put:  # PUT tracker ID
       tags:
-        - "connection"
-      description: Update connection information
-      operationId: api.apiConnection.update_connection
+        - "tracker"
+      description: Update tracker information
+      operationId: api.apiTracker.update_tracker
       parameters:
-        - name: connection_id
+        - name: tracker_id
           in: path
           required: true
           schema:
@@ -136,41 +120,32 @@ paths:
             schema:
               type: object
               properties:
-                issue_server_type:
+                name:
+                  type: string
+                  example: 'MyTracker'
+                type:
                   type: string
                   example: 'jira'
-                issue_server_host:
+                info:
+                  type: object
+                  example: "{
+                      host: 'http://bx.baoxian-sz.com',
+                      account: 'baoxian-sz',
+                      password: 'password'
+                  }"
+                status:
                   type: string
-                  example: 'https://www.baoxian-sz.com'
-                issue_server_account:
-                  type: string
-                  example: 'will'
-                issue_server_password:
-                  type: string
-                  example: 'password'
-                case_server_type:
-                  type: string
-                  example: 'jira'
-                case_server_host:
-                  type: string
-                  example: 'https://www.baoxian-sz.com'
-                case_server_account:
-                  type: string
-                  example: 'will'
-                case_server_password:
-                  type: string
-                  example: 'password'
+                  example: 'disable'
       responses:
         200:
-          description: succeed to update connection info
-
-    delete:
+          description: succeed to update tracker and return tracker ID
+    delete: # DELETE tracker ID
       tags:
-        - "connection"
+        - "tracker"
       description: Delete connection information
-      operationId: api.apiConnection.delete_connection
+      operationId: api.apiTracker.delete_tracker
       parameters:
-        - name: connection_id
+        - name: tracker_id
           in: path
           required: true
           schema:
@@ -178,40 +153,144 @@ paths:
             example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         204:
-          description: succeed to delete connection
+          description: succeed to delete tracker and return True
 
-  # PROJECT
+  /tracker/{tracker_id}/active:
+    put:  # PUT tracker active
+      tags:
+        - "tracker"
+      description: Active tracker
+      operationId: api.apiTracker.active_tracker
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: succeed to active tracker and return True
+
+  /tracker/{tracker_id}/disable:
+    put:  # PUT tracker disable
+      tags:
+        - "tracker"
+      description: Disable tracker status
+      operationId: api.apiTracker.disable_tracker
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: succeed to disable tracker and return True
+
+  /tracker/{tracker_id}/projects:
+    get:  # GET projects from tracker
+      tags:
+        - "tracker"
+      description: List project from tracker
+      operationId: api.apiTracker.list_tracker_project
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: 'succeed to list project from tracker and return projects {key: value}'
+
+  /tracker/{tracker_id}/issue_statuses:
+    get:  # GET issue statuses from tracker
+      tags:
+        - "tracker"
+      description: List issue statuses from tracker
+      operationId: api.apiTracker.list_tracker_issue_status
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: 'succeed to list issue status from tracker and return statuses {key: value}'
+
+  /tracker/{tracker_id}/issue_types:
+    get:  # GET issue types from tracker
+      tags:
+        - "tracker"
+      description: List issue type from tracker
+      operationId: api.apiTracker.list_tracker_issue_type
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: 'succeed to list issue type from tracker and return types {key: value}'
+
+
   /project:
-
-    get:
+    get:  # GET project
       tags:
         - "project"
       description: List All Projects
       operationId: api.apiProject.list_project
       responses:
         200:
-          description: succeed to list project
-
+          description: succeed to list project and return project info object
     post:
       tags:
         - "project"
-      description: Create Project
-      operationId: api.apiProject.create_project
+      description: Add Project
+      operationId: api.apiProject.add_project
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                connection_id:
+                name:
                   type: string
-                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-                project_name:
-                  type: string
-                  example: 'qap'
+                  example: "MyProject"
+                tracker:
+                  type: object
+                  example: "{
+                    issue: {
+                      id: 'e095081f-b145-4df7-affa-0412fce2ea88',
+                      name: 'IssueTracker'
+                    },
+                    case: {
+                      id: 'e095081f-b145-4df7-affa-0412fce2ea88',
+                      name: 'CaseTracker'
+                    }
+                  }"
+                project:
+                  type: object
+                  example: "{
+                    issue: {
+                      key: 'project1',
+                      value: 'qsphere'
+                    },
+                    case: {
+                      key: 'project',
+                      value: 'qsphere'
+                    },
+                  }"
       responses:
         200:
-          description: succeed to create project
+          description: "succeed to add project and return project ID"
 
   # PROJECT ID
   /project/{project_id}:

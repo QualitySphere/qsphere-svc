@@ -46,9 +46,9 @@ class Sprint(db.Entity):
     issue_project_latest = Set('IssueProjectLatest')
     issue_customer_latest = Set('IssueCustomerLatest')
     issue_sprint_latest = Set('IssueSprintLatest')
-    issue_feature_latest = Set('IssueFeatureLatest')
+    issue_feature_latest = Set('IssueReqLatest')
     issue_sprint = Set('IssueSprint')
-    issue_feature = Set('IssueFeature')
+    issue_feature = Set('IssueReq')
 
 
 class IssueProjectLatest(db.Entity):
@@ -94,21 +94,21 @@ class IssueSprintLatest(db.Entity):
 
 class IssueReq(db.Entity):
     # 迭代版本需求维度 缺陷数据
-    _table_ = 'issue_feature'
+    _table_ = 'issue_req'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
     sprint = Required(Sprint)
-    name = Required(str)  # 功能名称
+    name = Required(str)  # 需求名称
     status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
     # found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
 
 
 class IssueReqLatest(db.Entity):
-    # 迭代版本功能维度 最新缺陷数据
-    _table_ = 'issue_feature_latest'
+    # 迭代版本需求维度 最新缺陷数据
+    _table_ = 'issue_req_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
     sprint = Required(Sprint)
-    name = Required(str)  # 功能名称
+    name = Required(str)  # 需求名称
     status = Required(Json)  # 缺陷状态: total: '', fixing: '', fixed: '', verified: ''
 

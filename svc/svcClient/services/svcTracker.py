@@ -79,26 +79,17 @@ def list_tracker(tracker_status=None):
     """
     trackers = list()
     if tracker_status:
-        for status in tracker_status:
-            items = select(t for t in Tracker if t.status == status)
-            for item in items:
-                trackers.append({
-                    'id': item.uuid,
-                    'name': item.name,
-                    'type': item.type,
-                    'info': item.info,
-                    'status': item.status,
-                })
+        items = select(t for t in Tracker if t.status in tracker_status)
     else:
         items = select(t for t in Tracker)
-        for item in items:
-            trackers.append({
-                'id': item.uuid,
-                'name': item.name,
-                'type': item.type,
-                'info': item.info,
-                'status': item.status,
-            })
+    for item in items:
+        trackers.append({
+            'id': item.uuid,
+            'name': item.name,
+            'type': item.type,
+            'info': item.info,
+            'status': item.status,
+        })
     return trackers
 
 

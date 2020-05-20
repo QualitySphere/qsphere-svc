@@ -5,7 +5,7 @@
 # uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
 # name = Required(str)
 # tracker = Optional(Json)  # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
-# project = Optional(Json)  # {'issue': {'key': 'value'}, 'case': {'key': 'value'}}
+# project = Optional(Json)  # {'issue': {'key': '', 'value': ''}, 'case': {'key': '', 'value': ''}}
 # status = Required(str, default='active')  # active, disable, delete
 # sprints = Set('Sprint')
 
@@ -47,26 +47,17 @@ def list_project(project_status=None):
     """
     projects = list()
     if project_status:
-        for status in project_status:
-            items = select(p for p in Project if p.status == status).order_by(Project.name)
-            for item in items:
-                projects.append({
-                    'id': item.uuid,
-                    'name': item.name,
-                    'tracker': item.tracker,
-                    'project': item.project,
-                    'status': item.status
-                })
+        items = select(p for p in Project if p.status in project_status).order_by(Project.name)
     else:
         items = select(p for p in Project).order_by(Project.name)
-        for item in items:
-            projects.append({
-                'id': item.uuid,
-                'name': item.name,
-                'tracker': item.tracker,
-                'project': item.project,
-                'status': item.status
-            })
+    for item in items:
+        projects.append({
+            'id': item.uuid,
+            'name': item.name,
+            'tracker': item.tracker,
+            'project': item.project,
+            'status': item.status
+        })
     return projects
 
 

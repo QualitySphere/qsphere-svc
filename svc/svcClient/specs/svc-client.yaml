@@ -389,73 +389,64 @@ paths:
           description: succeed to active project
 
 
-  # SPRINT
   /sprint:
-
-    get:
+    get:  # GET sprint
       tags:
         - "sprint"
-      description: List All Sprints
+      description: List All Sprint
       operationId: api.apiSprint.list_sprint
       responses:
         200:
-          description: succeed to list sprint
-
-    post:
+          description: succeed to list sprint and return sprint objects
+    post:  # POST sprint
       tags:
         - "sprint"
       description: Create Sprint
-      operationId: api.apiSprint.create_sprint
+      operationId: api.apiSprint.add_sprint
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
+                name:
+                  type: string
+                  example: 'Qsphere 1.0'
                 project_id:
                   type: string
                   example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-                sprint_name:
+                version:
                   type: string
-                  example: 'qap 1.0'
-                product_version:
-                  type: string
-                  example: 'qap1.0'
-                issue_types:
+                  example: 'qsphere1.0'
+                requirements:
                   type: array
-                  example: 'Improvement,Defect'
-                features:
-                  type: array
-                  example: 'IssueManage,CaseManage'
+                  example: '[supportJIRA,caseProcess]'
                 rcs:
                   type: array
-                  example: 'RC1,RC2,RC3'
-                issue_found_since:
-                  type: array
-                  example: 'RegressionImprove,QAMissed,NewFeature,Customer'
-                issue_status:
+                  example: '[RC1,RC2,RC3]'
+                issue:
                   type: object
-                  properties:
-                    fixing:
-                      type: array
-                      example: 'new,fixing'
-                    fixed:
-                      type: array
-                      example: 'fixed'
-                    verified:
-                      type: array
-                      example: 'verified'
-                issue_categories:
-                  type: array
-                  example: 'Regression,Previous,NewFeature,Others'
+                  example: "{
+                    types: [Improvement,Defect],
+                    found_since: [RegressionImprove,QAMissed,NewFeature,Customer],
+                    statuses: {
+                      fixing: [new,fixing],
+                      fixed: [fixed],
+                      verified: [verified]
+                    },
+                    categories: [NewFeature,Previous,Regression,Others]
+                  }"
+                case:
+                  type: object
+                  example: "{
+                    statuses: [],
+                  }"
       responses:
         200:
-          description: succeed to create sprint
+          description: succeed to add sprint and return sprint ID
 
-  # SPRINT ID
   /sprint/{sprint_id}:
-
-    get:
+    get:  # GET sprint ID
       tags:
         - "sprint"
       description: Get Sprint
@@ -469,9 +460,8 @@ paths:
             example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
-          description: succeed to get sprint
-
-    delete:
+          description: succeed to get sprint and return sprint info object
+    delete:  # DELETE sprint ID
       tags:
         - "sprint"
       description: Delete Sprint
@@ -486,8 +476,7 @@ paths:
       responses:
         204:
           description: succeed to delete sprint
-
-    put:
+    put:  # PUT sprint ID
       tags:
         - "sprint"
       description: Update Sprint
@@ -505,53 +494,47 @@ paths:
             schema:
               type: object
               properties:
+                name:
+                  type: string
+                  example: 'Qsphere 1.0'
                 project_id:
                   type: string
                   example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-                sprint_name:
+                version:
                   type: string
-                  example: 'qap 1.0'
-                product_version:
-                  type: string
-                  example: 'qap1.0'
-                issue_types:
+                  example: 'qsphere1.0'
+                requirements:
                   type: array
-                  example: 'Improvement,Defect'
-                features:
-                  type: array
-                  example: 'IssueManage,CaseManage'
+                  example: '[supportJIRA,caseProcess]'
                 rcs:
                   type: array
-                  example: 'RC1,RC2,RC3'
-                issue_found_since:
-                  type: array
-                  example: 'RegressionImprove,QAMissed,NewFeature,Customer'
-                issue_status:
+                  example: '[RC1,RC2,RC3]'
+                issue:
                   type: object
-                  properties:
-                    fixing:
-                      type: array
-                      example: 'new,fixing'
-                    fixed:
-                      type: array
-                      example: 'fixed'
-                    verified:
-                      type: array
-                      example: 'verified'
-                issue_categories:
-                  type: array
-                  example: 'Regression,Previous,NewFeature,Others'
+                  example: "{
+                    types: [Improvement,Defect],
+                    found_since: [RegressionImprove,QAMissed,NewFeature,Customer],
+                    statuses: {
+                      fixing: [new,fixing],
+                      fixed: [fixed],
+                      verified: [verified]
+                    },
+                    categories: [NewFeature,Previous,Regression,Others]
+                  }"
+                case:
+                  type: object
+                  example: "{
+                    statuses: [],
+                  }"
       responses:
         200:
-          description: succeed to update sprint
+          description: succeed to update sprint and return sprint ID
 
-  # SPRINT ID ACTIVE
   /sprint/{sprint_id}/active:
-
-    put:
+    put:  # PUT sprint as active
       tags:
         - "sprint"
-      description: Active / Disable Sprint
+      description: Active Sprint
       operationId: api.apiSprint.active_sprint
       parameters:
         - name: sprint_id
@@ -560,18 +543,27 @@ paths:
           schema:
             type: string
             example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                active:
-                  type: string
-                  example: 'enable/disable'
+      responses:
+        200:
+          description: succeed to active sprint
+
+  /sprint/{sprint_id}/disable:
+    put:  # PUT sprint as disable
+      tags:
+        - "sprint"
+      description: Active Sprint
+      operationId: api.apiSprint.disable_sprint
+      parameters:
+        - name: sprint_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
           description: succeed to disable sprint
+
 
   # ISSUE SPRINT SYNC
   /issue/{sprint_id}/sync:

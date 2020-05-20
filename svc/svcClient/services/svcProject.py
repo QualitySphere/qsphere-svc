@@ -4,7 +4,7 @@
 # Project Model
 # uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
 # name = Required(str)
-# tracker = Optional(Json)  # {'issue': 'UUID', 'case': 'UUID'}
+# tracker = Optional(Json)  # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
 # project = Optional(Json)  # {'issue': {'key': 'value'}, 'case': {'key': 'value'}}
 # status = Required(str, default='active')  # active, disable, delete
 # sprints = Set('Sprint')
@@ -15,39 +15,58 @@ from models.models import Tracker, Project
 
 
 @db_session
-def list_project():
+def list_project(project_status=None):
     """
     List All Projects
-    :return:
+    :param project_status:
+    :return: {[
+      'id': '',
+      'name': '',
+      'tracker': {
+        'issue': {
+          'id': '',
+          'name': ''
+        },
+        'case': {
+          'id': '',
+          'name': ''
+        }
+      },
+      'project': {
+        'issue': {
+          'key': '',
+          'value': ''
+        },
+        'case': {
+          'key': '',
+          'value': ''
+        }
+      },
+      'status': ''
+    ]}
     """
-    items = select(p for p in Project if p.status != 'delete').order_by(Project.name)
     projects = list()
-    for item in items:
-        projects.append({
-            'id': item.uuid,
-            'name': item.name,
-            'tracker': {
-                'issue': {
-                    'id': item.tracker.get('issue'),
-                    'name': get(t for t in Tracker if str(t.uuid) == item.tracker.get('issue')).name,
-                },
-                'case': {
-                    'id': item.tracker.get('case'),
-                    'name': get(t for t in Tracker if str(t.uuid) == item.tracker.get('case')).name,
-                }
-            },
-            'project': {
-                'issue': {
-                    'key': item.project.get('issue').get('key'),
-                    'value': item.project.get('issue').get('value'),
-                },
-                'case': {
-                    'key': item.project.get('case').get('key'),
-                    'value': item.project.get('case').get('value'),
-                }
-            },
-            'status': item.status
-        })
+    if project_status:
+        for status in project_status:
+            items = select(p for p in Project if p.status == status).order_by(Project.name)
+            for item in items:
+                projects.append({
+                    'id': item.uuid,
+                    'name': item.name,
+                    'tracker': item.tracker,
+                    'project': item.project,
+                    'status': item.status
+                })
+    else:
+        items = select(p for p in Project).order_by(Project.name)
+        for item in items:
+            projects.append({
+                'id': item.uuid,
+                'name': item.name,
+                'tracker': item.tracker,
+                'project': item.project,
+                'status': item.status
+            })
     return projects
 
 
@@ -56,7 +75,31 @@ def get_project(project_id: str):
     """
     Get Project
     :param project_id:
-    :return:
+    :return: {
+      'id': '',
+      'name': '',
+      'tracker': {
+        'issue': {
+          'id': '',
+          'name': ''
+        },
+        'case': {
+          'id': '',
+          'name': ''
+        }
+      },
+      'project': {
+        'issue': {
+          'key': '',
+          'value': ''
+        },
+        'case': {
+          'key': '',
+          'value': ''
+        }
+      },
+      'status': ''
+    }
     """
     item = get(p for p in Project if str(p.uuid) == project_id)
     project = dict()
@@ -64,20 +107,8 @@ def get_project(project_id: str):
         project = {
             'id': item.uuid,
             'name': item.name,
-            'tracker': {
-                'issue': {
-                    'id': item.issue_tracker.uuid,
-                    'name': item.issue_tracker.name,
-                },
-                'case': {
-                    'id': item.case_trakcer.uuid,
-                    'name': item.case_trakcer.name,
-                }
-            },
-            'project': {
-                'issue': item.issue_tracker_project,
-                'case': item.case_tracker_project,
-            },
+            'tracker': item.tracker,
+            'project': item.project,
             'status': item.status
         }
     return project
@@ -90,31 +121,30 @@ def add_project(item: dict):
     :param item: {
         name: String,
         tracker: {
-            issue: UUID,
-            case: UUID
+            issue: {
+                id: uuid
+            },
+            case: {
+                id: uuid
+            }
         },
         project: {
             issue: {
-                key: String
-                value: String
+                key: string
+                value: sting
             },
             case: {
-                key: String,
-                value: String
+                key: string,
+                value: string
             },
         }
     }
     :return:
     """
-    _issue_tracker = get(p for p in Project if str(p.issue_tracker_id) == item.get('tracker').get('issue').get('id'))
-    _issue_tracker = get(p for p in Project if str(p.issue_tracker_id) == item.get('tracker').get('issue').get('id'))
-    _case_tracker = get(c for c in Tracker if str(c.uuid) == item.get('tracker').get('case').get('id'))
     _project = Project(
         name=item.get('name'),
-        tracker=item.get('tracker').get('issue'),
-        issue_tracker_project=item.get('project').get('issue'),
-        case_tracker_id=item.get('tracker').get('case'),
-        case_tracker_project=item.get('project').get('case')
+        tracker=item.get('tracker'),
+        project=item.get('project')
     )
     return _project.uuid
 

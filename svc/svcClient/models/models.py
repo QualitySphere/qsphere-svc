@@ -15,7 +15,8 @@ class Tracker(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
     type = Required(str)
-    info = Optional(Json)  # JIRA: {host: '', account: '', password: ''}
+    info = Optional(Json)  # JIRA: {host: '', account: ''}
+    secret = Optional(str)  # JIRA: 'password'
     status = Required(str, default='active')  # active, disable, delete
 
 
@@ -25,7 +26,7 @@ class Project(db.Entity):
 
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    tracker = Optional(Json)    # {'issue': 'UUID', 'case': 'UUID'}
+    tracker = Optional(Json)    # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
     project = Optional(Json)    # {'issue': {'key': 'value'}, 'case': {'key': 'value'}}
     status = Required(str, default='active')  # active, disable, delete
     sprints = Set('Sprint')

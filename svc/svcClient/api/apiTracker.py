@@ -30,8 +30,12 @@ def add_tracker(body):
     _name = body.get('name')
     _type = body.get('type')
     _info = body.get('info')
+    _secret = body.get('secret')
     try:
-        tracker_id = svcTracker.add_tracker(tracker_name=_name, tracker_type=_type, tracker_info=_info)
+        tracker_id = svcTracker.add_tracker(tracker_name=_name,
+                                            tracker_type=_type,
+                                            tracker_info=_info,
+                                            tracker_secret=_secret)
         return {
             'title': 'Add Tracker Succeed',
             'detail': {
@@ -52,11 +56,13 @@ def update_tracker(tracker_id, body):
     _name = body.get('name')
     _type = body.get('type')
     _info = body.get('info')
+    _secret = body.get('secret')
     try:
         tracker_id = svcTracker.update_tracker(tracker_id=tracker_id,
                                                tracker_name=_name,
                                                tracker_type=_type,
-                                               tracker_info=_info)
+                                               tracker_info=_info,
+                                               tracker_secret=_secret)
         return {
             'title': 'Update Tracker Succeed',
             'detail': {
@@ -73,7 +79,7 @@ def list_tracker():
     :return:
     """
     try:
-        trackers = svcTracker.list_tracker()
+        trackers = svcTracker.list_tracker(tracker_status=['active', 'disable'])
         return {
             'title': 'List Tracker Succeed',
             'detail': {
@@ -132,14 +138,18 @@ def disable_tracker(tracker_id):
 
 def list_tracker_project(tracker_id):
     """
-    GET /api/tracker/{tracker_id}/projects
+    GET /api/tracker/{tracker_id}/project
     :param tracker_id:
     :return: {key: value}
     """
     try:
-        svcTracker.list_tracker_project(tracker_id)
+        projects = svcTracker.list_tracker_project(tracker_id)
         return {
-                   'title': 'List Project From Tracker Succeed'
+                   'title': 'List Project From Tracker Succeed',
+                   'detail': {
+                       'count': len(projects),
+                       'results': projects
+                   }
                }, 200
     except Exception as e:
         raise DefaultError(title='List Project From Tracker Failed', detail=str(e))
@@ -152,9 +162,13 @@ def list_tracker_issue_type(tracker_id):
     :return: {key: value}
     """
     try:
-        svcTracker.list_tracker_issue_type(tracker_id)
+        types = svcTracker.list_tracker_issue_type(tracker_id)
         return {
-                   'title': 'List Issue Types From Tracker Succeed'
+                   'title': 'List Issue Types From Tracker Succeed',
+                   'detail': {
+                       'count': len(types),
+                       'results': types
+                   }
                }, 200
     except Exception as e:
         raise DefaultError(title='List Issue Types From Tracker Failed', detail=str(e))
@@ -167,9 +181,13 @@ def list_tracker_issue_status(tracker_id):
     :return: {key: value}
     """
     try:
-        svcTracker.list_tracker_issue_status(tracker_id)
+        statuses = svcTracker.list_tracker_issue_status(tracker_id)
         return {
-                   'title': 'List Issue Statuses From Tracker Succeed'
-               }, 200
+                   'title': 'List Issue Statuses From Tracker Succeed',
+                   'detail': {
+                       'count': len(statuses),
+                       'results': statuses
+                   }
+            }, 200
     except Exception as e:
         raise DefaultError(title='List Issue Statuses From Tracker Failed', detail=str(e))

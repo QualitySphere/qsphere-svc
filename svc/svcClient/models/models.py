@@ -25,7 +25,7 @@ class Project(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
     tracker = Optional(Json)    # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
-    project = Optional(Json)    # {'issue': {'key': 'value'}, 'case': {'key': 'value'}}
+    project = Optional(Json)    # {'issue': {'key': ''}, 'case': {'key': ''}}
     status = Required(str, default='active')  # active, disable, delete
     sprints = Set('Sprint')
 

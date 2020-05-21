@@ -4,10 +4,10 @@
 import logging
 
 
-def generate_jqls(project_name: str, sprint_info: dict):
+def generate_jqls(project_key: str, sprint_info: dict):
     """
     Generate JQL for Sprint
-    :param project_name:
+    :param project_key:
     :param sprint_info:
     :return:
     """
@@ -20,7 +20,7 @@ def generate_jqls(project_name: str, sprint_info: dict):
 
     # 定义customer bug jql, 它不应该局限在 sprint 过程
     jqls['issue_found_since']['customer'] = ' AND '.join([
-        'project = "%s"' % project_name,
+        'project = "%s"' % project_key,
         'issuetype in (%s)' % ', '.join(sprint_info.get('issue')),
         'labels = "%s"' % sprint_info.get('version'),
         'labels = "Customer"',
@@ -28,7 +28,7 @@ def generate_jqls(project_name: str, sprint_info: dict):
 
     # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
-        'project = "%s"' % project_name,
+        'project = "%s"' % project_key,
         'issuetype in (%s)' % ', '.join(sprint_info.get('issue').get('types')),
         'Sprint = "%s"' % sprint_info.get('name'),
         'labels = "%s"' % sprint_info.get('version'),

@@ -49,10 +49,21 @@ def list_project(project_status=None):
     else:
         items = select(p for p in Project).order_by(Project.name)
     for item in items:
+        _issue_tracker = get(t for t in Tracker if item.tracker['issue']['id'] == str(t.uuid))
+        _case_tracker = get(t for t in Tracker if item.tracker['case']['id'] == str(t.uuid))
         projects.append({
             'id': item.uuid,
             'name': item.name,
-            'tracker': item.tracker,
+            'tracker': {
+                'issue': {
+                    'id': _issue_tracker.uuid if _issue_tracker else '',
+                    'name': _issue_tracker.name if _issue_tracker else ''
+                },
+                'case': {
+                    'id': _case_tracker.uuid if _case_tracker else '',
+                    'name': _case_tracker.name if _case_tracker else ''
+                }
+            },
             'project': item.project,
             'status': item.status
         })

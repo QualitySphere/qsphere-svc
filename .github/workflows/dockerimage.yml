@@ -35,6 +35,7 @@ jobs:
             echo -e "\nBuild and push ${img_tag} image\n"
             cd ${git_ref_name}
             docker build . --file Dockerfile --tag ${IMG}:${img_tag}
+	    echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
             docker push ${IMG}:${img_tag}
 
         elif [[ "${git_ref_type}" == "tags" ]]; then

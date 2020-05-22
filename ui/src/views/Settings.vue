@@ -1,10 +1,13 @@
 <template>
-  <el-tabs type="border-card" style="height: 100%">
+  <el-tabs
+    type="border-card"
+    style="height: 100%">
     <el-tab-pane>
       <span slot="label" @click="listTracker"><i class="el-icon-connection"></i> Tracker</span>
       <Tracker
         :trackerTableData="trackerTableData"
-        :trackerTableLoading="trackerTableLoading"/>
+        :trackerTableLoading="trackerTableLoading"
+        :listTracker="listTracker"/>
     </el-tab-pane>
     <el-tab-pane>
       <span slot="label" @click="listProject"><i class="el-icon-menu"></i> Project</span>

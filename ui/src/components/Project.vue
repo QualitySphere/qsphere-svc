@@ -15,9 +15,12 @@
         :data="projectTableData"
         :border="true"
         style="width: 100%;">
-        <el-table-column prop="project_name" label="Project" width="200"></el-table-column>
-        <el-table-column prop="connection_id" label="Tracker" width="200"></el-table-column>
-        <el-table-column prop="active" label="Status" width=""></el-table-column>
+        <el-table-column prop="name" label="Project" width="150"></el-table-column>
+        <el-table-column prop="tracker.issue.name" label="Issue Tracker" width="200"></el-table-column>
+        <el-table-column prop="project.issue.key" label="Issue Project" width="200"></el-table-column>
+        <el-table-column prop="tracker.case.name" label="Case Tracker" width="200"></el-table-column>
+        <el-table-column prop="project.case.key" label="Case Project" width="200"></el-table-column>
+        <el-table-column prop="status" label="Status" width=""></el-table-column>
         <el-table-column prop="action" label="Action" width="150"></el-table-column>
       </el-table>
     </el-row>
@@ -25,9 +28,82 @@
       title="Project"
       :visible.sync="dialogProjectVisible"
       width="30%">
-      <InfoProject/>
+      <el-form
+        :label-position="labelPosition"
+        :border="true"
+        :model="projectData"
+        label-width="120px"
+        style="width: 100%;">
+        <el-form-item label="Project Name">
+          <el-input v-model="projectData.name" placeholder="Provide Project Name"></el-input>
+        </el-form-item>
+        <el-form-item label="Issue Tracker">
+          <el-select
+            v-model="projectData.tracker.issue.id"
+            @focus="listIssueTracker()"
+            filterable
+            clearable
+            placeholder="Select Tracker"
+            style="width: 100%;">
+            <el-option
+              v-for="item in issueTrackers"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Issue Project">
+          <el-select
+            v-model="projectData.project.issue.key"
+            @focus="listIssueTrackerProject()"
+            filterable
+            clearable
+            placeholder="Select Project From Tracker"
+            style="width: 100%;">
+            <el-option
+              v-for="item in issueTrackerProjects"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Case Tracker">
+          <el-select
+            v-model="projectData.tracker.case.id"
+            @focus="listCaseTracker()"
+            filterable
+            clearable
+            placeholder="Select Tracker"
+            style="width: 100%;">
+            <el-option
+              v-for="item in caseTrackers"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Case Project">
+          <el-select
+            v-model="projectData.project.case.key"
+            @focus="listCaseTrackerProject()"
+            filterable
+            clearable
+            placeholder="Select Project From Tracker"
+            style="width: 100%;">
+            <el-option
+              v-for="item in caseTrackerProjects"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogProjectVisible = false" size="small">Save</el-button>
+        <el-button type="primary" @click="submit" size="small">Save</el-button>
         <el-button @click="dialogProjectVisible = false" size="small">Cancel</el-button>
       </span>
     </el-dialog>
@@ -35,8 +111,8 @@
 </template>
 
 <script>
-import InfoProject from '@/components/InfoProject.vue'
-// import projectSvc from '@/services/projectSvc'
+import trackerSvc from '@/services/trackerSvc'
+import projectSvc from '@/services/projectSvc'
 export default {
   props: {
     projectTableData: {
@@ -51,11 +127,93 @@ export default {
       dialogProjectVisible: false,
       content: `
       Hello, Project
-      `
+      `,
+      labelPosition: 'left',
+      issueTrackers: {},
+      issueTrackerProjects: {},
+      caseTrackers: {},
+      caseTrackerProjects: {},
+      projectData: {
+        id: '',
+        name: '',
+        tracker: {
+          issue: {
+            id: ''
+          },
+          case: {
+            id: ''
+          }
+        },
+        project: {
+          issue: {
+            key: ''
+          },
+          case: {
+            key: ''
+          }
+        }
+      }
     }
   },
-  components: {
-    InfoProject
+  methods: {
+    listIssueTracker () {
+      trackerSvc.listTracker()
+        .then((response) => {
+          this.issueTrackers = response.data.detail.results
+          console.log(this.issueTrackers)
+        })
+    },
+    listCaseTracker () {
+      trackerSvc.listTracker()
+        .then((response) => {
+          this.caseTrackers = response.data.detail.results
+          console.log(this.caseTrackers)
+        })
+    },
+    listIssueTrackerProject () {
+      trackerSvc.listTrackerProject(this.projectData.tracker.issue.id)
+        .then((response) => {
+          this.issueTrackerProjects = response.data.detail.results
+          console.log(this.issueTrackerProjects)
+        })
+    },
+    listCaseTrackerProject () {
+      trackerSvc.listTrackerProject(this.projectData.tracker.case.id)
+        .then((response) => {
+          this.caseTrackerProjects = response.data.detail.results
+          console.log(this.caseTrackerProjects)
+        })
+    },
+    submit () {
+      var _data = {
+        name: this.projectData.name,
+        tracker: {
+          issue: {
+            id: this.projectData.tracker.issue.id
+          },
+          case: {
+            id: this.projectData.tracker.case.id
+          }
+        },
+        project: {
+          issue: {
+            key: this.projectData.project.issue.key
+          },
+          case: {
+            key: this.projectData.project.case.key
+          }
+        }
+      }
+      projectSvc.addProject(_data)
+        .then((reponse) => {
+          this.projectData.id = reponse.data.detail.id
+          this.$message.success('Success')
+          this.dialogProjectVisible = false
+        })
+        .catch((error) => {
+          this.$message.error(String(error))
+        })
+    }
   }
 }
 </script>

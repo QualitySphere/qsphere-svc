@@ -9,13 +9,13 @@
         label="Tracker">
         <el-select
           @focus="listTracker"
-          v-model="trackers.connection_name"
+          v-model="tracker.id"
           placeholder="Select Tracker">
           <el-option
             v-for="item in trackers"
-            :key="item.connection_id"
-            :label="item.connection_name"
-            :value="item.connection_name">
+            :key="item.id"
+            :label="item.name"
+            :value="item.name">
           </el-option>
         </el-select>
       </el-form-item>
@@ -25,14 +25,14 @@
         style="margin-left: 20px;">
         <el-select
           @focus="listProject"
-          v-model="projects.project_name"
+          v-model="project.name"
           @change="updateUrlForProject"
           placeholder="Select Project">
           <el-option
             v-for="item in projects"
-            :key="item.project_id"
-            :label="item.project_name"
-            :value="item.project_name">
+            :key="item.id"
+            :label="item.name"
+            :value="item.name">
           </el-option>
         </el-select>
       </el-form-item>
@@ -42,16 +42,20 @@
         style="margin-left: 20px;">
         <el-select
           @focus="listSprint"
-          v-model="sprints.sprint_name"
+          v-model="sprint.name"
           @change="updateUrlForSprint"
           placeholder="Select Sprint">
           <el-option
             v-for="item in sprints"
-            :key="item.sprint_id"
-            :label="item.sprint_name"
-            :value="item.sprint_name">
+            :key="item.id"
+            :label="item.name"
+            :value="item.name">
           </el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item
+        style="align: right;">
+        <el-link :href="url" icon="el-icon-full-screen" :underline="false" style="font-size: 1.25em;"></el-link>
       </el-form-item>
     </el-form>
     </el-row>
@@ -71,11 +75,24 @@ import sprintSvc from '@/services/sprintSvc'
 export default {
   data () {
     return {
-      baseUrl: '/dashboard/d/qap/quality-assurance-platform?orgId=1&theme=light&kiosk&refresh=1m',
+      baseUrl: '/dashboard/d/qap/quality-assurance-platform?orgId=1&kiosk&refresh=1m',
       url: '/dashboard/d/qap/quality-assurance-platform?orgId=1&theme=light&kiosk&refresh=1m',
+      theme: 'light',
       trackers: [],
+      tracker: {
+        id: '',
+        name: ''
+      },
       projects: [],
+      project: {
+        id: '',
+        name: ''
+      },
       sprints: [],
+      sprint: {
+        id: '',
+        name: ''
+      },
       startDate: '2020-04-30',
       endDate: '2020-05-13'
     }
@@ -83,10 +100,10 @@ export default {
   methods: {
     updateUrlForProject () {
       this.sprints.sprint_name = ''
-      this.url = this.baseUrl + '&var-PROJECT=' + this.projects.project_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
     },
     updateUrlForSprint () {
-      this.url = this.baseUrl + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
     },
     listTracker () {
       trackerSvc.listTracker()
@@ -95,7 +112,7 @@ export default {
           this.trackers = response.data.detail.results
         })
         .catch((error) => {
-          console.log(error)
+          this.$message.error(String(error))
         })
     },
     listProject () {
@@ -105,7 +122,7 @@ export default {
           this.projects = response.data.detail.results
         })
         .catch((error) => {
-          console.log(error)
+          this.$message.error(String(error))
         })
     },
     listSprint () {
@@ -115,7 +132,7 @@ export default {
           this.sprints = response.data.detail.results
         })
         .catch((error) => {
-          console.log(error)
+          this.$message.error(String(error))
         })
     }
   }

@@ -55,7 +55,12 @@
       </el-form-item>
       <el-form-item
         style="align: right;">
-        <el-link :href="url" icon="el-icon-full-screen" :underline="false" style="font-size: 1.25em;"></el-link>
+        <el-link
+          icon="el-icon-full-screen"
+          :underline="false"
+          style="font-size: 1.25em;"
+          @click="fullScreen">
+        </el-link>
       </el-form-item>
     </el-form>
     </el-row>
@@ -134,6 +139,10 @@ export default {
         .catch((error) => {
           this.$message.error(String(error))
         })
+    },
+    fullScreen () {
+      var fullScreenUrl = this.url
+      window.open(fullScreenUrl.replace(/theme=light/, 'theme=dark'))
     }
   }
 }

@@ -31,7 +31,7 @@ def list_sprint(sprint_status=None):
     else:
         items = select(s for s in Sprint).order_by(Sprint.name)
     for item in items:
-        logging.info('Get sprint %s[%s] info' % (item.uuid, item.name))
+        logging.debug('Get sprint %s[%s] info' % (item.uuid, item.name))
         sprints.append({
             'id': item.uuid,
             'name': item.name,
@@ -88,7 +88,13 @@ def add_sprint(sprint_info: dict):
     :param sprint_info:
     :return:
     """
+    logging.debug('Get Project %s' % sprint_info.get('project_id'))
     _project = get(p for p in Project if str(p.uuid) == sprint_info.get('project_id'))
+    if _project:
+        logging.debug('Got it')
+    else:
+        logging.debug('No this project')
+    logging.debug('Add New Sprint %s' % sprint_info.get('name'))
     _sprint = Sprint(
         name=sprint_info.get('name'),
         project=_project,
@@ -98,16 +104,17 @@ def add_sprint(sprint_info: dict):
         issue=sprint_info.get('issue'),
         case=sprint_info.get('case')
     )
+    logging.debug('Complete to add sprint %s' % _sprint.uuid)
+    logging.debug('Get issue tracker %s' % _project.tracker.get('issue').get('id'))
     _issue_tracker = get(t for t in Tracker if str(t.uuid) == _project.tracker.get('issue').get('id'))
-    logging.warning(_project.project)
-    logging.warning(_project.project['issue'])
-    logging.warning(_project.project['issue']['key'])
     if _issue_tracker.type == 'jira':
+        logging.debug('Issue tracker is JIRA')
         _sprint.queries = {
             'issue': {
                 'jira': generateQueries.generate_jqls(_project.project['issue']['key'], sprint_info)
             }
         }
+        logging.debug('Complete to generate issue queries')
     return _sprint.uuid
 
 

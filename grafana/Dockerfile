@@ -1,5 +1,5 @@
 FROM grafana/grafana:6.3.6
-MAINTAINER shiwei@baoxian-sz.com
+LABEL maintainer=v.stone@163.com
 
 WORKDIR /etc/grafana/provisioning
 

@@ -252,7 +252,7 @@ export default {
         issue_types: [],
         issue_found_since: [],
         issue_categories: [],
-        issue_statuses: [],
+        issue_statuses: []
       },
       sprintData: {
         project_id: '',

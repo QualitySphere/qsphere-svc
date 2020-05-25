@@ -36,7 +36,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
 
     # 获取 sprint 信息
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if t.uuid == sprint.project.tracker['issue']['id'])
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
     server = _issue_tracker.info.get('host')
     account = _issue_tracker.info.get('account')
     password = _issue_tracker.secret
@@ -147,8 +147,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
 
         # 更新 issue_req_latest 表中的迭代维度的最新功能数据
         logging.info('Start to update DB for latest requirement issues status')
-        issue_req = get(f for f in IssueReqLatest
-                            if str(f.sprint.uuid) == sprint_id and f.name == key)
+        issue_req = get(f for f in IssueReqLatest if str(f.sprint.uuid) == sprint_id and f.name == key)
         if issue_req:
             issue_req.capture_time = capture_time
             issue_req.status = issues.get(key)
@@ -175,7 +174,7 @@ def _sync_jira_data_for_sprint_customer_issue(sprint_id: str):
 
     # 获取 sprint, connection 以及 bug from customer 的 JQL
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if t.uuid == sprint.project.tracker['issue']['id'])
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
     server = _issue_tracker.info.get('host')
     account = _issue_tracker.info.get('account')
     password = _issue_tracker.secret
@@ -210,7 +209,7 @@ def sync_sprint_issue_data(sprint_id: str):
     :return:
     """
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if t.uuid == sprint.project.tracker['issue']['id'])
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
     if sprint.status == 'active':
         if _issue_tracker.type == 'jira':
             _sync_jira_data_for_sprint_all_issue(sprint_id)

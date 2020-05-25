@@ -1,0 +1,61 @@
+name: Docker Image CI
+
+on:
+  - push
+
+env:
+  IMG: bxwill/qsphere
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: |
+        echo -e "\nCheck branchs/tags\n"
+        git_ref_type=$(echo "${{ github.ref }}" | awk -F '/' '{print $2}')
+        git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
+
+        if [[ "${git_ref_type}" == "heads" ]]; then
+            echo -e "\nTriggered by branch ${git_ref_name}\n"
+            if [[ "${git_ref_name}" == "master" ]]; then
+                echo -e "Skip build since master branch"
+                exit 0
+            elif [[ "${git_ref_name}" == "ui" ]]; then
+                img_tag="ui-develop"
+            elif [[ "${git_ref_name}" == "svc" ]]; then
+                img_tag="svc-develop"
+            elif [[ "${git_ref_name}" == "grafana" ]]; then
+                img_tag="grafana-develop"
+            fi
+            echo -e "\nBuild and push ${img_tag} image\n"
+            cd ${git_ref_name}
+            docker build . --file Dockerfile --tag ${IMG}:${img_tag}
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+            docker push ${IMG}:${img_tag}
+
+        elif [[ "${git_ref_type}" == "tags" ]]; then
+            echo -e "\nTriggered by tag ${git_ref_name}\n"
+            for tag_base in "ui" "svc" "grafana" 
+            do
+                img_tag="${tag_base}-${git_ref_name}"
+                echo -e "\nBuild and push ${img_tag} image\n"
+                cd ${git_ref_name}
+                docker build . --file Dockerfile --tag ${IMG}:${img_tag}
+                docker push ${IMG}:${img_tag}
+                cd ..
+                retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
+                retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')
+                for retag in "${retag_1}" "retag_2"
+                do
+                    [[ -z "${retag}" ]] && continue
+                    echo -e "\nRetag ${img_tag} to ${retag} and push it\n"
+                    docker tag ${IMG}:${img_tag} ${IMG}:${retag}
+                    docker push ${IMG}:${retag}
+                done
+            done
+        fi

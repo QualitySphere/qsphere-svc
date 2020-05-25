@@ -36,7 +36,7 @@ export default {
     return axios.get('/api/tracker/' + trackerId + '/projects')
   },
 
-  listTrackerIssueType (trakcerId) {
+  listTrackerIssueType (trackerId) {
     return axios.get('/api/tracker/' + trackerId + '/issue_types')
   },
 

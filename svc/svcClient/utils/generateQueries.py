@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Sprint Info
+# uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+# name = Required(str)
+# project = Required(Project)
+# version = Required(str)  # sprint version tag
+# requirements = Required(StrArray)  # list(): req1, req2
+# rcs = Required(StrArray)  # RC tags list: RC1, RC2
+# issue = Optional(Json)  # dict(): keys: types, found_since, statuses, categories
+# case = Optional(Json)
+# queries = Optional(Json)  # dict(): issue: jql,  ...  case: xx
+# status = Required(str, default='active')  # active, disable, delete
 
 import logging
 
@@ -21,7 +32,7 @@ def generate_jqls(project_key: str, sprint_info: dict):
     # 定义customer bug jql, 它不应该局限在 sprint 过程
     jqls['issue_found_since']['customer'] = ' AND '.join([
         'project = "%s"' % project_key,
-        'issuetype in (%s)' % ', '.join(sprint_info.get('issue')),
+        'issuetype in (%s)' % ', '.join(sprint_info['issue']['types']),
         'labels = "%s"' % sprint_info.get('version'),
         'labels = "Customer"',
         ])
@@ -29,7 +40,7 @@ def generate_jqls(project_key: str, sprint_info: dict):
     # 定义 jql base, 用于后面的所有 jql
     jql_base = ' AND '.join([
         'project = "%s"' % project_key,
-        'issuetype in (%s)' % ', '.join(sprint_info.get('issue').get('types')),
+        'issuetype in (%s)' % ', '.join(sprint_info['issue']['types']),
         'Sprint = "%s"' % sprint_info.get('name'),
         'labels = "%s"' % sprint_info.get('version'),
     ])
@@ -71,7 +82,7 @@ def generate_jqls(project_key: str, sprint_info: dict):
     jqls['categories']['others'] = jql_base
 
     logging.info('Generate JQL for rcs')
-    for rc in sprint_info.get('rcs'):
+    for rc in sprint_info['rcs']:
         jql_rc = ' AND '.join([
             jql_base,
             'labels = "%s"' % rc,

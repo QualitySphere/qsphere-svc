@@ -8,5 +8,9 @@ export default {
 
   addProject (projectData) {
     return axios.post('/api/project', projectData)
+  },
+
+  getProject (projectId) {
+    return axios.get('/api/project/' + projectId)
   }
 }

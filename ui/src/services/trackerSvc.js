@@ -38,7 +38,11 @@ export default {
 
   listTrackerSprint (project) {},
 
-  listTrackerIssueType (project) {},
+  listTrackerIssueType (project) {
+    return axios.get('/api/tracker/' + trackerId + '/issue_types')
+  },
 
-  listTrackerIssueStatus (project) {}
+  listTrackerIssueStatus (trackerId) {
+    return axios.get('/api/tracker/' + trackerId + '/issue_statuses')
+  }
 }

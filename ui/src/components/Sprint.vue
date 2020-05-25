@@ -43,7 +43,7 @@
             placeholder="Select Project"
             style="width: 100%;">
             <el-option
-              v-for="item in projects"
+              v-for="item in selection.projects"
               :key="item.name"
               :label="item.name"
               :value="item.id">
@@ -93,10 +93,11 @@
             clearable
             allow-create
             default-first-option
+            @focus="listRC()"
             placeholder="Define RC Tags"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.rcs"
+              v-for="item in selection.rcs"
               :key="item"
               :label="item"
               :value="item">
@@ -112,10 +113,11 @@
             filterable
             allow-create
             default-first-option
-            placeholder="Define Tags For Issue Type"
+            @focus="listIssueType()"
+            placeholder="Select Issue Type"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.types"
+              v-for="item in selection.issue_types"
               :key="item"
               :label="item"
               :value="item">
@@ -130,10 +132,11 @@
             filterable
             allow-create
             default-first-option
+            @focus="listIssueFoundSince()"
             placeholder="Define Tags For Found Since"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.found_since"
+              v-for="item in selection.issueFoundSince"
               :key="item"
               :label="item"
               :value="item">
@@ -148,10 +151,11 @@
             filterable
             allow-create
             default-first-option
+            @focus="listIssueCategories()"
             placeholder="Define Issue Category Tags"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.categories"
+              v-for="item in selection.issue_categories"
               :key="item"
               :label="item"
               :value="item">
@@ -166,10 +170,11 @@
             clearable
             allow-create
             default-first-option
+            @focus="listIssueStatus()"
             placeholder="Define Fixing Tags"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.statuses.fixing"
+              v-for="item in selection.issue_statuses"
               :key="item"
               :label="item"
               :value="item">
@@ -187,7 +192,7 @@
             placeholder="Define Fixed Tags"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.statuses.fixed"
+              v-for="item in selection.issue_statuses"
               :key="item"
               :label="item"
               :value="item">
@@ -205,7 +210,7 @@
             placeholder="Define Verified Tags"
             style="width: 100%;">
             <el-option
-              v-for="item in sprintData.issue.statuses.verified"
+              v-for="item in selection.issue_statuses"
               :key="item"
               :label="item"
               :value="item">
@@ -222,6 +227,7 @@
 </template>
 
 <script>
+import trackerSvc from '@/services/trackerSvc'
 import projectSvc from '@/services/projectSvc'
 import sprintSvc from '@/services/sprintSvc'
 export default {
@@ -240,7 +246,14 @@ export default {
       `,
       dialogSprintVisible: false,
       labelPosition: 'left',
-      projects: [],
+      selection: {
+        projects: [],
+        rcs: [],
+        issue_types: [],
+        issue_found_since: [],
+        issue_categories: [],
+        issue_statuses: [],
+      },
       sprintData: {
         project_id: '',
         name: '',
@@ -249,13 +262,13 @@ export default {
         rcs: [],
         issue: {
           types: [],
-          found_since: ['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer'],
+          found_since: [],
           statuses: {
             fixing: [],
             fixed: [],
             verified: []
           },
-          categories: ['regression', 'previous', 'newfeature', 'others']
+          categories: []
         },
         case: {}
       }
@@ -263,16 +276,55 @@ export default {
   },
   methods: {
     listProject () {
-      this.tracker_id = ''
       projectSvc.listProject()
         .then((response) => {
-          this.projects = response.data.detail.results
-          this.tracker_id = ''
+          this.selection.projects = response.data.detail.results
         })
-      return []
+        .catch((error) => {
+          this.$$message.error(String(error))
+          this.selection.projects = []
+        })
+    },
+    listIssueStatus () {
+      projectSvc.getProject(this.sprintData.project_id)
+        .then((response) => {
+          trackerSvc.listIssueStatus(response.data.detail.tracker.issue.id)
+            .then((response) => {
+              this.selection.issue_statuses = response.data.detail.results
+            })
+            .catch((error) => {
+              this.$message.error(String(error))
+            })
+        })
+        .catch((error) => {
+          this.$$message.error(String(error))
+          this.selection.issue_statuses = []
+        })
+    },
+    listIssueType () {
+      projectSvc.getProject(this.sprintData.project_id)
+        .then((response) => {
+          trackerSvc.listIssueType(response.data.detail.tracker.issue.id)
+            .then((response) => {
+              this.selection.issue_types = response.data.detail.results
+            })
+            .catch((error) => {
+              this.$message.error(String(error))
+            })
+        })
+        .catch((error) => {
+          this.$$message.error(String(error))
+          this.selection.issue_types = []
+        })
     },
     listRC () {
-      return ['RC1', 'RC2', 'RC3', 'RC4', 'RC5']
+      this.selection.rcs = ['RC1', 'RC2', 'RC3', 'RC4', 'RC5']
+    },
+    listIssueFoundSince () {
+      this.selection.issue_found_since = ['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer']
+    },
+    listIssueCategories () {
+      this.selection.issue_categories = ['Regression', 'Previous', 'NewFeature', 'Others']
     },
     submit () {
       console.log(this.sprintData)

@@ -55,7 +55,7 @@ class IssueProjectLatest(db.Entity):
     # 项目维度 最新缺陷数据
     _table_ = 'issue_project_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     categories = Required(Json)  # 缺陷类别:
     found_since = Required(Json)  # 缺陷发现来源: new_feature: '', regression_improve: '', qa_missed: ''
@@ -65,7 +65,7 @@ class IssueCustomerLatest(db.Entity):
     # 项目维度 最新客户反馈缺陷数量
     _table_ = 'issue_customer_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     count = Required(int)  # 客户反馈的缺陷数量, 缺陷发现来源: customer
 

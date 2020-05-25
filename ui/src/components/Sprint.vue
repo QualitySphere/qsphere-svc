@@ -278,33 +278,38 @@ export default {
     listProject () {
       projectSvc.listProject()
         .then((response) => {
+          console.log(response)
           this.selection.projects = response.data.detail.results
         })
         .catch((error) => {
-          this.$$message.error(String(error))
+          this.$message.error(String(error))
           this.selection.projects = []
         })
     },
     listIssueStatus () {
       projectSvc.getProject(this.sprintData.project_id)
         .then((response) => {
-          trackerSvc.listIssueStatus(response.data.detail.tracker.issue.id)
+          console.log(response)
+          trackerSvc.listTrackerIssueStatus(response.data.detail.tracker.issue.id)
             .then((response) => {
+              console.log(response)
               this.selection.issue_statuses = response.data.detail.results
             })
             .catch((error) => {
               this.$message.error(String(error))
+              this.selection.issue_statuses = []
             })
         })
         .catch((error) => {
-          this.$$message.error(String(error))
+          this.$message.error(String(error))
           this.selection.issue_statuses = []
         })
     },
     listIssueType () {
       projectSvc.getProject(this.sprintData.project_id)
         .then((response) => {
-          trackerSvc.listIssueType(response.data.detail.tracker.issue.id)
+          console.log(response)
+          trackerSvc.listTrackerIssueType(response.data.detail.tracker.issue.id)
             .then((response) => {
               this.selection.issue_types = response.data.detail.results
             })
@@ -313,7 +318,7 @@ export default {
             })
         })
         .catch((error) => {
-          this.$$message.error(String(error))
+          this.$message.error(String(error))
           this.selection.issue_types = []
         })
     },
@@ -330,6 +335,7 @@ export default {
       console.log(this.sprintData)
       sprintSvc.addSprint(this.sprintData)
         .then((response) => {
+          console.log(response)
           this.$message.success('Success')
           this.dialogSprintVisible = false
         })

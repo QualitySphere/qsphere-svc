@@ -1,3 +1,4 @@
 #!/bin/sh
 set -ex
-netstat -tlnup | grep nginx
+curl http://127.0.0.1
+exit $?

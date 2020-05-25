@@ -111,7 +111,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
         issue_project.found_since = issues.get('issue_found_since')
     else:
         IssueProjectLatest(
-            capture_time =capture_time,
+            capture_time=capture_time,
             sprint=sprint,
             categories=issues.get('categories'),
             found_since=issues.get('issue_found_since')
@@ -135,7 +135,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
     for key in issues.keys():
         if key in ['overall', 'categories', 'rcs', 'issue_found_since']:
             continue
-        # 更新 issue_req 表中的功能数据
+        # 更新 issue_req 表中的需求数据
         logging.info('Start to update DB for requirement issues status')
         IssueReq(
             capture_time=capture_time,
@@ -145,7 +145,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
         )
         logging.info('Complete update')
 
-        # 更新 issue_req_latest 表中的迭代维度的最新功能数据
+        # 更新 issue_req_latest 表中的迭代维度的最新需求数据
         logging.info('Start to update DB for latest requirement issues status')
         issue_req = get(f for f in IssueReqLatest if str(f.sprint.uuid) == sprint_id and f.name == key)
         if issue_req:

@@ -136,7 +136,7 @@
             placeholder="Define Tags For Found Since"
             style="width: 100%;">
             <el-option
-              v-for="item in selection.issueFoundSince"
+              v-for="item in selection.issue_found_since"
               :key="item"
               :label="item"
               :value="item">

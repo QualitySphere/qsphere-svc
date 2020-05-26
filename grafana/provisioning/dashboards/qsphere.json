@@ -515,7 +515,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'newfeature' AS integer) AS \"New Feature\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
+          "rawSql": "SELECT $__time(issue_sprint.capture_time), CAST(issue_sprint.categories::json->>'newfeature' AS integer) AS \"New Feature\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -541,7 +541,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'previous' AS integer) AS \"Previous\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
+          "rawSql": "SELECT $__time(issue_sprint.capture_time), CAST(issue_sprint.categories::json->>'previous' AS integer) AS \"Previous\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -567,7 +567,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'regression' AS integer) AS \"Regression\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
+          "rawSql": "SELECT $__time(issue_sprint.capture_time), CAST(issue_sprint.categories::json->>'regression' AS integer) AS \"Regression\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -593,7 +593,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT $__time(issue_sprint.capture_at), CAST(issue_sprint.categories::json->>'others' AS integer) AS \"Others\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
+          "rawSql": "SELECT $__time(issue_sprint.capture_time), CAST(issue_sprint.categories::json->>'others' AS integer) AS \"Others\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 1",
           "refId": "D",
           "select": [
             [
@@ -710,7 +710,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_sprint_latest.capture_at AS \"time\", issue_sprint_latest.rc, issue_sprint_latest.count FROM issue_sprint_latest INNER JOIN sprint ON sprint.uuid = issue_sprint_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 2",
+          "rawSql": "SELECT issue_sprint_latest.capture_time AS \"time\", issue_sprint_latest.rc, issue_sprint_latest.count FROM issue_sprint_latest INNER JOIN sprint ON sprint.uuid = issue_sprint_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 2",
           "refId": "A",
           "select": [
             [
@@ -826,7 +826,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_sprint.capture_at AS \"time\", CAST(issue_sprint.found_since::json->>'regression_improve'  AS integer)AS \"Regression Improve\", CAST(issue_sprint.found_since::json->>'new_feature'  AS integer)AS \"New Feature\", CAST(issue_sprint.found_since::json->>'qa_missed' AS integer) AS \"QA Missed\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1 DESC LIMIT 1",
+          "rawSql": "SELECT issue_sprint.capture_time AS \"time\", CAST(issue_sprint.found_since::json->>'regression_improve'  AS integer)AS \"Regression Improve\", CAST(issue_sprint.found_since::json->>'new_feature'  AS integer)AS \"New Feature\", CAST(issue_sprint.found_since::json->>'qa_missed' AS integer) AS \"QA Missed\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1 DESC LIMIT 1",
           "refId": "A",
           "select": [
             [
@@ -839,7 +839,7 @@
             ]
           ],
           "table": "issue_project",
-          "timeColumn": "capture_at",
+          "timeColumn": "capture_time",
           "timeColumnType": "timestamp",
           "where": [
             {
@@ -947,7 +947,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.latest.capture_at AS \"time\", issue_req.latest.name, CAST(issue_req.latest.status::json->>'total' AS integer) FROM issue_req.latest INNER JOIN sprint ON sprint.uuid = issue_req.latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
+          "rawSql": "SELECT issue_req.latest.capture_time AS \"time\", issue_req.latest.name, CAST(issue_req.latest.status::json->>'total' AS integer) FROM issue_req.latest INNER JOIN sprint ON sprint.uuid = issue_req.latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
           "refId": "A",
           "select": [
             [
@@ -1024,7 +1024,7 @@
       },
       "id": 15,
       "panels": [],
-      "title": "Requirement $REQ",
+      "title": "Requirement $REQUIREMENT",
       "type": "row"
     },
     {
@@ -1079,7 +1079,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_at AS \"time\", CAST(issue_req.status::json->>'verified' AS integer) AS \"Verified\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQ' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'verified' AS integer) AS \"Verified\" FROM issue_req INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
           "refId": "A",
           "select": [
             [
@@ -1105,7 +1105,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_at AS \"time\", CAST(issue_req.status::json->>'fixed' AS integer) AS \"To Be Verified\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQ' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixed' AS integer) AS \"To Be Verified\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -1131,7 +1131,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_at AS \"time\", CAST(issue_req.status::json->>'fixing' AS integer) AS \"To Be Fixed\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQ' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixing' AS integer) AS \"To Be Fixed\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -1157,7 +1157,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "$REQ Bug Verification",
+      "title": "$REQUIREMENT Bug Verification",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1292,14 +1292,14 @@
           "value": "2019-09-27"
         },
         "datasource": "qsphere",
-        "definition": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
+        "definition": "SELECT to_char(capture_time, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
         "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "START_DATE",
         "options": [],
-        "query": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
+        "query": "SELECT to_char(capture_time, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1317,14 +1317,14 @@
           "value": ""
         },
         "datasource": "qsphere",
-        "definition": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 DESC limit 1",
+        "definition": "SELECT to_char(capture_time, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 DESC limit 1",
         "hide": 2,
         "includeAll": false,
         "label": null,
         "multi": false,
         "name": "END_DATE",
         "options": [],
-        "query": "SELECT to_char(capture_at, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 DESC limit 1",
+        "query": "SELECT to_char(capture_time, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 DESC limit 1",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1356,7 +1356,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Quality Assurance Platform",
+  "title": "Quality Sphere",
   "uid": "qap",
   "version": 1
 }

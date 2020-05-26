@@ -947,7 +947,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.latest.capture_time AS \"time\", issue_req.latest.name, CAST(issue_req.latest.status::json->>'total' AS integer) FROM issue_req.latest INNER JOIN sprint ON sprint.uuid = issue_req.latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", issue_req.name, CAST(issue_req.status::json->>'total' AS integer) FROM issue_req INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
           "refId": "A",
           "select": [
             [
@@ -1105,7 +1105,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixed' AS integer) AS \"To Be Verified\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixed' AS integer) AS \"To Be Verified\" FROM issue_req INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
           "refId": "B",
           "select": [
             [
@@ -1131,7 +1131,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixing' AS integer) AS \"To Be Fixed\" FROM issue_req.INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_req.capture_time AS \"time\", CAST(issue_req.status::json->>'fixing' AS integer) AS \"To Be Fixed\" FROM issue_req INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE issue_req.name = '$REQUIREMENT' AND sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1",
           "refId": "C",
           "select": [
             [
@@ -1357,6 +1357,6 @@
   },
   "timezone": "browser",
   "title": "Quality Sphere",
-  "uid": "qap",
+  "uid": "qsphere",
   "version": 1
 }

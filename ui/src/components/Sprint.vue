@@ -290,7 +290,7 @@ export default {
       projectSvc.getProject(this.sprintData.project_id)
         .then((response) => {
           console.log(response)
-          trackerSvc.listTrackerIssueStatus(response.data.detail.tracker.issue.id)
+          trackerSvc.listTrackerIssueStatus(response.data.detail.results.tracker.issue.id)
             .then((response) => {
               console.log(response)
               this.selection.issue_statuses = response.data.detail.results

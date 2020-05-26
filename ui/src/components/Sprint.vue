@@ -118,9 +118,9 @@
             style="width: 100%;">
             <el-option
               v-for="item in selection.issue_types"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.key"
+              :label="item.value"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -175,9 +175,9 @@
             style="width: 100%;">
             <el-option
               v-for="item in selection.issue_statuses"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.key"
+              :label="item.value"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -193,9 +193,9 @@
             style="width: 100%;">
             <el-option
               v-for="item in selection.issue_statuses"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.key"
+              :label="item.value"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -211,9 +211,9 @@
             style="width: 100%;">
             <el-option
               v-for="item in selection.issue_statuses"
-              :key="item"
-              :label="item"
-              :value="item">
+              :key="item.key"
+              :label="item.value"
+              :value="item.value">
             </el-option>
           </el-select>
         </el-form-item>
@@ -290,7 +290,7 @@ export default {
       projectSvc.getProject(this.sprintData.project_id)
         .then((response) => {
           console.log(response)
-          trackerSvc.listTrackerIssueStatus(response.data.detail.results.tracker.issue.id)
+          trackerSvc.listTrackerIssueStatus(response.data.detail.tracker.issue.id)
             .then((response) => {
               console.log(response)
               this.selection.issue_statuses = response.data.detail.results
@@ -302,13 +302,13 @@ export default {
         })
         .catch((error) => {
           this.$message.error(String(error))
-          this.selection.issue_statuses = []
         })
     },
     listIssueType () {
       projectSvc.getProject(this.sprintData.project_id)
         .then((response) => {
           console.log(response)
+          console.log(response.data.detail.tracker.issue.id)
           trackerSvc.listTrackerIssueType(response.data.detail.tracker.issue.id)
             .then((response) => {
               this.selection.issue_types = response.data.detail.results
@@ -319,7 +319,6 @@ export default {
         })
         .catch((error) => {
           this.$message.error(String(error))
-          this.selection.issue_types = []
         })
     },
     listRC () {

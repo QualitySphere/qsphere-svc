@@ -93,11 +93,11 @@ if __name__ == '__main__':
     db.generate_mapping(create_tables=True)
 
     # 创建定时任务, 每小时执行一次同步
-    # scheduler = APScheduler()
-    # scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
+    scheduler = APScheduler()
+    scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
     # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
-    # scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
-    # scheduler.start()
+    scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
+    scheduler.start()
 
     # Start flask app
     app.run(port=6001, debug=True)

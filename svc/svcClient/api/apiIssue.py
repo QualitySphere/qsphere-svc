@@ -5,21 +5,6 @@ from services import svcIssue
 from utils.exceptionHandle import DefaultError
 
 
-def sync_sprint_issue(sprint_id):
-    """
-    GET /api/sprint/{sprint_id}/issue/sync
-    :param sprint_id:
-    :return:
-    """
-    try:
-        svcIssue.sync_sprint_issue_data(sprint_id)
-        return {
-            'title': 'Sync Sprint Issue Succeed',
-        }, 200
-    except Exception as e:
-        raise DefaultError(title='Sync Sprint Issue Failed', detail=str(e))
-
-
 def sync_issue(sprint_id=None):
     """
     GET /api/issue/sync
@@ -42,7 +27,7 @@ def sync_issue(sprint_id=None):
 
 def get_active_sprint_issue_status():
     """
-    GET /api//issue/status
+    GET /api/issue/status
     :return:
     """
     try:

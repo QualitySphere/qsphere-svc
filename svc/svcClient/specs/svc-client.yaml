@@ -566,7 +566,7 @@ paths:
 
 
   /issue/sync:
-    get:  # GET sync issue
+    get:  # GET sync all sprints issue
       tags:
         - "issue"
       description: Sync All Sprints Issues

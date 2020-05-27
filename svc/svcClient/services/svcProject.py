@@ -155,7 +155,6 @@ def update_project(project_id: str, item: dict):
     """
     _project = get(p for p in Project if str(p.uuid) == project_id)
     _project.name = item.get('name')
-    _project.status = item.get('status') or 'active'
     _project.issue_tracker = get(c for c in Tracker if str(c.uuid) == item.get('tracker').get('issue').get('id'))
     _project.issue_tracker_project = item.get('project').get('issue')
     _project.case_tracker = get(c for c in Tracker if str(c.uuid) == item.get('tracker').get('case').get('id'))

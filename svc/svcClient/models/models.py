@@ -46,9 +46,9 @@ class Sprint(db.Entity):
     issue_project_latest = Set('IssueProjectLatest')
     issue_customer_latest = Set('IssueCustomerLatest')
     issue_sprint_latest = Set('IssueSprintLatest')
-    issue_feature_latest = Set('IssueReqLatest')
+    issue_req_latest = Set('IssueReqLatest')
     issue_sprint = Set('IssueSprint')
-    issue_feature = Set('IssueReq')
+    issue_req = Set('IssueReq')
 
 
 class IssueProjectLatest(db.Entity):

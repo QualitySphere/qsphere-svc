@@ -13,13 +13,15 @@
       <span slot="label" @click="listProject"><i class="el-icon-menu"></i> Project</span>
       <Project
         :projectTableData="projectTableData"
-        :projectTableLoading="projectTableLoading"/>
+        :projectTableLoading="projectTableLoading"
+        :listProject="listProject"/>
     </el-tab-pane>
     <el-tab-pane>
       <span slot="label" @click="listSprint"><i class="el-icon-s-grid"></i> Sprint</span>
       <Sprint
         :sprintTableData="sprintTableData"
-        :sprintTableLoading="sprintTableLoading"/>
+        :sprintTableLoading="sprintTableLoading"
+        :listSprint="listSprint"/>
     </el-tab-pane>
   </el-tabs>
 </template>

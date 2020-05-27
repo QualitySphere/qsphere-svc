@@ -7,29 +7,49 @@ export default {
   },
 
   addTracker (trackerData) {
-    return axios.post('/api/tracker', {
-      name: trackerData.name,
-      type: trackerData.type,
-      info: trackerData.info,
-      secret: trackerData.secret
-    })
+    if (trackerData.type === 'jira') {
+      var _data = {
+        name: trackerData.name,
+        type: trackerData.type,
+        info: {
+          host: trackerData.jira.host,
+          account: trackerData.jira.account
+        },
+        secret: trackerData.jira.password
+      }
+    }
+    return axios.post('/api/tracker', _data)
   },
 
   deleteTracker (trackerId) {
     return axios.delete('/api/tracker/' + trackerId)
   },
 
+  activeTracker (trackerId, trackerStatus) {
+    if (trackerStatus === 'active') {
+      return axios.put('/api/tracker/' + trackerId + '/active')
+    } else {
+      return axios.put('/api/tracker/' + trackerId + '/disable')
+    }
+  },
+
   getTracker (trackerId) {
     return axios.get('/api/tracker/' + trackerId)
   },
 
-  updateTracker (trackerInfo) {
-    return axios.put('/api/tracker/' + trackerInfo.trackerId, {
-      name: '',
-      type: '',
-      info: '',
-      status: ''
-    })
+  updateTracker (trackerData) {
+    if (trackerData.type === 'jira') {
+      var _data = {
+        name: trackerData.name,
+        type: trackerData.type,
+        info: {
+          host: trackerData.jira.host,
+          account: trackerData.jira.account
+        },
+        secret: trackerData.jira.password
+      }
+    }
+    return axios.put('/api/tracker/' + trackerData.id, _data)
   },
 
   listTrackerProject (trackerId) {

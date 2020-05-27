@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row style="margin-bottom: 15px" type="flex">
-      <el-button plain round type="primary" size="small" @click="dialogSprintVisible = true">
+      <el-button plain round type="primary" size="small" @click="initSprint(); dialogSprintVisible = true">
         <i class="el-icon-plus el-icon--left"></i>New Sprint
       </el-button>
       <el-tooltip placement="bottom-start">
@@ -16,9 +16,53 @@
         :border="true"
         style="width: 100%;">
         <el-table-column prop="name" label="Sprint" width="200"></el-table-column>
-        <el-table-column prop="project_name" label="Project" width="200"></el-table-column>
-        <el-table-column prop="status" label="Status" width></el-table-column>
-        <el-table-column prop="action" label="Action" width="150"></el-table-column>
+        <el-table-column prop="project_name" label="Project" width=""></el-table-column>
+        <el-table-column
+          label="Sync"
+          width="100">
+          <template slot-scope="scope">
+            <el-button
+              @click="syncSprintIssue(scope.row.id)"
+              size="mini"
+              icon="el-icon-refresh"
+              circle>
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="Status"
+          width="100">
+          <template slot-scope="scope">
+            <el-tooltip :content="'Status is ' + scope.row.status">
+              <el-switch
+                v-model="scope.row.status"
+                @change="activeSprint(scope.row.id, scope.row.status)"
+                active-value='active'
+                inactive-value='disable'>
+              </el-switch>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="Action"
+          width="150">
+          <template slot-scope="scope">
+            <el-button
+              @click="editSprint(scope.row.id); dialogSprintVisible = true"
+              size="mini"
+              type="primary"
+              icon="el-icon-edit"
+              circle>
+            </el-button>
+            <el-button
+              @click="deleteSprint(scope.row.id)"
+              size="mini"
+              type="danger"
+              icon="el-icon-delete"
+              circle>
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-row>
     <el-dialog title="Sprint" :visible.sync="dialogSprintVisible" width="30%">
@@ -230,6 +274,7 @@
 import trackerSvc from '@/services/trackerSvc'
 import projectSvc from '@/services/projectSvc'
 import sprintSvc from '@/services/sprintSvc'
+import issueSvc from '@/services/issueSvc'
 export default {
   props: {
     sprintTableData: {
@@ -237,6 +282,9 @@ export default {
     },
     sprintTableLoading: {
       type: Boolean
+    },
+    listSprint: {
+      type: Function
     }
   },
   data () {
@@ -332,11 +380,97 @@ export default {
     },
     submit () {
       console.log(this.sprintData)
-      sprintSvc.addSprint(this.sprintData)
+      if (this.sprintData.id) {
+        sprintSvc.addSprint(this.sprintData)
+          .then((response) => {
+            console.log(response)
+            this.$message.success('Success')
+            this.dialogSprintVisible = false
+            this.listSprint()
+          })
+          .catch((error) => {
+            this.$message.error(String(error))
+          })
+      } else {
+        sprintSvc.updateSprint(this.sprintData)
+          .then((response) => {
+            console.log(response)
+            this.$message.success('Success')
+            this.dialogSprintVisible = false
+            this.listSprint()
+          })
+          .catch((error) => {
+            this.$message.error(String(error))
+          })
+      }
+    },
+    activeSprint (sprintId, sprintStatus) {
+      console.log('Set sprint ' + sprintId + ' status as ' + sprintStatus)
+      sprintSvc.activeSprint(sprintId, sprintStatus)
+        .then((response) => {
+          this.$message.success('Set status as ' + sprintStatus)
+          this.listSprint()
+        })
+        .catch((error) => {
+          this.$message.error(String(error))
+        })
+    },
+    deleteSprint (sprintId) {
+      console.log('Delete sprint' + sprintId)
+      sprintSvc.deleteSprint(sprintId)
+        .then((response) => {
+          this.$message.success('Deleted')
+          this.listSprint()
+        })
+        .catch((error) => {
+          this.$message.error(String(error))
+        })
+    },
+    editSprint (sprintId) {
+      this.listProject()
+      console.log('Edit sprint: ' + sprintId)
+      sprintSvc.getSprint(sprintId)
+        .then((response) => {
+          console.log(response.data.detail)
+          this.sprintData.id = response.data.detail.id
+          this.sprintData.name = response.data.detail.name
+          this.sprintData.project_id = response.data.detail.project_id
+          this.sprintData.version = response.data.detail.version
+          this.sprintData.requirements = response.data.detail.requirements
+          this.sprintData.rcs = response.data.detail.rcs
+          this.sprintData.issue = response.data.detail.issue
+          this.sprintData.case = response.data.detail.case
+        })
+        .catch((error) => {
+          this.$message.error(String(error))
+        })
+    },
+    initSprint () {
+      this.sprintData.id = ''
+      this.sprintData.name = ''
+      this.sprintData.project_id = ''
+      this.sprintData.version = ''
+      this.sprintData.requirements = []
+      this.sprintData.rcs = []
+      this.sprintData.issue = {
+        types: [],
+        found_since: [],
+        statuses: {
+          fixing: [],
+          fixed: [],
+          verified: []
+        },
+        categories: []
+      }
+      this.sprintData.case = {}
+    },
+    syncSprintIssue (sprintId) {
+      console.log('Sync issue status of sprint ' + sprintId)
+      this.$message.success('Start to sync')
+      issueSvc.syncSprintIssue(sprintId)
         .then((response) => {
           console.log(response)
-          this.$message.success('Success')
-          this.dialogSprintVisible = false
+          this.$message.success('Complete to sync')
         })
         .catch((error) => {
           this.$message.error(String(error))

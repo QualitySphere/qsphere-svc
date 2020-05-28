@@ -7,27 +7,27 @@
     active-text-color="#212529">
     <el-menu-item-group title="Dashboard" style="margin-top: 15px;">
       <el-menu-item index="1-1" route="/overview">
-        <span style="margin-left: 15px;">Overview</span>
+        <i class="el-icon-data-board"><span class="qsphere-menu"> Overview</span></i>
       </el-menu-item>
       <el-menu-item index="1-2" route="/project">
-        <span style="margin-left: 15px;">Project</span>
+        <i class="el-icon-data-line"><span class="qsphere-menu"> Project</span></i>
       </el-menu-item>
       <el-menu-item index="1-3" route="/sprint">
-        <span style="margin-left: 15px;">Sprint</span>
+        <i class="el-icon-data-analysis"><span class="qsphere-menu"> Sprint</span></i>
       </el-menu-item>
     </el-menu-item-group>
     <el-menu-item-group title="Portal" style="margin-top: 15px;">
       <el-menu-item index="2-1" :route="portal.jira" v-if="portal.jira">
-        <span style="margin-left: 15px;">JIRA</span>
+        <i class="el-icon-position"><span class="qsphere-menu"> Jira</span></i>
       </el-menu-item>
       <el-menu-item index="2-2" :route="portal.zentao" v-if="portal.zentao">
-        <span style="margin-left: 15px;">Zentao</span>
+        <i class="el-icon-position"><span class="qsphere-menu"> Zentao</span></i>
       </el-menu-item>
       <el-menu-item index="2-3" :route="portal.bugzilla" v-if="portal.bugzilla">
-        <span style="margin-left: 15px;">Bugzilla</span>
+        <i class="el-icon-position"><span class="qsphere-menu"> Bugzilla</span></i>
       </el-menu-item>
       <el-menu-item index="2-4" :route="portal.testlink" v-if="portal.testlink">
-        <span style="margin-left: 15px;">TestLink</span>
+        <i class="el-icon-position"><span class="qsphere-menu"> TestLink</span></i>
       </el-menu-item>
     </el-menu-item-group>
   </el-menu>
@@ -91,6 +91,10 @@ export default {
 
   .el-menu-item {
     font-size: 16px;
+  }
+
+  .qsphere-menu {
+    font-size: 0.85em;
   }
 
 </style>

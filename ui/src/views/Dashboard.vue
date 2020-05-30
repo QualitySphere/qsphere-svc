@@ -104,11 +104,32 @@ export default {
   },
   methods: {
     updateUrlForProject () {
-      this.sprints.sprint_name = ''
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
+      this.sprint.name = ''
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&from=' + this.startDate + '&to=' + this.endDate
+      console.log(this.url)
     },
     updateUrlForSprint () {
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
+      for (var s in this.sprints) {
+        console.log(this.sprints[s])
+        if (this.sprints[s].name === this.sprint.name) {
+          this.sprint.id = this.sprints[s].id
+          break
+        }
+      }
+      console.log(this.sprint.id)
+      sprintSvc.getSprint(this.sprint.id)
+        .then((response) => {
+          console.log(response)
+          this.startDate = response.data.detail.start_time
+          console.log(this.startDate)
+          this.endDate = response.data.detail.end_time
+          console.log(this.endDate)
+          this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&from=' + this.startDate + '&to=' + this.endDate
+          console.log(this.url)
+        })
+        .catch((error) => {
+          this.$message.error(error)
+        })
     },
     listTracker () {
       trackerSvc.listTracker()

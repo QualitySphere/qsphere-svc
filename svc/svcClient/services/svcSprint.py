@@ -54,7 +54,7 @@ def get_sprint(sprint_id: str):
     if item:
         cts = list()
         for ct in select(i for i in IssueSprint if str(i.sprint.uuid) == sprint_id).order_by(IssueSprint.capture_time):
-            cts.append(ct.capture.time)
+            cts.append(ct.capture_time)
         sprint_info = {
             'id': item.uuid,
             'name': item.name,

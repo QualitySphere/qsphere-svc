@@ -184,21 +184,8 @@ export default {
     },
     submit () {
       console.log(this.trackerData)
-      if (this.trackerData.type === 'jira') {
-        var _data = {
-          id: this.trackerData.id,
-          name: this.trackerData.name,
-          type: this.trackerData.type,
-          info: {
-            host: this.trackerData.jira.host,
-            account: this.trackerData.jira.account
-          },
-          secret: this.trackerData.jira.password,
-          status: this.trackerData.status
-        }
-      }
       if (this.trackerData.id) {
-        trackerSvc.updateTracker(_data)
+        trackerSvc.updateTracker(this.trackerData)
           .then((response) => {
             this.$message.success('Success')
             this.dialogTrackerVisible = false
@@ -208,7 +195,7 @@ export default {
             this.$message.error(String(error))
           })
       } else {
-        trackerSvc.addTracker(_data)
+        trackerSvc.addTracker(this.trackerData)
           .then((response) => {
             this.$message.success('Success')
             this.dialogTrackerVisible = false

@@ -105,10 +105,10 @@ export default {
   methods: {
     updateUrlForProject () {
       this.sprints.sprint_name = ''
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
     },
     updateUrlForSprint () {
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
     },
     listTracker () {
       trackerSvc.listTracker()

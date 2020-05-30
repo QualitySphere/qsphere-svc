@@ -80,8 +80,8 @@ import sprintSvc from '@/services/sprintSvc'
 export default {
   data () {
     return {
-      baseUrl: '/dashboard/d/qap/quality-assurance-platform?orgId=1&kiosk&refresh=1m',
-      url: '/dashboard/d/qap/quality-assurance-platform?orgId=1&theme=light&kiosk&refresh=1m',
+      baseUrl: '/dashboard/d/qsphere/quality-qsphere?orgId=1&kiosk&refresh=1m',
+      url: '/dashboard/d/qap/qsphere-sphere?orgId=1&theme=light&kiosk&refresh=1m',
       theme: 'light',
       trackers: [],
       tracker: {
@@ -98,17 +98,17 @@ export default {
         id: '',
         name: ''
       },
-      startDate: '2020-04-30',
-      endDate: '2020-05-13'
+      startDate: '',
+      endDate: ''
     }
   },
   methods: {
     updateUrlForProject () {
       this.sprints.sprint_name = ''
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
     },
     updateUrlForSprint () {
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate
+      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.projects.project_name + '&var-SPRINT=' + this.sprints.sprint_name + '&var-START_DATE=' + this.startDate + '&var-END_DATE=' + this.endDate + '&from' + Date(this.startDate).valueOf() + '&to' + Date(this.endDate).valueOf()
     },
     listTracker () {
       trackerSvc.listTracker()

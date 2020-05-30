@@ -381,7 +381,7 @@ export default {
     submit () {
       console.log(this.sprintData)
       if (this.sprintData.id) {
-        sprintSvc.addSprint(this.sprintData)
+        sprintSvc.updateSprint(this.sprintData)
           .then((response) => {
             console.log(response)
             this.$message.success('Success')
@@ -392,7 +392,7 @@ export default {
             this.$message.error(String(error))
           })
       } else {
-        sprintSvc.updateSprint(this.sprintData)
+        sprintSvc.addSprint(this.sprintData)
           .then((response) => {
             console.log(response)
             this.$message.success('Success')

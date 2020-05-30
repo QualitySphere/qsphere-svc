@@ -242,16 +242,29 @@ export default {
       }
     },
     submit () {
-      projectSvc.addProject(this.projectData)
-        .then((reponse) => {
-          this.projectData.id = reponse.data.detail.id
-          this.$message.success('Success')
-          this.dialogProjectVisible = false
-          this.listProject()
-        })
-        .catch((error) => {
-          this.$message.error(String(error))
-        })
+      if (this.projectData.id) {
+        projectSvc.updateProject(this.projectData)
+          .then((reponse) => {
+            this.projectData.id = reponse.data.detail.id
+            this.$message.success('Success')
+            this.dialogProjectVisible = false
+            this.listProject()
+          })
+          .catch((error) => {
+            this.$message.error(String(error))
+          })
+      } else {
+        projectSvc.addProject(this.projectData)
+          .then((reponse) => {
+            this.projectData.id = reponse.data.detail.id
+            this.$message.success('Success')
+            this.dialogProjectVisible = false
+            this.listProject()
+          })
+          .catch((error) => {
+            this.$message.error(String(error))
+          })
+      }
     },
     editProject (projectId) {
       this.listIssueTracker()

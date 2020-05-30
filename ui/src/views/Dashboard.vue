@@ -80,8 +80,8 @@ import sprintSvc from '@/services/sprintSvc'
 export default {
   data () {
     return {
-      baseUrl: '/dashboard/d/qsphere/quality-qsphere?orgId=1&kiosk&refresh=1m',
-      url: '/dashboard/d/qap/qsphere-sphere?orgId=1&theme=light&kiosk&refresh=1m',
+      baseUrl: '/dashboard/d/qsphere/quality-sphere?orgId=1&kiosk&refresh=1m',
+      url: '/dashboard/d/qsphere/quality-sphere?orgId=1&theme=light&kiosk&refresh=1m',
       theme: 'light',
       trackers: [],
       tracker: {

@@ -14,7 +14,7 @@
 
 
 from pony.orm import db_session, select, get
-from models.models import Tracker, Project, Sprint
+from models.models import Tracker, Project, Sprint, IssueSprint
 import logging
 from utils import generateQueries
 
@@ -52,6 +52,9 @@ def get_sprint(sprint_id: str):
     sprint_info = dict()
     item = get(s for s in Sprint if str(s.uuid) == sprint_id)
     if item:
+        cts = list()
+        for ct in select(i for i in IssueSprint if str(i.sprint.uuid) == sprint_id).order_by(IssueSprint.capture_time):
+            cts.append(ct.capture.time)
         sprint_info = {
             'id': item.uuid,
             'name': item.name,
@@ -63,7 +66,9 @@ def get_sprint(sprint_id: str):
             "issue": item.issue,
             "case": item.case,
             "queries": item.queries,
-            'status': item.status
+            'status': item.status,
+            'start_time': int(cts[0].timestamp()) if len(cts) > 0 else '',
+            'end_time': int(cts[-1].timestamp()) if len(cts) > 0 else ''
         }
     return sprint_info
 

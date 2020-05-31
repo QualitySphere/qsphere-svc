@@ -1,6 +1,6 @@
 apiVersion: 1
 providers:
- - name: 'Quality Assurance Platform'
+ - name: 'Quality Sphere'
    orgId: 1
    folder: ''
    type: file

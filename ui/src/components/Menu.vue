@@ -1,7 +1,7 @@
 <template>
   <el-menu
     :router="true"
-    default-active="1-1"
+    default-active="1"
     background-color="#EDEDED"
     text-color="#909399"
     active-text-color="#212529">

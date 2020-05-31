@@ -13,7 +13,7 @@ services:
 
   qsphere-svc:
     container_name: qsphere-svc
-    image: bxwill/qsphere:svc
+    image: bxwill/qsphere:svc-latest
     restart: always
     ports:
       - 6001:6001
@@ -27,7 +27,7 @@ services:
 
   qsphere-grafana:
     container_name: qsphere-grafana
-    image: bxwill/qsphere:grafana
+    image: bxwill/qsphere:grafana-latest
     restart: always
     ports:
       - 3000:3000
@@ -43,7 +43,7 @@ services:
 
   qsphere-ui:
     container_name: qsphere-ui
-    image: bxwill/qsphere:ui
+    image: bxwill/qsphere:ui-latest
     restart: always
     ports:
       - 8080:80

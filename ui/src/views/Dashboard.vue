@@ -80,8 +80,9 @@ import sprintSvc from '@/services/sprintSvc'
 export default {
   data () {
     return {
-      baseUrl: '/dashboard/d/qsphere/quality-sphere?orgId=1&kiosk&refresh=1m',
-      url: '/dashboard/d/qsphere/quality-sphere?orgId=1&theme=light&kiosk&refresh=1m',
+      projectBaseUrl: '/dashboard/d/qsphere-project/qsphere-project?orgId=1&kiosk&refresh=1m',
+      sprintBaseUrl: '/dashboard/d/qsphere-sprint/qsphere-sprint?orgId=1&kiosk&refresh=1m',
+      url: '/dashboard/d/qsphere-project/qsphere-project?orgId=1&theme=light&kiosk&refresh=1m',
       theme: 'light',
       trackers: [],
       tracker: {
@@ -105,7 +106,7 @@ export default {
   methods: {
     updateUrlForProject () {
       this.sprint.name = ''
-      this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&from=' + this.startDate + '&to=' + this.endDate
+      this.url = this.projectBaseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&from=' + this.startDate + '&to=now'
       console.log(this.url)
     },
     updateUrlForSprint () {
@@ -124,7 +125,7 @@ export default {
           console.log(this.startDate)
           this.endDate = response.data.detail.end_time
           console.log(this.endDate)
-          this.url = this.baseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&from=' + this.startDate + '&to=' + this.endDate
+          this.url = this.sprintBaseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&from=' + this.startDate * 1000 + '&to=' + this.endDate * 1000
           console.log(this.url)
         })
         .catch((error) => {

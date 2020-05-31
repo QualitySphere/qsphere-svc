@@ -104,3 +104,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+ui/node_modules/
+debug.*
+vue.config.js

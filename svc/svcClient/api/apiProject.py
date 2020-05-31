@@ -11,7 +11,7 @@ def list_project():
     :return:
     """
     try:
-        projects = svcProject.list_project()
+        projects = svcProject.list_project(project_status=['active', 'disable'])
         return {
             'title': 'List Projects Succeed',
             'detail': {
@@ -39,18 +39,18 @@ def get_project(project_id):
         raise DefaultError(title='Get Project Failed', detail=str(e))
 
 
-def create_project(body):
+def add_project(body):
     """
     POST /api/project
     :param body:
     :return:
     """
     try:
-        project_id = svcProject.create_project(body)
+        project_id = svcProject.add_project(body)
         return {
             'title': 'Create Project Succeed',
             'detail': {
-                'project_id': project_id
+                'id': project_id
             }
         }, 200
     except Exception as e:
@@ -69,7 +69,7 @@ def update_project(project_id, body):
         return {
             'title': 'Update Project Succeed',
             'detail': {
-                'project_id': project_id
+                'id': project_id
             }
         }, 200
     except Exception as e:
@@ -83,10 +83,39 @@ def delete_project(project_id):
     :return:
     """
     try:
-        svcProject.delete_project(project_id)
+        svcProject.set_project_status(project_id, 'delete')
         return {
-                   'title': 'Delete Project Succeed',
-               }, 204
+            'title': 'Delete Project Succeed',
+        }, 204
     except Exception as e:
         raise DefaultError(title='Delete Project Failed', detail=str(e))
 
+
+def disable_project(project_id):
+    """
+    PUT /api/project/{project_id}/disable
+    :param project_id:
+    :return:
+    """
+    try:
+        svcProject.set_project_status(project_id, 'disable')
+        return {
+                   'title': 'Disable Project Succeed',
+               }, 200
+    except Exception as e:
+        raise DefaultError(title='Disable Project Failed', detail=str(e))
+
+
+def active_project(project_id):
+    """
+    PUT /api/project/{project_id}/active
+    :param project_id:
+    :return:
+    """
+    try:
+        svcProject.set_project_status(project_id, 'active')
+        return {
+                   'title': 'Active Project Succeed',
+               }, 200
+    except Exception as e:
+        raise DefaultError(title='Active Project Failed', detail=str(e))

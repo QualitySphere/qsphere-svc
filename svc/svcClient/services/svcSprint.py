@@ -1,28 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+# uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+# name = Required(str)
+# project = Required(Project)
+# version = Required(str)  # sprint version tag
+# requirements = Required(StrArray)  # list(): req1, req2
+# rcs = Required(StrArray)  # RC tags list: RC1, RC2
+# issue = Optional(Json)  # dict(): keys: types, found_since, statuses, categories
+# case = Optional(Json)
+# queries = Optional(Json)  # dict(): issue: jql,  ...  case: xx
+# status = Required(str, default='active')  # active, disable, delete
 
 
 from pony.orm import db_session, select, get
-from models.models import Project, Sprint
+from models.models import Tracker, Project, Sprint, IssueSprint
 import logging
+from utils import generateQueries
 
 
 @db_session
-def list_sprint():
+def list_sprint(sprint_status=None):
     """
-    List ALl Sprints
+    List ALl Sprint
     :return:
     """
-    items = select(s for s in Sprint if s.active != 'delete').order_by(Sprint.name)
     sprints = list()
+    if sprint_status:
+        items = select(s for s in Sprint if s.status in sprint_status).order_by(Sprint.name)
+    else:
+        items = select(s for s in Sprint).order_by(Sprint.name)
     for item in items:
-        logging.info('Get sprint %s[%s] info' % (item.uuid, item.name))
+        logging.debug('Get sprint %s[%s] info' % (item.uuid, item.name))
         sprints.append({
+            'id': item.uuid,
+            'name': item.name,
             'project_id': item.project.uuid,
             'project_name': item.project.name,
-            'sprint_id': item.uuid,
-            'sprint_name': item.name,
-            'active': item.active
+            'status': item.status
         })
     return sprints
 
@@ -34,165 +49,77 @@ def get_sprint(sprint_id: str):
     :param sprint_id:
     :return:
     """
-    item = get(s for s in Sprint if str(s.uuid) == sprint_id)
     sprint_info = dict()
+    item = get(s for s in Sprint if str(s.uuid) == sprint_id)
     if item:
+        cts = list()
+        for ct in select(i for i in IssueSprint if str(i.sprint.uuid) == sprint_id).order_by(IssueSprint.capture_time):
+            cts.append(ct.capture_time)
         sprint_info = {
-            "project_id": item.project.uuid,
-            "project_name": item.project.name,
-            "sprint_id": item.uuid,
-            "sprint_name": item.name,
-            "product_version": item.version,
-            "features": item.features,
+            'id': item.uuid,
+            'name': item.name,
+            'project_id': item.project.uuid,
+            'project_name': item.project.name,
+            "version": item.version,
+            "requirements": item.requirements,
             "rcs": item.rcs,
-            "issue_found_since": item.issue_found_since,
-            "issue_types": item.issue_types,
-            "issue_status": item.issue_status,
-            "issue_categories": item.issue_categories,
-            'jqls': item.queries.get('jqls'),
-            'active': item.active
+            "issue": item.issue,
+            "case": item.case,
+            "queries": item.queries,
+            'status': item.status,
+            'start_time': int(cts[0].timestamp()) if len(cts) > 0 else '',
+            'end_time': int(cts[-1].timestamp()) if len(cts) > 0 else ''
         }
     return sprint_info
 
 
 @db_session
-def active_sprint(sprint_id: str, active: str):
+def set_sprint_status(sprint_id: str, sprint_status: str):
     """
-    Change Sprint Active Status: enable/disable
+    Change Sprint Status: active/disable
     :param sprint_id:
-    :param active:
+    :param sprint_status:
     :return:
     """
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    sprint.active = active
-    return sprint.active
+    sprint.status = sprint_status
+    return sprint.status
 
 
 @db_session
-def delete_sprint(sprint_id: str):
+def add_sprint(sprint_info: dict):
     """
-    Delete Sprint
-    :param sprint_id:
-    :return:
-    """
-    sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    sprint.active = 'delete'
-    return True
-
-
-def _generate_jqls(project_name, sprint_info: dict):
-    """
-    Internal Function: Generate JQL for Sprint
-    :param project_name:
+    Add Sprint
     :param sprint_info:
     :return:
     """
-    jqls = {
-        'overall': dict(),
-        'categories': dict(),
-        'rcs': dict(),
-        'issue_found_since': dict(),
-    }
-
-    # 定义customer bug jql, 它不应该局限在 sprint 过程
-    jqls['issue_found_since']['customer'] = ' AND '.join([
-        'project = "%s"' % project_name,
-        'issuetype in (%s)' % ', '.join(sprint_info.get('issue_types')),
-        'labels = "%s"' % sprint_info.get('product_version'),
-        'labels = "Customer"',
-        ])
-
-    # 定义 jql base, 用于后面的所有 jql
-    jql_base = ' AND '.join([
-        'project = "%s"' % project_name,
-        'issuetype in (%s)' % ', '.join(sprint_info.get('issue_types')),
-        'Sprint = "%s"' % sprint_info.get('sprint_name'),
-        'labels = "%s"' % sprint_info.get('product_version'),
-    ])
-
-    logging.info('Generate JQL for overall')
-    for k, v in sprint_info.get('issue_status').items():
-        jqls['overall'][k] = ' AND '.join([
-            jql_base,
-            'status in (%s)' % ', '.join(v)
-        ])
-
-    logging.info('Generate JQL for features')
-    for feature in sprint_info.get('features'):
-        jql_feature_base = ' AND '.join([
-            jql_base,
-            'labels = "%s"' % feature,
-        ])
-        jqls[feature] = dict()
-        for k, v in sprint_info.get('issue_status').items():
-            jqls[feature][k] = ' AND '.join([
-                jql_feature_base,
-                'status in (%s)' % ', '.join(v)
-            ])
-
-    logging.info('Generate JQL for categories')
-    if sprint_info.get('issue_categories') is None:
-        sprint_info['issue_categories'] = ['Regression', 'Previous', 'NewFeature', 'Others']
-    for category in sprint_info.get('issue_categories'):
-        # Others 的类别将在下面进行处理
-        if category == 'Others':
-            continue
-        jql_category = ' AND '.join([
-            jql_base,
-            'labels = "%s"' % category,
-        ])
-        jqls['categories'][category.lower()] = jql_category
-    # Others 是除了 Regression, Previous, NewFeature 的类别
-    # 实际中可能没有标记，这里不做jql不带任何相关标记，先获取总数，用于后面函数处理时候计算得出 others
-    jqls['categories']['others'] = jql_base
-
-    logging.info('Generate JQL for rcs')
-    for rc in sprint_info.get('rcs'):
-        jql_rc = ' AND '.join([
-            jql_base,
-            'labels = "%s"' % rc,
-        ])
-        jqls['rcs'][rc] = jql_rc
-
-    logging.info('Generate JQL for issue found since')
-    if sprint_info.get('issue_found_since') is None:
-        sprint_info['issue_found_since'] = ['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer']
-    for since in sprint_info.get('issue_found_since'):
-        # 来自 customer 的缺陷已经在一开始就生成了 jql，所以这里跳过
-        if since == 'Customer':
-            continue
-        jql_issue_found_since = ' AND '.join([
-            jql_base,
-            'labels = "%s"' % since,
-        ])
-        jqls['issue_found_since'][since.lower()] = jql_issue_found_since
-    logging.info('Complete to generate all JQLs')
-    return jqls
-
-
-@db_session
-def create_sprint(sprint_info: dict):
-    """
-    Create Sprint
-    :param sprint_info:
-    :return:
-    """
+    logging.debug('Get Project %s' % sprint_info.get('project_id'))
     _project = get(p for p in Project if str(p.uuid) == sprint_info.get('project_id'))
+    if _project:
+        logging.debug('Got it')
+    else:
+        logging.debug('No this project')
+    logging.debug('Add New Sprint %s' % sprint_info.get('name'))
     _sprint = Sprint(
+        name=sprint_info.get('name'),
         project=_project,
-        name=sprint_info.get('sprint_name'),
-        version=sprint_info.get('product_version'),
-        issue_types=sprint_info.get('issue_types'),
-        features=sprint_info.get('features'),
+        version=sprint_info.get('version'),
+        requirements=sprint_info.get('requirements'),
         rcs=sprint_info.get('rcs'),
-        issue_found_since=sprint_info.get('issue_status'),
-        issue_status=sprint_info.get('issue_status'),
-        issue_categories=sprint_info.get('issue_categories')
+        issue=sprint_info.get('issue'),
+        case=sprint_info.get('case')
     )
-    if _sprint.project.connection.issue_server.get('type') == 'jira':
+    logging.debug('Complete to add sprint %s' % _sprint.uuid)
+    logging.debug('Get issue tracker %s' % _project.tracker.get('issue').get('id'))
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == _project.tracker.get('issue').get('id'))
+    if _issue_tracker.type == 'jira':
+        logging.debug('Issue tracker is JIRA')
         _sprint.queries = {
-            'jqls': _generate_jqls(_project.name, sprint_info)
+            'issue': {
+                'jira': generateQueries.generate_jqls(_project.project['issue']['key'], sprint_info)
+            }
         }
+        logging.debug('Complete to generate issue queries')
     return _sprint.uuid
 
 
@@ -204,20 +131,21 @@ def update_sprint(sprint_id: str, sprint_info: dict):
     :param sprint_info:
     :return:
     """
-    _project = get(p for p in Project if str(p.uuid) == sprint_info.get('project_id'))
     _sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
+    _project = get(p for p in Project if str(p.uuid) == sprint_info.get('project_id'))
     _sprint.project = _project
-    _sprint.name = sprint_info.get('sprint_name')
-    _sprint.version = sprint_info.get('product_version')
-    _sprint.features = sprint_info.get('features')
+    _sprint.name = sprint_info.get('name')
+    _sprint.version = sprint_info.get('version')
+    _sprint.requirements = sprint_info.get('requirements')
     _sprint.rcs = sprint_info.get('rcs')
-    _sprint.issue_types = sprint_info.get('issue_types')
-    _sprint.issue_status = sprint_info.get('issue_status')
-    _sprint.issue_categories = sprint_info.get('issue_categories')
-
-    if _sprint.project.connection.issue_server.get('type') == 'jira':
+    _sprint.issue = sprint_info.get('issue')
+    _sprint.case = sprint_info.get('case')
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == _project.tracker.get('issue').get('id'))
+    if _issue_tracker.type == 'jira':
         _sprint.queries = {
-            'jqls': _generate_jqls(_project.name, sprint_info)
+            'issue': {
+                'jira': generateQueries.generate_jqls(_project.project['issue']['key'], sprint_info)
+            }
         }
     return _sprint.uuid
 

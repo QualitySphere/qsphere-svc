@@ -1,4 +1,4 @@
-FROM bxwill/qap:svc-base
+FROM bxwill/qsphere:svc-base
 MAINTAINER shiwei@baoxian-sz.com
 
 WORKDIR /workspace

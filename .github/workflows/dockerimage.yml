@@ -44,18 +44,19 @@ jobs:
             do
                 img_tag="${tag_base}-${git_ref_name}"
                 echo -e "\nBuild and push ${img_tag} image\n"
-                cd ${git_ref_name}
+                cd ${tag_base}
                 docker build . --file Dockerfile --tag ${IMG}:${img_tag}
                 docker push ${IMG}:${img_tag}
                 cd ..
                 retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
                 retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')
-                for retag in "${retag_1}" "retag_2"
+                retag_3="latest"
+                for retag in "${retag_1}" "${retag_2}" "${retag_3}"
                 do
                     [[ -z "${retag}" ]] && continue
-                    echo -e "\nRetag ${img_tag} to ${retag} and push it\n"
-                    docker tag ${IMG}:${img_tag} ${IMG}:${retag}
-                    docker push ${IMG}:${retag}
+                    echo -e "\nRetag ${img_tag} to ${tag_base}-${retag} and push it\n"
+                    docker tag ${IMG}:${img_tag} ${IMG}:${tag_base}-${retag}
+                    docker push ${IMG}:${tag_base}-${retag}
                 done
             done
         fi

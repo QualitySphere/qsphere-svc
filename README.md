@@ -48,7 +48,7 @@ docker-compose -f docker-compose.yaml up -d
 - 0.1.0 - `2019-10-14`
 
 ## More
-- Homepage: https://QualitySphere.github.com
+- Homepage: https://QualitySphere.github.io
 - GitHub: https://github.com/QualitySphere/qsphere
 - Docker: https://hub.docker.com/r/bxwill/qsphere
 

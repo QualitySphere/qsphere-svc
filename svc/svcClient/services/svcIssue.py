@@ -36,10 +36,11 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
 
     # 获取 sprint 信息
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    server = sprint.project.connection.issue_server.get('host')
-    account = sprint.project.connection.issue_server.get('account')
-    password = sprint.project.connection.issue_server.get('password')
-    jqls = sprint.queries.get('jqls')
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
+    server = _issue_tracker.info.get('host')
+    account = _issue_tracker.info.get('account')
+    password = _issue_tracker.secret
+    jqls = sprint.queries['issue']['jira']
 
     # 多线程登录 JIRA 用 JQL 收集所有数据
     issues = dict()
@@ -72,7 +73,7 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
     # 生成一条新的数据记录
     logging.info('Start to update DB for sprint issues status')
     IssueSprint(
-        capture_at=capture_time,
+        capture_time=capture_time,
         sprint=sprint,
         status=issues.get('overall'),
         categories=issues.get('categories'),
@@ -88,13 +89,13 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
         logging.info('Start to update DB for latest sprint issues status')
         issue_sprint = get(s for s in IssueSprintLatest if str(s.sprint.uuid) == sprint_id and s.rc == rc_key)
         if issue_sprint:
-            issue_sprint.capture_at = capture_time
+            issue_sprint.capture_time = capture_time
             issue_sprint.sprint = sprint
             issue_sprint.rc = rc_key
             issue_sprint.count = rc_value
         else:
             IssueSprintLatest(
-                capture_at=capture_time,
+                capture_time=capture_time,
                 sprint=sprint,
                 rc=rc_key,
                 count=rc_value
@@ -105,12 +106,12 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
     logging.info('Start to update DB for latest project issues status')
     issue_project = get(p for p in IssueProjectLatest if str(p.sprint.uuid) == sprint_id)
     if issue_project:
-        issue_project.capture_at = capture_time
+        issue_project.capture_time = capture_time
         issue_project.categories = issues.get('categories')
         issue_project.found_since = issues.get('issue_found_since')
     else:
         IssueProjectLatest(
-            capture_at=capture_time,
+            capture_time=capture_time,
             sprint=sprint,
             categories=issues.get('categories'),
             found_since=issues.get('issue_found_since')
@@ -121,11 +122,11 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
     logging.info('Start to update DB for latest customer issues status')
     issue_customer = get(c for c in IssueCustomerLatest if str(c.sprint.uuid) == sprint_id)
     if issue_customer:
-        issue_customer.capture_at = capture_time
+        issue_customer.capture_time = capture_time
         issue_customer.count = issues.get('issue_found_since').get('customer')
     else:
         IssueCustomerLatest(
-            capture_at=capture_time,
+            capture_time=capture_time,
             sprint=sprint,
             count=issues.get('issue_found_since').get('customer')
         )
@@ -134,26 +135,25 @@ def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
     for key in issues.keys():
         if key in ['overall', 'categories', 'rcs', 'issue_found_since']:
             continue
-        # 更新 issue_feature 表中的功能数据
-        logging.info('Start to update DB for feature issues status')
-        IssueFeature(
-            capture_at=capture_time,
+        # 更新 issue_req 表中的需求数据
+        logging.info('Start to update DB for requirement issues status')
+        IssueReq(
+            capture_time=capture_time,
             sprint=sprint,
             name=key,
             status=issues.get(key)
         )
         logging.info('Complete update')
 
-        # 更新 issue_feature_latest 表中的迭代维度的最新功能数据
-        logging.info('Start to update DB for latest feature issues status')
-        issue_feature = get(f for f in IssueFeatureLatest
-                            if str(f.sprint.uuid) == sprint_id and f.name == key)
-        if issue_feature:
-            issue_feature.capture_at = capture_time
-            issue_feature.status = issues.get(key)
+        # 更新 issue_req_latest 表中的迭代维度的最新需求数据
+        logging.info('Start to update DB for latest requirement issues status')
+        issue_req = get(f for f in IssueReqLatest if str(f.sprint.uuid) == sprint_id and f.name == key)
+        if issue_req:
+            issue_req.capture_time = capture_time
+            issue_req.status = issues.get(key)
         else:
-            IssueFeatureLatest(
-                capture_at=capture_time,
+            IssueReqLatest(
+                capture_time=capture_time,
                 sprint=sprint,
                 name=key,
                 status=issues.get(key)
@@ -174,10 +174,11 @@ def _sync_jira_data_for_sprint_customer_issue(sprint_id: str):
 
     # 获取 sprint, connection 以及 bug from customer 的 JQL
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    server = sprint.project.connection.issue_server.get('host')
-    account = sprint.project.connection.issue_server.get('account')
-    password = sprint.project.connection.issue_server.get('password')
-    jql = sprint.queries.get('jqls').get('issue_found_since').get('customer')
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
+    server = _issue_tracker.info.get('host')
+    account = _issue_tracker.info.get('account')
+    password = _issue_tracker.secret
+    jql = sprint.queries['issue']['jira'].get('issue_found_since').get('customer')
 
     # JQL 从 JIRA 中获取查询结果数量
     with JiraSession(server, account, password) as jira_session:
@@ -187,11 +188,11 @@ def _sync_jira_data_for_sprint_customer_issue(sprint_id: str):
     logging.info('Start to update DB for latest customer issues status')
     issue_customer = get(c for c in IssueCustomerLatest if str(c.sprint.uuid) == sprint_id)
     if issue_customer:
-        issue_customer.capture_at = capture_time
+        issue_customer.capture_time = capture_time
         issue_customer.count = count
     else:
         IssueCustomerLatest(
-            capture_at=capture_time,
+            capture_time=capture_time,
             sprint=sprint,
             count=count
         )
@@ -208,11 +209,12 @@ def sync_sprint_issue_data(sprint_id: str):
     :return:
     """
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    if sprint.active == 'enable':
-        if sprint.project.connection.issue_server.get('type') == 'jira':
+    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
+    if sprint.status == 'active':
+        if _issue_tracker.type == 'jira':
             _sync_jira_data_for_sprint_all_issue(sprint_id)
-    elif sprint.active == 'disable':
-        if sprint.project.connection.issue_server.get('type') == 'jira':
+    elif sprint.status == 'disable':
+        if _issue_tracker.type == 'jira':
             _sync_jira_data_for_sprint_customer_issue(sprint_id)
 
 
@@ -223,7 +225,7 @@ def sync_issue_data():
     :return:
     """
     # 同步数据库中所有存在的迭代
-    sprints = select(s for s in Sprint if s.active != 'delete')
+    sprints = select(s for s in Sprint if s.status != 'delete')
     threads = list()
     for sprint in sprints:
         logging.info('Start to sync data for sprint %s' % sprint.name)
@@ -239,6 +241,23 @@ def sync_issue_data():
     for t in threads:
         t.join()
     return True
+
+
+@db_session
+def get_active_sprint_issue_status():
+    sprints = select(s for s in Sprint if s.status == 'active')
+    items = list()
+    bugs = list()
+    for sprint in sprints:
+        items.append(select(i for i in IssueSprint if i.sprint.uuid == sprint.uuid)
+                     .order_by(IssueSprint.capture_time)
+                     .first())
+    for item in items:
+        bugs.append({
+            'sprint_name': item.sprint.name,
+            'issue_status': item.status,
+        })
+    return bugs
 
 
 def sync_sprint_case_data(sprint_id: str):

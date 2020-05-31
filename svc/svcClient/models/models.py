@@ -8,59 +8,54 @@ import uuid
 from datetime import datetime
 
 
-class Connection(db.Entity):
-    # 连接缺陷/用例管理工具的地址和帐密信息
-    _table_ = 'connection'
-
+class Tracker(db.Entity):
+    # Tracker Information
+    _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    issue_server = Optional(Json)  # {type: jira/zentao/bugzilla, host: '', account: '', password: ''}
-    case_server = Optional(Json)  # {type: jira/zentao/testlink, host: '', account: '', password: ''}
-    active = Required(str, default='enable')
-    projects = Set('Project')
+    type = Required(str)
+    info = Optional(Json)  # JIRA: {host: '', account: ''}
+    secret = Optional(str)  # JIRA: 'password'
+    status = Required(str, default='active')  # active, disable, delete
 
 
 class Project(db.Entity):
-    # 项目名称和激活状态
+    # Project Information
     _table_ = 'project'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    connection = Required(Connection)
     name = Required(str)
-    active = Required(str, default='enable')  # enable, disable, delete
+    tracker = Optional(Json)    # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
+    project = Optional(Json)    # {'issue': {'key': ''}, 'case': {'key': ''}}
+    status = Required(str, default='active')  # active, disable, delete
     sprints = Set('Sprint')
 
 
 class Sprint(db.Entity):
-    # 迭代循环的信息
+    # Sprint Information
     _table_ = 'sprint'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    name = Required(str)
     project = Required(Project)
-    name = Required(str)  # 名称
-    version = Required(str)  # 迭代版本
-    issue_types = Required(StrArray)  # 问题筛选类型: Improvement, 缺陷
-    features = Required(StrArray)  # 功能标签列表: 功能1, 功能2, ...
-    rcs = Required(StrArray)  # RC标签列表: rc1,rc2,rc3,rc4,rc5, ...
-    issue_found_since = Required(StrArray, default=['RegressionImprove', 'QAMissed', 'NewFeature', 'Customer'])  # 问题发现来源标签列表
-    issue_status = Required(Json)  # 问题状态: fixing: '', fixed: '', verified: ''
-    issue_categories = Required(StrArray, default=['Regression', 'Previous', 'NewFeature', 'Others'])  # 问题类别标签列表
-    queries = Optional(Json)  # 查询语句集: jql/././.
-    active = Required(str, default='enable')  # 该迭代的激活状态: enable, disable, delete
+    version = Required(str)  # sprint version tag
+    requirements = Required(StrArray)   # list(): req1, req2
+    rcs = Required(StrArray)  # RC tags list: RC1, RC2
+    issue = Optional(Json)   # dict(): keys: types, found_since, statuses, categories
+    case = Optional(Json)
+    queries = Optional(Json)  # dict(): keys: case, issue
+    status = Required(str, default='active')  # active, disable, delete
     issue_project_latest = Set('IssueProjectLatest')
     issue_customer_latest = Set('IssueCustomerLatest')
     issue_sprint_latest = Set('IssueSprintLatest')
-    issue_feature_latest = Set('IssueFeatureLatest')
+    issue_req_latest = Set('IssueReqLatest')
     issue_sprint = Set('IssueSprint')
-    issue_feature = Set('IssueFeature')
+    issue_req = Set('IssueReq')
 
 
 class IssueProjectLatest(db.Entity):
     # 项目维度 最新缺陷数据
     _table_ = 'issue_project_latest'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     categories = Required(Json)  # 缺陷类别:
     found_since = Required(Json)  # 缺陷发现来源: new_feature: '', regression_improve: '', qa_missed: ''
@@ -69,9 +64,8 @@ class IssueProjectLatest(db.Entity):
 class IssueCustomerLatest(db.Entity):
     # 项目维度 最新客户反馈缺陷数量
     _table_ = 'issue_customer_latest'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     count = Required(int)  # 客户反馈的缺陷数量, 缺陷发现来源: customer
 
@@ -79,9 +73,8 @@ class IssueCustomerLatest(db.Entity):
 class IssueSprint(db.Entity):
     # 迭代版本维度 缺陷数据
     _table_ = 'issue_sprint'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
     categories = Required(Json)  # 缺陷类别: regression: '', previous: '', new_feature: '', others: ''
@@ -92,33 +85,30 @@ class IssueSprint(db.Entity):
 class IssueSprintLatest(db.Entity):
     # 迭代版本维度 最新缺陷数据
     _table_ = 'issue_sprint_latest'
-
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
     rc = Required(str)  # 迭代版本 RC
     count = Required(int)  # 缺陷数量
 
 
-class IssueFeature(db.Entity):
-    # 迭代版本功能维度 缺陷数据
-    _table_ = 'issue_feature'
-
+class IssueReq(db.Entity):
+    # 迭代版本需求维度 缺陷数据
+    _table_ = 'issue_req'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
-    name = Required(str)  # 功能名称
+    name = Required(str)  # 需求名称
     status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
     # found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
 
 
-class IssueFeatureLatest(db.Entity):
-    # 迭代版本功能维度 最新缺陷数据
-    _table_ = 'issue_feature_latest'
-
+class IssueReqLatest(db.Entity):
+    # 迭代版本需求维度 最新缺陷数据
+    _table_ = 'issue_req_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_at = Required(datetime)
+    capture_time = Required(datetime)
     sprint = Required(Sprint)
-    name = Required(str)  # 功能名称
+    name = Required(str)  # 需求名称
     status = Required(Json)  # 缺陷状态: total: '', fixing: '', fixed: '', verified: ''
 

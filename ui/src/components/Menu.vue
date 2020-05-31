@@ -6,28 +6,22 @@
     text-color="#909399"
     active-text-color="#212529">
     <el-menu-item-group title="Dashboard" style="margin-top: 15px;">
-      <el-menu-item index="1-1" route="/overview">
-        <i class="el-icon-data-board"><span class="qsphere-menu"> Overview</span></i>
+      <el-menu-item index="1" route="/overview">
+        <i class="el-icon-data-board"></i><span>Overview</span>
       </el-menu-item>
-      <el-menu-item index="1-2" route="/project">
-        <i class="el-icon-data-line"><span class="qsphere-menu"> Project</span></i>
+      <el-menu-item index="2" route="/project">
+        <i class="el-icon-data-line"></i><span>Project</span>
       </el-menu-item>
-      <el-menu-item index="1-3" route="/sprint">
-        <i class="el-icon-data-analysis"><span class="qsphere-menu"> Sprint</span></i>
+      <el-menu-item index="3" route="/sprint">
+        <i class="el-icon-data-analysis"></i><span>Sprint</span>
       </el-menu-item>
     </el-menu-item-group>
     <el-menu-item-group title="Portal" style="margin-top: 15px;">
-      <el-menu-item index="2-1" :route="portal.jira" v-if="portal.jira">
-        <i class="el-icon-position"><span class="qsphere-menu"> Jira</span></i>
-      </el-menu-item>
-      <el-menu-item index="2-2" :route="portal.zentao" v-if="portal.zentao">
-        <i class="el-icon-position"><span class="qsphere-menu"> Zentao</span></i>
-      </el-menu-item>
-      <el-menu-item index="2-3" :route="portal.bugzilla" v-if="portal.bugzilla">
-        <i class="el-icon-position"><span class="qsphere-menu"> Bugzilla</span></i>
-      </el-menu-item>
-      <el-menu-item index="2-4" :route="portal.testlink" v-if="portal.testlink">
-        <i class="el-icon-position"><span class="qsphere-menu"> TestLink</span></i>
+      <el-menu-item v-for="item in portal" :key="item.value">
+        <div @click="openTracker(item.value)">
+          <i class="el-icon-position"></i>
+          <span>{{ item.key }}</span>
+        </div>
       </el-menu-item>
     </el-menu-item-group>
   </el-menu>
@@ -39,12 +33,7 @@ export default {
   data () {
     return {
       tabPosition: 'left',
-      portal: {
-        jira: '',
-        zentao: '',
-        bugzilla: '',
-        testlink: ''
-      }
+      portal: []
     }
   },
   methods: {
@@ -57,16 +46,31 @@ export default {
           for (i in trackers) {
             if (trackers[i].type === 'jira') {
               console.log(trackers[i].info.host)
-              this.portal.jira = trackers[i].info.host
+              this.portal.push({
+                key: 'Jira',
+                value: trackers[i].info.host
+              })
             }
             if (trackers[i].type === 'bugzilla') {
-              this.portal.bugzilla = trackers[i].info.host
+              console.log(trackers[i].info.host)
+              this.portal.push({
+                key: 'Bugzilla',
+                value: trackers[i].info.host
+              })
             }
             if (trackers[i].type === 'zentao') {
-              this.portal.zentao = trackers[i].info.host
+              console.log(trackers[i].info.host)
+              this.portal.push({
+                key: 'Zentao',
+                value: trackers[i].info.host
+              })
             }
             if (trackers[i].type === 'testlink') {
-              this.portal.testlink = trackers[i].info.host
+              console.log(trackers[i].info.host)
+              this.portal.push({
+                key: 'TestLink',
+                value: trackers[i].info.host
+              })
             }
             console.log((this.portal))
           }
@@ -74,6 +78,9 @@ export default {
         .catch((error) => {
           this.$message.error(error)
         })
+    },
+    openTracker (url) {
+      window.open(url)
     }
   },
   mounted: function () {
@@ -91,10 +98,6 @@ export default {
 
   .el-menu-item {
     font-size: 16px;
-  }
-
-  .qsphere-menu {
-    font-size: 0.85em;
   }
 
 </style>

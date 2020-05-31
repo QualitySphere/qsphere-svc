@@ -26,259 +26,6 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
-      },
-      "id": 11,
-      "panels": [],
-      "title": "Project $PROJECT",
-      "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "qsphere",
-      "description": "",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 1
-      },
-      "id": 4,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "repeat": null,
-      "repeatDirection": "h",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT issue_project_latest.capture_time AS \"time\", sprint.name AS \"Sprint\", cast(issue_project_latest.categories::json->>'total' AS integer) FROM issue_project_latest INNER JOIN sprint ON issue_project_latest.sprint = sprint.uuid INNER JOIN project ON sprint.project = project.uuid WHERE project.name = '$PROJECT' ORDER BY 2\n",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "table": "issue_project",
-          "timeColumn": "capture_time",
-          "timeColumnType": "timestamp",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$PROJECT Bug In Release Testing",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "series",
-        "name": null,
-        "show": true,
-        "values": [
-          "total"
-        ]
-      },
-      "yaxes": [
-        {
-          "decimals": 0,
-          "format": "locale",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "To Be Fixed": "orange",
-        "To Be Verified": "blue",
-        "Verified": "green"
-      },
-      "bars": true,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "qsphere",
-      "decimals": null,
-      "fill": 6,
-      "fillGradient": 6,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 1
-      },
-      "id": 6,
-      "interval": "",
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "hideEmpty": false,
-        "hideZero": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": false,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "format": "time_series",
-          "group": [],
-          "metricColumn": "none",
-          "rawQuery": true,
-          "rawSql": "SELECT issue_customer_latest.capture_time AS \"time\", sprint.name, issue_customer_latest.count FROM issue_customer_latest INNER JOIN sprint ON sprint.uuid = issue_customer_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' ORDER BY 1",
-          "refId": "A",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "column"
-              }
-            ]
-          ],
-          "timeColumn": "time",
-          "where": [
-            {
-              "name": "$__timeFilter",
-              "params": [],
-              "type": "macro"
-            }
-          ]
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "$PROJECT Bug From Customer",
-      "tooltip": {
-        "shared": false,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "series",
-        "name": null,
-        "show": true,
-        "values": [
-          "total"
-        ]
-      },
-      "yaxes": [
-        {
-          "decimals": 0,
-          "format": "locale",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": false
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
         "y": 9
       },
       "id": 13,
@@ -619,7 +366,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "$SPRINT  Bug Categories",
+      "title": "$SPRINT Bug Categories",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -947,7 +694,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_req.capture_time AS \"time\", issue_req.name, CAST(issue_req.status::json->>'total' AS integer) FROM issue_req INNER JOIN sprint ON sprint.uuid = issue_req.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
+          "rawSql": "SELECT issue_req_latest.capture_time AS \"time\", issue_req_latest.name, CAST(issue_req_latest.status::json->>'total' AS integer) FROM issue_req_latest INNER JOIN sprint ON sprint.uuid = issue_req_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' AND sprint.name = '$SPRINT' ORDER BY 3 DESC",
           "refId": "A",
           "select": [
             [
@@ -973,7 +720,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "$SPRINT  New Feature Status",
+      "title": "$SPRINT New Feature Status",
       "tooltip": {
         "shared": false,
         "sort": 0,
@@ -1237,8 +984,8 @@
         "allValue": null,
         "current": {
           "tags": [],
-          "text": "DX Pilot QA Sprint",
-          "value": "DX Pilot QA Sprint"
+          "text": "",
+          "value": ""
         },
         "datasource": "qsphere",
         "definition": "SELECT sprint.name FROM sprint INNER JOIN project ON sprint.project = project.uuid WHERE project.name = '$PROJECT' ORDER BY 1 DESC;",
@@ -1288,8 +1035,8 @@
       {
         "allValue": null,
         "current": {
-          "text": "2019-09-27",
-          "value": "2019-09-27"
+          "text": "",
+          "value": ""
         },
         "datasource": "qsphere",
         "definition": "SELECT to_char(capture_time, 'YYYY-MM-DD') FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint WHERE sprint.name = '$SPRINT'  order by 1 limit 1",
@@ -1356,7 +1103,7 @@
     ]
   },
   "timezone": "browser",
-  "title": "Quality Sphere",
-  "uid": "qsphere",
+  "title": "QSphere Sprint",
+  "uid": "qsphere-sprint",
   "version": 1
 }

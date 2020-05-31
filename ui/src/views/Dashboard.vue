@@ -5,7 +5,7 @@
       :inline="true"
       size="small"
       label-position="left">
-      <el-form-item
+      <!-- <el-form-item
         label="Tracker">
         <el-select
           @focus="listTracker"
@@ -18,9 +18,9 @@
             :value="item.name">
           </el-option>
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item
-        v-if="$route.path == '/project' || $route.path == '/sprint'"
+        v-if="$route.path === '/project'"
         label="Project"
         style="margin-left: 20px;">
         <el-select
@@ -37,7 +37,7 @@
         </el-select>
       </el-form-item>
       <el-form-item
-        v-if="$route.path == '/sprint'"
+        v-if="$route.path === '/sprint'"
         label="Sprint"
         style="margin-left: 20px;">
         <el-select
@@ -125,7 +125,7 @@ export default {
           console.log(this.startDate)
           this.endDate = response.data.detail.end_time
           console.log(this.endDate)
-          this.url = this.sprintBaseUrl + '&theme=' + this.theme + '&var-PROJECT=' + this.project.name + '&var-SPRINT=' + this.sprint.name + '&from=' + this.startDate * 1000 + '&to=' + this.endDate * 1000
+          this.url = this.sprintBaseUrl + '&theme=' + this.theme + '&var-PROJECT=' + response.data.detail.project_name + '&var-SPRINT=' + this.sprint.name + '&from=' + this.startDate * 1000 + '&to=' + this.endDate * 1000
           console.log(this.url)
         })
         .catch((error) => {

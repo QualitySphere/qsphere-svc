@@ -19,6 +19,7 @@
 
 ## 平台预览
 
+![Tracker](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/tracker.png)
 ![Project](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/project.png)
 ![Sprint](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/sprint.png)
 ![Dashboard](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/dashboard.png)
@@ -51,6 +52,8 @@ http://{qsphere-server}/api/ui
 docker-compose -f docker-compose.yaml pull
 docker-compose -f docker-compose.yaml up -d
 ```
+
+> docker-compose.yaml
 
 ```yaml
 version: "3"
@@ -103,6 +106,14 @@ services:
       - qsphere-svc
       - qsphere-grafana
 ```
+
+#### 配置 QSphere
+
+- 绑定追踪服务器
+- 创建项目
+- 创建迭代
+
+#### 查看数据展示
 
 ## 版本历史
 

@@ -34,11 +34,11 @@
 
 #### 组件
 
-![Framework](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/framework.png)
+![Framework](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/framework.svg)
 
 #### 数据库
 
-![Database](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/database.png)
+![Database](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/database.svg)
 
 ## 接口文档
 

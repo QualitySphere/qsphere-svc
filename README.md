@@ -34,11 +34,11 @@
 
 #### Component
 
-![Framework](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/framework.png)
+![Framework](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/framework.svg)
 
 #### Database
 
-![Database](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/database.png)
+![Database](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/database.svg)
 
 ## API Document
 

@@ -1,4 +1,4 @@
-![Quality Assurance Platform](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/qap.png)
+![Quality Assuracen Platform](https://qualitysphere.github.io/images/qap.png)
 
 # Quality Sphere
 
@@ -19,10 +19,10 @@
 
 ## Preview
 
-![Tracker](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/tracker.png)
-![Project](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/project.png)
-![Sprint](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/sprint.png)
-![Dashboard](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/dashboard.png)
+![Tracker](https://qualitysphere.github.io/images/tracker.png)
+![Project](https://qualitysphere.github.io/images/project.png)
+![Sprint](https://qualitysphere.github.io/images/sprint.png)
+![Dashboard](https://qualitysphere.github.io/images/dashboard.png)
 
 ## Vision
 
@@ -34,11 +34,11 @@
 
 #### Component
 
-![Framework](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/framework.svg)
+![Framework](https://qualitysphere.github.io/images/framework.svg)
 
 #### Database
 
-![Database](https://raw.githubusercontent.com/QualitySphere/qsphere/master/docs/database.svg)
+![Database](https://qualitysphere.github.io/images/database.svg)
 
 ## API Document
 

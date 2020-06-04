@@ -206,7 +206,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_customer_latest.capture_time AS \"time\", sprint.name, issue_customer_latest.count FROM issue_customer_latest INNER JOIN sprint ON sprint.uuid = issue_customer_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' ORDER BY 1",
+          "rawSql": "SELECT issue_customer_latest.capture_time AS \"time\", sprint.name, issue_customer_latest.count FROM issue_customer_latest INNER JOIN sprint ON sprint.uuid = issue_customer_latest.sprint INNER JOIN project ON project.uuid = sprint.project WHERE project.name = '$PROJECT' ORDER BY 2",
           "refId": "A",
           "select": [
             [

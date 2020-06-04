@@ -573,7 +573,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT issue_sprint.capture_time AS \"time\", CAST(issue_sprint.found_since::json->>'regression_improve'  AS integer)AS \"Regression Improve\", CAST(issue_sprint.found_since::json->>'new_feature'  AS integer)AS \"New Feature\", CAST(issue_sprint.found_since::json->>'qa_missed' AS integer) AS \"QA Missed\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1 DESC LIMIT 1",
+          "rawSql": "SELECT issue_sprint.capture_time AS \"time\", CAST(issue_sprint.found_since::json->>'regressionimprove' AS integer)AS \"Regression Improve\", CAST(issue_sprint.found_since::json->>'newfeature' AS integer)AS \"New Feature\", CAST(issue_sprint.found_since::json->>'qamissed' AS integer) AS \"QA Missed\" FROM issue_sprint INNER JOIN sprint ON sprint.uuid = issue_sprint.sprint INNER JOIN project ON project.uuid = sprint.project WHERE sprint.name = '$SPRINT' AND project.name = '$PROJECT' ORDER BY 1 DESC LIMIT 1",
           "refId": "A",
           "select": [
             [

@@ -8,8 +8,9 @@
     text-color="#909399"
     active-text-color="#fff">
     <el-menu-item>
-      <a class="nav-brand" style="display: inline-block; color: #fff; font-size: 1.75em;" >
-        <i class="el-icon-pie-chart" style="display: inline-block; color: #fff; font-size: 1.25em;"></i>sphere
+      <a class="nav-brand" style="display: inline-block; color: #fff; font-size: 1.75em;">
+        <img src="/logo.png" width="38px;" style="margin: -20px; margin-top: -25px;">
+        <a style="margin: 20px;">sphere</a>
       </a>
     </el-menu-item>
     <el-menu-item index="1" route="/">

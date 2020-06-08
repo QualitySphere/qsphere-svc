@@ -81,9 +81,9 @@ services:
       PG_PASSWORD: 'password'
     depends_on:
       - qsphere-db
-  qsphere-grafana:
-    container_name: qsphere-grafana
-    image: bxwill/qsphere:grafana-latest
+  qsphere-dashboard:
+    container_name: qsphere-dashboard
+    image: bxwill/qsphere:dashboard-latest
     restart: always
     ports:
       - 3000:3000
@@ -104,46 +104,21 @@ services:
       - 8080:80
     depends_on:
       - qsphere-svc
-      - qsphere-grafana
+      - qsphere-dashboard
 ```
 
-#### 配置 QSphere
-
-- 绑定追踪服务器
-- 创建项目
-- 创建迭代
-
-#### 查看数据展示
+#### [快速开始](https://qualitysphere.github.io/usage)
 
 ## 版本历史
 
-- 1.0.0 - `2020-06-01`
-  - UI 重构
-  - 数据库结构调整
-  - 改进后端接口反馈数据信息
-  - 数据图表项目/冲刺拆分
-  - 新增 Portal 菜单
-  - 移除实验室中 VM 在线检查功能
-
-- 0.9.0 - `2019-12-31`
-  - 优化 UI 界面
-
-- 0.2.0 - `2019-10-23`
-  - 支持修改连接 JIRA 的配置信息
-  - 支持修改迭代信息
-  - 支持暂停/激活迭代的数据抓取
-  - 支持实验室中 VM 的在线检查
-
-- 0.1.0 - `2019-10-14`
-  - 实现抓取 JIRA 数据，经过整理分析后，通过 Grafana 进行展示，关注者通过图表可进行分析判断项目风险和产品质量。
-  - 支持连接 JIRA 服务器
-  - 支持添加项目和迭代信息
-  - 支持图表看板
-  - 支持 API 文档
+- [QSphere-svc](https://github.com/QualitySphere/qsphere-svc/releases)
+- [QSphere-ui](https://github.com/QualitySphere/qsphere-ui/releases)
+- [QSphere-dashboard](https://github.com/QualitySphere/qsphere-dashboard/releases)
+- [变更详情](https://QualitySphere.github.io/change)
 
 ## 更多信息 
 
 - Homepage: https://QualitySphere.github.io
-- GitHub: https://github.com/QualitySphere/qsphere
+- GitHub: https://github.com/QualitySphere
 - Docker: https://hub.docker.com/r/bxwill/qsphere
 

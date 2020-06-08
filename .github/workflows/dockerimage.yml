@@ -5,6 +5,8 @@ on:
 
 env:
   IMG: bxwill/qsphere
+  TAG_PREFIX: svc
+  CODE_ROOT: svc
 
 jobs:
 
@@ -25,39 +27,29 @@ jobs:
             if [[ "${git_ref_name}" == "master" ]]; then
                 echo -e "Skip build since master branch"
                 exit 0
-            elif [[ "${git_ref_name}" == "ui" ]]; then
-                img_tag="ui-develop"
-            elif [[ "${git_ref_name}" == "svc" ]]; then
-                img_tag="svc-develop"
-            elif [[ "${git_ref_name}" == "grafana" ]]; then
-                img_tag="grafana-develop"
+            elif [[ "${git_ref_name}" == "develop" ]]; then
+                echo -e "\nBuild and push ${TAG_PREFIX}-develop image\n"
+                cd ./${CODE_ROOT}
+                docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-develop
+                echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+                docker push ${IMG}:${TAG_PREFIX}-develop
             fi
-            echo -e "\nBuild and push ${img_tag} image\n"
-            cd ${git_ref_name}
-            docker build . --file Dockerfile --tag ${IMG}:${img_tag}
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
-            docker push ${IMG}:${img_tag}
 
         elif [[ "${git_ref_type}" == "tags" ]]; then
-            echo -e "\nTriggered by tag ${git_ref_name}\n"
-            for tag_base in "ui" "svc" "grafana" 
+            echo -e "\nTriggered by tag ${git_ref_name}"
+            echo -e "Build and push ${TAG_PREFIX}-${git_ref_name} image\n"
+            cd ./${CODE_ROOT}
+            docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-${git_ref_name}
+            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+            docker push ${IMG}:${TAG_PREFIX}-${git_ref_name}
+            retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
+            retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')
+            retag_3="latest"
+            for retag in "${retag_1}" "${retag_2}" "${retag_3}"
             do
-                img_tag="${tag_base}-${git_ref_name}"
-                echo -e "\nBuild and push ${img_tag} image\n"
-                cd ${tag_base}
-                docker build . --file Dockerfile --tag ${IMG}:${img_tag}
-                echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
-                docker push ${IMG}:${img_tag}
-                cd ..
-                retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
-                retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')
-                retag_3="latest"
-                for retag in "${retag_1}" "${retag_2}" "${retag_3}"
-                do
-                    [[ -z "${retag}" ]] && continue
-                    echo -e "\nRetag ${img_tag} to ${tag_base}-${retag} and push it\n"
-                    docker tag ${IMG}:${img_tag} ${IMG}:${tag_base}-${retag}
-                    docker push ${IMG}:${tag_base}-${retag}
-                done
+                [[ -z "${retag}" ]] && continue
+                echo -e "\nRetag ${TAG_PREFIX}-${git_ref_name} to ${TAG_PREFIX}-${retag} and push it\n"
+                docker tag ${IMG}:${TAG_PREFIX}-${git_ref_name} ${IMG}:${TAG_PREFIX}-${retag}
+                docker push ${IMG}:${TAG_PREFIX}-${retag}
             done
         fi

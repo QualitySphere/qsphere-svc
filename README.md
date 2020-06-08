@@ -81,9 +81,9 @@ services:
       PG_PASSWORD: 'password'
     depends_on:
       - qsphere-db
-  qsphere-grafana:
-    container_name: qsphere-grafana
-    image: bxwill/qsphere:grafana-latest
+  qsphere-dashboard:
+    container_name: qsphere-dashboard
+    image: bxwill/qsphere:dashboard-latest
     restart: always
     ports:
       - 3000:3000
@@ -104,46 +104,21 @@ services:
       - 8080:80
     depends_on:
       - qsphere-svc
-      - qsphere-grafana
+      - qsphere-dashboard
 ```
 
-#### Config QSphere
-
-- Bind tracker
-- Add project
-- Add sprint
-
-#### Check data graph
+#### [Quick Start](https://qualitysphere.github.io/usage)
 
 ## Changelog
 
-- 1.0.0 - `2020-06-01`
-  - UI rewrite
-  - Change database models
-  - Improve service API data
-  - Data graph change to project/sprint
-  - Add Portal menu
-  - Remove VM online check function
-
-- 0.9.0 - `2019-12-31`
-  - Enhance UI
-
-- 0.2.0 - `2019-10-23`
-  - Support to update JIRA connection info
-  - Support to update Sprint info
-  - Support to disable/active Sprint
-  - Support to VM online check
-
-- 0.1.0 - `2019-10-14`
-  - Get and analyze JIRA data, show graph via Grafana
-  - Support JIRA
-  - Support to add Project/Sprint
-  - Support data graph 
-  - Support API swagger
+- [QSphere-svc](https://github.com/QualitySphere/qsphere-svc/releases)
+- [QSphere-ui](https://github.com/QualitySphere/qsphere-ui/releases)
+- [QSphere-dashboard](https://github.com/QualitySphere/qsphere-dashboard/releases)
+- [Changelog Details](https://QualitySphere.github.io/change)
 
 ## More
 
 - Homepage: https://QualitySphere.github.io
-- GitHub: https://github.com/QualitySphere/qsphere
+- GitHub: https://github.com/QualitySphere
 - Docker: https://hub.docker.com/r/bxwill/qsphere
 

@@ -14,7 +14,11 @@ class JiraSession(object):
         self.server = server
         self.account = account
         self.password = password
-        self.jira_session = JIRA(server=self.server, basic_auth=(self.account, self.password))
+        jira_opts = {
+            'server': self.server,
+            'verify': False,
+        }
+        self.jira_session = JIRA(jira_opts, basic_auth=(self.account, self.password))
 
     def __enter__(self):
         assert self.jira_session.current_user() == self.account

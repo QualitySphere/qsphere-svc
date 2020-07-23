@@ -5,6 +5,7 @@ on:
 
 env:
   IMG: bxwill/qsphere
+  ALI_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   TAG_PREFIX: svc
   CODE_ROOT: svc
 
@@ -33,6 +34,10 @@ jobs:
                 docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-develop
                 echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
                 docker push ${IMG}:${TAG_PREFIX}-develop
+                echo -e "\nPush image into Ali registry\n"
+                echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin
+                docker tag ${IMG}:${TAG_PREFIX}-develop ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-develop
+                docker push ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-develop
             fi
 
         elif [[ "${git_ref_type}" == "tags" ]]; then
@@ -41,6 +46,7 @@ jobs:
             cd ./${CODE_ROOT}
             docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-${git_ref_name}
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+            echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin
             docker push ${IMG}:${TAG_PREFIX}-${git_ref_name}
             retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
             retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')
@@ -51,5 +57,8 @@ jobs:
                 echo -e "\nRetag ${TAG_PREFIX}-${git_ref_name} to ${TAG_PREFIX}-${retag} and push it\n"
                 docker tag ${IMG}:${TAG_PREFIX}-${git_ref_name} ${IMG}:${TAG_PREFIX}-${retag}
                 docker push ${IMG}:${TAG_PREFIX}-${retag}
+                echo -e "\nPush image into Ali registry\n"
+                docker tag ${IMG}:${TAG_PREFIX}-${retag} ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-${retag}
+                docker push ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-${retag}
             done
         fi

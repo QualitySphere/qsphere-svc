@@ -29,13 +29,15 @@ jobs:
                 echo -e "Skip build since master branch"
                 exit 0
             elif [[ "${git_ref_name}" == "develop" ]]; then
+
                 echo -e "\nBuild and push ${TAG_PREFIX}-develop image\n"
                 cd ./${CODE_ROOT}
                 docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-develop
                 echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
                 docker push ${IMG}:${TAG_PREFIX}-develop
+
                 echo -e "\nPush image into Ali registry\n"
-                echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin
+                echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin ${ALI_REGISTRY}
                 docker tag ${IMG}:${TAG_PREFIX}-develop ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-develop
                 docker push ${ALI_REGISTRY}/${IMG}:${TAG_PREFIX}-develop
             fi
@@ -46,7 +48,7 @@ jobs:
             cd ./${CODE_ROOT}
             docker build . --file Dockerfile --tag ${IMG}:${TAG_PREFIX}-${git_ref_name}
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
-            echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin
+            echo "${{ secrets.ALI_DC_PASSWORD }}" | docker login -u ${{ secrets.ALI_DC_USER }} --password-stdin ${ALI_REGISTRY}
             docker push ${IMG}:${TAG_PREFIX}-${git_ref_name}
             retag_1=$(echo ${git_ref_name} | awk -F '.' '{print $1}')
             retag_2=$(echo ${git_ref_name} | awk -F '.' '{print $1"."$2}')

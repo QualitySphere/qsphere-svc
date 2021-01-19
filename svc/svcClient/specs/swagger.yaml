@@ -2,7 +2,7 @@ openapi: "3.0.0"
 
 info:
   title: "Quality Sphere"
-  version: "1.0.0"
+  version: "1.1.0"
 
 servers:
   - url: http://0.0.0.0:6001/api
@@ -77,7 +77,7 @@ paths:
                 info:
                   type: object
                   example: "{
-                    host: 'http://bx.baoxian-sz.com',
+                    host: 'https://office.baoxian-sz.com',
                     account: 'baoxian-sz'
                   }"
                 secret:
@@ -130,7 +130,7 @@ paths:
                 info:
                   type: object
                   example: "{
-                      host: 'http://bx.baoxian-sz.com',
+                      host: 'https://office.baoxian-sz.com',
                       account: 'baoxian-sz'
                   }"
                 secret:

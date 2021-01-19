@@ -9,8 +9,8 @@ import os
 db = Database(
     provider='postgres',
     user=os.getenv('PG_USER') or 'postgres',
-    password=os.getenv('PG_PASSWORD') or 'password',
-    host=os.getenv('PG_SERVER') or '127.0.0.1',
+    password=os.getenv('PG_PASS') or 'password',
+    host=os.getenv('PG_HOST') or '127.0.0.1',
     port=os.getenv('PG_PORT') or '5432',
     database='qsphere'
 )

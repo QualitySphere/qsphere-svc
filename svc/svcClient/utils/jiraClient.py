@@ -16,7 +16,7 @@ class JiraSession(object):
         self.password = password
         jira_opts = {
             'server': self.server,
-            'verify': False,
+            'verify': True,
         }
         self.jira_session = JIRA(jira_opts, basic_auth=(self.account, self.password))
 
@@ -43,6 +43,33 @@ class JiraSession(object):
         """
         logging.info(u'Get JIRA Projects')
         return self.jira_session.projects()
+
+    def get_sprints(self):
+        """
+        Get jira sprints
+        :return: <name, id>
+        """
+        logging.info(u'Get JIRA Sprints')
+        jira_sprints = list()
+        _boards = self.jira_session.boards()
+        for _board in _boards:
+            _sprints = self.jira_session.sprints(_board.id)
+            jira_sprints = jira_sprints + _sprints
+        return jira_sprints
+
+    def get_fields(self):
+        """
+        Get jira fields
+        :return: [{'name':'','id':''}]
+        """
+        logging.info(u'Get JIRA Fields')
+        _fields = list()
+        for _field in self.jira_session.fields():
+            _fields.append({
+                'name': _field['name'],
+                'id': _field['id']
+            })
+        return _fields
 
     def get_issue_types(self):
         """

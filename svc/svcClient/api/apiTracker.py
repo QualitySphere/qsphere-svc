@@ -9,7 +9,7 @@ def get_tracker(tracker_id: str):
     """
     GET /api/tracker/{tracker_id}
     :param tracker_id:
-    :return:
+    :return: {}
     """
     try:
         tracker = svcTracker.get_tracker(tracker_id)
@@ -25,7 +25,7 @@ def add_tracker(body):
     """
     POST /api/tracker
     :param body:
-    :return:
+    :return: tracker_id
     """
     _name = body.get('name')
     _type = body.get('type')
@@ -51,7 +51,7 @@ def update_tracker(tracker_id, body):
     PUT /api/tracker/{tracker_id}
     :param tracker_id:
     :param body:
-    :return:
+    :return: tracker_id
     """
     _name = body.get('name')
     _type = body.get('type')
@@ -76,7 +76,7 @@ def update_tracker(tracker_id, body):
 def list_tracker():
     """
     GET /api/tracker
-    :return:
+    :return: [{}]
     """
     try:
         trackers = svcTracker.list_tracker(tracker_status=['active', 'disable'])
@@ -140,7 +140,7 @@ def list_tracker_project(tracker_id):
     """
     GET /api/tracker/{tracker_id}/project
     :param tracker_id:
-    :return: {key: value}
+    :return: [{'key': '', 'value': ''}]
     """
     try:
         projects = svcTracker.list_tracker_project(tracker_id)
@@ -159,7 +159,7 @@ def list_tracker_issue_type(tracker_id):
     """
     GET /api/tracker/{tracker_id}/issue_types
     :param tracker_id:
-    :return: {key: value}
+    :return: [{'key': '', 'value': ''}]
     """
     try:
         types = svcTracker.list_tracker_issue_type(tracker_id)
@@ -178,7 +178,7 @@ def list_tracker_issue_status(tracker_id):
     """
     GET /api/tracker/{tracker_id}/issue_statuses
     :param tracker_id:
-    :return: {key: value}
+    :return: [{'key': '', 'value': ''}]
     """
     try:
         statuses = svcTracker.list_tracker_issue_status(tracker_id)
@@ -191,3 +191,63 @@ def list_tracker_issue_status(tracker_id):
             }, 200
     except Exception as e:
         raise DefaultError(title='List Issue Statuses From Tracker Failed', detail=str(e))
+
+
+def list_tracker_sprint(tracker_id):
+    """
+    GET /api/tracker/{tracker_id}/sprint
+    :param tracker_id:
+    :return: [{'key': '', 'value': ''}]
+    """
+    try:
+        sprints = svcTracker.list_tracker_sprint(tracker_id)
+        return {
+            'title': 'Succeed to list Sprint from tracker',
+            'detail': {
+                'count': len(sprints),
+                'results': sprints
+            }
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Failed to list Sprint from tracker', detail=str(e))
+
+
+def list_tracker_issue_field(tracker_id):
+    """
+    GET /api/tracker/{tracker_id}/issue_field
+    :param tracker_id:
+    :return: [{'key': '', 'value': ''}]
+    """
+    try:
+        fields = svcTracker.list_tracker_issue_field(tracker_id)
+        return {
+            'title': 'Succeed to list Issue Field from tracker',
+            'detail': {
+                'count': len(fields),
+                'results': fields
+            }
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Failed to list Issue Field from tracker', detail=str(e))
+
+
+def list_tracker_issue_field_value(tracker_id, issue_field_id, project_id):
+    """
+    GET /api/tracker/{tracker_id}/issue_field/{issue_field_id}
+    :param tracker_id:
+    :param issue_field_id:
+    :param project_id:
+    :return: [{'key': '', 'value': ''}]
+    """
+    try:
+        values = svcTracker.list_tracker_issue_field_value(tracker_id, issue_field_id, project_id)
+        return {
+            'title': 'Succeed to list Issue Field Value from tracker',
+            'detail': {
+                'count': len(values),
+                'results': values
+            }
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Failed to list Issue Field Value from tracker', detail=str(e))
+

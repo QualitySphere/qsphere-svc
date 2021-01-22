@@ -11,21 +11,29 @@ import logging
 
 class JiraSession(object):
     def __init__(self, server, account, password):
-        self.server = server
-        self.account = account
-        self.password = password
-        jira_opts = {
-            'server': self.server,
+        self.__server = server
+        self.__account = account
+        self.__password = password
+        self.__jira_opts = {
+            'server': self.__server,
             'verify': True,
         }
-        self.jira_session = JIRA(jira_opts, basic_auth=(self.account, self.password))
+        self.__session = JIRA(self.__jira_opts, basic_auth=(self.__account, self.__password))
 
     def __enter__(self):
-        assert self.jira_session.current_user() == self.account
+        assert self.__session.current_user() == self.__account
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.jira_session.close()
+        self.__session.close()
+
+    def get_user(self):
+        """
+        Get jira user
+        :return:
+        """
+        logging.info(u'Get JIRA Current User')
+        return self.__session.current_user()
 
     def search_issues(self, jql):
         """
@@ -34,7 +42,7 @@ class JiraSession(object):
         :return:
         """
         logging.info(u'JIRA Search: %s' % jql)
-        return self.jira_session.search_issues(jql_str=jql, maxResults=128, json_result=True)
+        return self.__session.search_issues(jql_str=jql, maxResults=128, json_result=True)
 
     def get_projects(self):
         """
@@ -42,7 +50,7 @@ class JiraSession(object):
         :return: <key, name, id>
         """
         logging.info(u'Get JIRA Projects')
-        return self.jira_session.projects()
+        return self.__session.projects()
 
     def get_sprints(self):
         """
@@ -51,20 +59,20 @@ class JiraSession(object):
         """
         logging.info(u'Get JIRA Sprints')
         jira_sprints = list()
-        _boards = self.jira_session.boards()
+        _boards = self.__session.boards()
         for _board in _boards:
-            _sprints = self.jira_session.sprints(_board.id)
+            _sprints = self.__session.sprints(_board.id)
             jira_sprints = jira_sprints + _sprints
         return jira_sprints
 
-    def get_fields(self):
+    def get_issue_fields(self):
         """
         Get jira fields
         :return: [{'name':'','id':''}]
         """
         logging.info(u'Get JIRA Fields')
         _fields = list()
-        for _field in self.jira_session.fields():
+        for _field in self.__session.fields():
             _fields.append({
                 'name': _field['name'],
                 'id': _field['id']
@@ -77,7 +85,7 @@ class JiraSession(object):
         :return: <name, id>
         """
         logging.info(u'Get JIRA Issue Types')
-        return self.jira_session.issue_types()
+        return self.__session.issue_types()
 
     def get_issue_statuses(self):
         """
@@ -85,15 +93,16 @@ class JiraSession(object):
         :return: <name, id>
         """
         logging.info(u'Get JIRA Issue Statuses')
-        return self.jira_session.statuses()
+        return self.__session.statuses()
 
-    def get_user(self):
+    def get_project_versions(self, pid: str):
         """
-        Get jira user
-        :return:
+        Get project versions
+        :param pid:
+        :return: [<name, id>]
         """
-        logging.info(u'Get JIRA Current User')
-        return self.jira_session.current_user()
+        logging.info(u'Get JIRA Project %s Versions' % pid)
+        return self.__session.project_versions(project=pid)
 
 
 if __name__ == '__main__':

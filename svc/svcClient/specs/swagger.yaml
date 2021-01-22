@@ -5,7 +5,7 @@ info:
   version: "1.1.0"
 
 servers:
-  - url: http://0.0.0.0:6001/api
+  - url: http://0.0.0.0/api
 
 tags:
   - name: "status"
@@ -192,7 +192,7 @@ paths:
         200:
           description: succeed to disable tracker and return True
 
-  /tracker/{tracker_id}/projects:
+  /tracker/{tracker_id}/project:
     get:  # GET projects from tracker
       tags:
         - "tracker"
@@ -209,11 +209,74 @@ paths:
         200:
           description: 'succeed to list project from tracker and return projects {key: value}'
 
+  /tracker/{tracker_id}/sprint:
+    get:
+      tags:
+        - "tracker"
+      description: List sprints from tracker
+      operationId: api.apiTracker.list_tracker_sprint
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: 'succeed to list sprint from tracker and return sprints {key: value}'
+
+  /tracker/{tracker_id}/issue_field:
+    get:
+      tags:
+        - "tracker"
+      description: List issue fields from tracker
+      operationId: api.apiTracker.list_tracker_issue_field
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+      responses:
+        200:
+          description: 'succeed to list issue field from tracker and return issue fields {key: value}'
+
+  /tracker/{tracker_id}/issue_field/{issue_field_id}:
+    get:
+      tags:
+        - "tracker"
+      description: List issue field values from tracker
+      operationId: api.apiTracker.list_tracker_issue_field_value
+      parameters:
+        - name: tracker_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+        - name: issue_field_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'label'
+        - name: project_id
+          in: query
+          required: false
+          schema:
+            type: string
+            example: 'QS'
+      responses:
+        200:
+          description: 'succeed to list issue field value from tracker and return issue field values {key: value}'
+
   /tracker/{tracker_id}/issue_statuses:
     get:  # GET issue statuses from tracker
       tags:
         - "tracker"
-      description: List issue statuses from tracker
+      description: [replaced by /tracker/{tracker_id}/issue_field/{issue_field_is}] List issue statuses from tracker
       operationId: api.apiTracker.list_tracker_issue_status
       parameters:
         - name: tracker_id
@@ -230,7 +293,7 @@ paths:
     get:  # GET issue types from tracker
       tags:
         - "tracker"
-      description: List issue type from tracker
+      description: [replaced by /tracker/{tracker_id}/issue_field/{issue_field_is}] List issue type from tracker
       operationId: api.apiTracker.list_tracker_issue_type
       parameters:
         - name: tracker_id

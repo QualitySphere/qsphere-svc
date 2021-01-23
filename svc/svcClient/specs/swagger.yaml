@@ -8,61 +8,69 @@ servers:
   - url: http://0.0.0.0/api
 
 tags:
-  - name: "status"
+  - name: "check"
   - name: "tracker"
   - name: "project"
   - name: "sprint"
   - name: "issue"
 
 paths:
-  /status:  # GET status
+  /status:
     get:
       tags:
-        - "status"
-      description: Check Health Status
+        - "check"
+      description: "Check Health Status"
       operationId: api.apiHealth.health_check
       responses:
         200:
-          description: Status is healthy
+          description: "Service status is healthy"
 
 
-  /machine:
+  /hosts:
     get:
       tags:
-        - "status"
-      description: Get Machine Status
-      operationId: api.apiHealth.machine_check
+        - "check"
+      description: "Get Host Status"
+      operationId: api.apiHealth.host_check
       responses:
         200:
-          description: succeed to list all machines status
+          description: "succeed to list all hosts status"
 
 
   /trackers:
-    get:  # List trackers
+    get:
       tags:
         - "tracker"
-      description: List All Trackers
+      description: "List All Trackers"
       operationId: api.apiTracker.list_tracker
       responses:
         200:
-          description: "succeed to list all trackers and return tracker info object
-            [{
-              'id': 'UUID',
-              'name': 'String',
-              'type': 'String',
-              'info': {
-                'host': 'String',
-                'account': 'String'
-              },
-              'status': 'String'
-            }]
-          "
-
-  /tracker:
-    post: # POST tracker
+          description: "succeed to list all trackers and return tracker info object"
+          content:
+            application/json:
+              schema: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  info:
+                    type: object
+                    properties:
+                      host:
+                        type: string
+                      account:
+                        type: string
+                  status:
+                    type: string
+    post:
       tags:
         - "tracker"
-      description: Add Tracker
+      description: "Add Tracker"
       operationId: api.apiTracker.add_tracker
       requestBody:
         content:
@@ -72,28 +80,31 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'MyTracker'
+                  example: "MyTracker"
                 type:
                   type: string
                   example: 'jira'
                 info:
                   type: object
-                  example: "{
-                    host: 'https://office.baoxian-sz.com',
-                    account: 'baoxian-sz'
-                  }"
-                secret:
+                  properties:
+                    host:
+                      type: string
+                      example: "http://qualitysphere.github.io"
+                    account:
+                      type: string
+                      example: "admin"
+                token:
                   type: string
-                  example: 'password'
+                  example: "PassWord"
       responses:
         200:
-          description: succeed to add tracker and return tracker ID
+          description: "succeed to add tracker and return tracker ID"
 
   /tracker/{tracker_id}:
-    get:  # GET tracker
+    get:
       tags:
         - "tracker"
-      description: Get tracker information
+      description: "Get tracker information"
       operationId: api.apiTracker.get_tracker
       parameters:
         - name: tracker_id
@@ -104,11 +115,11 @@ paths:
             example: 'e095081f-b145-4df7-affa-0412fce2ea88'
       responses:
         200:
-          description: succeed to get tracker and return tracker info object
-    put:  # PUT tracker ID
+          description: "succeed to get tracker and return tracker info object"
+    put:
       tags:
         - "tracker"
-      description: Update tracker information
+      description: "Update tracker information"
       operationId: api.apiTracker.update_tracker
       parameters:
         - name: tracker_id
@@ -125,29 +136,29 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'MyTracker'
+                  example: "MyTracker"
                 type:
                   type: string
-                  example: 'jira'
+                  example: "jira"
                 info:
                   type: object
-                  example: "{
-                      host: 'https://office.baoxian-sz.com',
-                      account: 'baoxian-sz'
-                  }"
-                secret:
+                  properties:
+                    host:
+                      type: string
+                      example: "https://qualitysphere.github.io"
+                    account:
+                      type: string
+                      example: "admin"
+                token:
                   type: string
-                  example: 'password'
-                status:
-                  type: string
-                  example: 'disable'
+                  example: "PassWord"
       responses:
         200:
-          description: succeed to update tracker and return tracker ID
-    delete: # DELETE tracker ID
+          description: "succeed to update tracker and return tracker ID"
+    delete:
       tags:
         - "tracker"
-      description: Delete connection information
+      description: "Delete tracker information"
       operationId: api.apiTracker.delete_tracker
       parameters:
         - name: tracker_id
@@ -155,50 +166,42 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         204:
-          description: succeed to delete tracker and return True
+          description: "succeed to delete tracker and return True"
 
-  /tracker/{tracker_id}/active:
-    put:  # PUT tracker active
+  /tracker/{tracker_id}/status:
+    put:
       tags:
         - "tracker"
-      description: Active tracker
-      operationId: api.apiTracker.active_tracker
+      description: "Active/Disable tracker"
+      operationId: api.apiTracker.update_tracker_status
       parameters:
         - name: tracker_id
           in: path
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "active"
       responses:
         200:
-          description: succeed to active tracker and return True
-
-  /tracker/{tracker_id}/disable:
-    put:  # PUT tracker disable
-      tags:
-        - "tracker"
-      description: Disable tracker status
-      operationId: api.apiTracker.disable_tracker
-      parameters:
-        - name: tracker_id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      responses:
-        200:
-          description: succeed to disable tracker and return True
+          description: "succeed to update tracker status and return tracker status"
 
   /tracker/{tracker_id}/projects:
-    get:  # GET projects from tracker
+    get:
       tags:
         - "tracker"
-      description: List project from tracker
+      description: "List project from tracker"
       operationId: api.apiTracker.list_tracker_project
       parameters:
         - name: tracker_id
@@ -206,16 +209,27 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: 'succeed to list project from tracker and return projects {key: value}'
+          description: "succeed to list project from tracker and return projects"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
 
   /tracker/{tracker_id}/sprints:
     get:
       tags:
         - "tracker"
-      description: List sprints from tracker
+      description: "List sprint from tracker"
       operationId: api.apiTracker.list_tracker_sprint
       parameters:
         - name: tracker_id
@@ -223,16 +237,27 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: 'succeed to list sprint from tracker and return sprints {key: value}'
+          description: "succeed to list sprint from tracker and return sprints"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
 
   /tracker/{tracker_id}/issue_fields:
     get:
       tags:
         - "tracker"
-      description: List issue fields from tracker
+      description: "List issue fields from tracker"
       operationId: api.apiTracker.list_tracker_issue_field
       parameters:
         - name: tracker_id
@@ -240,16 +265,27 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: 'succeed to list issue field from tracker and return issue fields {key: value}'
+          description: "succeed to list issue field from tracker and return issue fields"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
 
-  /tracker/{tracker_id}/issue_field/{issue_field_id}:
+  /tracker/{tracker_id}/issue_field:
     get:
       tags:
         - "tracker"
-      description: List issue field values from tracker
+      description: "Get issue field values from tracker"
       operationId: api.apiTracker.list_tracker_issue_field_value
       parameters:
         - name: tracker_id
@@ -257,75 +293,75 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-        - name: issue_field_id
-          in: path
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
+        - name: field
+          in: query
           required: true
           schema:
             type: string
-            example: 'label'
-        - name: project_id
+            example: "label"
+        - name: project
           in: query
           required: false
           schema:
             type: string
-            example: 'QS'
+            example: "QS"
       responses:
         200:
-          description: 'succeed to list issue field value from tracker and return issue field values {key: value}'
-
-  /tracker/{tracker_id}/issue_statuses:
-    get:  # GET issue statuses from tracker
-      deprecated: true
-      tags:
-        - "tracker"
-      description: "[replaced by /tracker/{tracker_id}/issue_field/{issue_field_is}] List issue statuses from tracker"
-      operationId: api.apiTracker.list_tracker_issue_status
-      parameters:
-        - name: tracker_id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      responses:
-        200:
-          description: 'succeed to list issue status from tracker and return statuses {key: value}'
-
-  /tracker/{tracker_id}/issue_types:
-    deprecated: true
-    get:  # GET issue types from tracker
-      tags:
-        - "tracker"
-      description: "[replaced by /tracker/{tracker_id}/issue_field/{issue_field_is}] List issue type from tracker"
-      operationId: api.apiTracker.list_tracker_issue_type
-      parameters:
-        - name: tracker_id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      responses:
-        200:
-          description: 'succeed to list issue type from tracker and return types {key: value}'
+          description: "succeed to get issue field values from tracker and return values"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
 
 
   /projects:
-      get:  # List projects
-        tags:
-          - "project"
-        description: List All Projects
-        operationId: api.apiProject.list_project
-        responses:
-          200:
-            description: succeed to list project and return project info object
-
-  /project:
-    post:  # POST project
+    get:
       tags:
         - "project"
-      description: Add Project
+      description: "List All Projects"
+      operationId: api.apiProject.list_project
+      responses:
+        200:
+          description: "succeed to list project and return projects"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    issue_tracker:
+                      type: object
+                      properties:
+                        tracker_name:
+                          type: string
+                        project_value:
+                          type: string
+                    case_tracker:
+                      type: object
+                      properties:
+                        tracker_name:
+                          type: string
+                        project_value:
+                          type: string
+                    status:
+                      type: string
+    post:
+      tags:
+        - "project"
+      description: "Add Project"
       operationId: api.apiProject.add_project
       requestBody:
         content:
@@ -336,39 +372,39 @@ paths:
                 name:
                   type: string
                   example: "MyProject"
-                tracker:
+                issue_tracker:
                   type: object
-                  example: "{
-                    issue: {
-                      id: 'e095081f-b145-4df7-affa-0412fce2ea88',
-                      name: 'IssueTracker'
-                    },
-                    case: {
-                      id: 'e095081f-b145-4df7-affa-0412fce2ea88',
-                      name: 'CaseTracker'
-                    }
-                  }"
-                project:
+                  properties:
+                    tracker_id:
+                      type: string
+                      example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                    project_key:
+                      type: string
+                      example: "QS"
+                    project_value:
+                      type: string
+                      example: "QSphere"
+                case_tracker:
                   type: object
-                  example: "{
-                    issue: {
-                      key: 'project1',
-                      value: 'qsphere'
-                    },
-                    case: {
-                      key: 'project',
-                      value: 'qsphere'
-                    },
-                  }"
+                  properties:
+                    tracker_id:
+                      type: string
+                      example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                    project_key:
+                      type: string
+                      example: "QS"
+                    project_value:
+                      type: string
+                      example: "QSphere"
       responses:
         200:
           description: "succeed to add project and return project ID"
 
   /project/{project_id}:
-    get:  # GET project ID
+    get:
       tags:
         - "project"
-      description: Get Project
+      description: "Get Project"
       operationId: api.apiProject.get_project
       parameters:
         - name: project_id
@@ -376,14 +412,47 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: succeed to get project
-    put:  # PUT project ID
+          description: "succeed to get project"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  issue_tracker:
+                    type: object
+                    properties:
+                      tracker_id:
+                        type: string
+                      tracker_name:
+                        type: string
+                      project_key:
+                        type: string
+                      project_value:
+                        type: string
+                  case_tracker:
+                    type: object
+                    properties:
+                      tracker_id:
+                        type: string
+                      tracker_name:
+                        type: string
+                      project_key:
+                        type: string
+                      project_value:
+                        type: string
+                  status:
+                    type: string
+    put:
       tags:
         - "project"
-      description: Update Project
+      description: "Update Project"
       operationId: api.apiProject.update_project
       parameters:
         - name: project_id
@@ -391,26 +460,35 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                connection_id:
+                name:
                   type: string
-                  example: 'e095781f-b145-4df7-agfa-0412fci2ea88'
-                project_name:
-                  type: string
-                  example: 'qsphere'
+                  example: "MyProject"
+                issue_tracker:
+                  type: object
+                  properties:
+                    tracker_id:
+                      type: string
+                      example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                    project_key:
+                      type: string
+                      example: "QS"
+                    project_value:
+                      type: string
+                      example: "QSphere"
       responses:
         200:
-          description: succeed to get project
-    delete:  # DELETE project ID
+          description: "succeed to update project"
+    delete:
       tags:
         - "project"
-      description: Delete Project
+      description: "Delete Project"
       operationId: api.apiProject.delete_project
       parameters:
         - name: project_id
@@ -418,61 +496,73 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         204:
-          description: succeed to delete project
+          description: "succeed to delete project"
 
-  /project/{project_id}/disable:
-    put:  # PUT project status as disable
+  /project/{project_id}/status:
+    put:
       tags:
         - "project"
-      description: Disable Project
-      operationId: api.apiProject.disable_project
+      description: "Active/Disable Project"
+      operationId: api.apiProject.update_project_status
       parameters:
         - name: project_id
           in: path
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "active"
       responses:
         200:
-          description: succeed to disable project
-
-  /project/{project_id}/active:
-    put:  # PUT project status as active
-      tags:
-        - "project"
-      description: Active Project
-      operationId: api.apiProject.active_project
-      parameters:
-        - name: project_id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      responses:
-        200:
-          description: succeed to active project
+          description: "succeed to update project status and return project's status"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
 
 
   /sprints:
-      get:  # List sprints
-        tags:
-          - "sprint"
-        description: List All Sprint
-        operationId: api.apiSprint.list_sprint
-        responses:
-          200:
-            description: succeed to list sprint and return sprint objects
-
-  /sprint:
-    post:  # POST sprint
+    get:
       tags:
         - "sprint"
-      description: Create Sprint
+      description: "List All Sprint"
+      operationId: api.apiSprint.list_sprint
+      responses:
+        200:
+          description: "succeed to list sprint and return sprint objects"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    project_name:
+                      type: string
+                    status:
+                      type: string
+    post:
+      tags:
+        - "sprint"
+      description: "Add Sprint"
       operationId: api.apiSprint.add_sprint
       requestBody:
         content:
@@ -482,45 +572,159 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'Qsphere 1.0'
+                  example: "Qsphere 1.1"
                 project_id:
                   type: string
-                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-                version:
-                  type: string
-                  example: 'qsphere1.0'
-                requirements:
-                  type: array
-                  example: '[supportJIRA,caseProcess]'
-                rcs:
-                  type: array
-                  example: '[RC1,RC2,RC3]'
-                issue:
+                  example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                issue_config:
                   type: object
-                  example: "{
-                    types: [Improvement,Defect],
-                    found_since: [RegressionImprove,QAMissed,NewFeature,Customer],
-                    statuses: {
-                      fixing: [new,fixing],
-                      fixed: [fixed],
-                      verified: [verified]
-                    },
-                    categories: [NewFeature,Previous,Regression,Others]
-                  }"
-                case:
+                  properties:
+                    sprint:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: "sprint"
+                        value:
+                          type: array
+                          items:
+                            type: string
+                    requirement:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "support JIRA"
+                            - "case process"
+                    version:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          exemple:
+                            - "qsphere1.1"
+                    rc:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "RC1"
+                            - "RC2"
+                            - "RC3"
+                    type:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Improvement"
+                            - "Defect"
+                    since:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        newfeature:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "NewFeature"
+                        improve:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "RegressionImprove"
+                        customer:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Customer"
+                        qamissed:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "QAMissed"
+                    category:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        newfeature:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "NewFeature"
+                        regression:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Regression"
+                        previous:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Previous"
+                    status:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        fixing:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "backlog"
+                            - "new"
+                            - "fixing"
+                        fixed:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "fixed"
+                        verified:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "verified"
+                case_config:
                   type: object
-                  example: "{
-                    statuses: [],
-                  }"
       responses:
         200:
-          description: succeed to add sprint and return sprint ID
+          description: "succeed to add sprint and return sprint ID"
 
   /sprint/{sprint_id}:
-    get:  # GET sprint
+    get:
       tags:
         - "sprint"
-      description: Get Sprint
+      description: "Get Sprint"
       operationId: api.apiSprint.get_sprint
       parameters:
         - name: sprint_id
@@ -528,14 +732,14 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: succeed to get sprint and return sprint info object
-    delete:  # DELETE sprint ID
+          description: "succeed to get sprint and return sprint info object"
+    delete:
       tags:
         - "sprint"
-      description: Delete Sprint
+      description: "Delete Sprint"
       operationId: api.apiSprint.delete_sprint
       parameters:
         - name: sprint_id
@@ -543,14 +747,14 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         204:
-          description: succeed to delete sprint
-    put:  # PUT sprint ID
+          description: "succeed to delete sprint"
+    put:
       tags:
         - "sprint"
-      description: Update Sprint
+      description: "Update Sprint"
       operationId: api.apiSprint.update_sprint
       parameters:
         - name: sprint_id
@@ -558,7 +762,7 @@ paths:
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       requestBody:
         content:
           application/json:
@@ -567,80 +771,184 @@ paths:
               properties:
                 name:
                   type: string
-                  example: 'Qsphere 1.0'
+                  example: "Qsphere 1.1"
                 project_id:
                   type: string
-                  example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-                version:
-                  type: string
-                  example: 'qsphere1.0'
-                requirements:
-                  type: array
-                  example: '[supportJIRA,caseProcess]'
-                rcs:
-                  type: array
-                  example: '[RC1,RC2,RC3]'
-                issue:
+                  example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                issue_config:
                   type: object
-                  example: "{
-                    types: [Improvement,Defect],
-                    found_since: [RegressionImprove,QAMissed,NewFeature,Customer],
-                    statuses: {
-                      fixing: [new,fixing],
-                      fixed: [fixed],
-                      verified: [verified]
-                    },
-                    categories: [NewFeature,Previous,Regression,Others]
-                  }"
-                case:
+                  properties:
+                    sprint:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: "sprint"
+                        value:
+                          type: array
+                          items:
+                            type: string
+                    requirement:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "support JIRA"
+                            - "case process"
+                    version:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          exemple:
+                            - "qsphere1.1"
+                    rc:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "RC1"
+                            - "RC2"
+                            - "RC3"
+                    type:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        value:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Improvement"
+                            - "Defect"
+                    since:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        newfeature:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "NewFeature"
+                        improve:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "RegressionImprove"
+                        customer:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Customer"
+                        qamissed:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "QAMissed"
+                    category:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        newfeature:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "NewFeature"
+                        regression:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Regression"
+                        previous:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "Previous"
+                    status:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                        fixing:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "backlog"
+                            - "new"
+                            - "fixing"
+                        fixed:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "fixed"
+                        verified:
+                          type: array
+                          items:
+                            type: string
+                          example:
+                            - "verified"
+                case_config:
                   type: object
-                  example: "{
-                    statuses: [],
-                  }"
       responses:
         200:
-          description: succeed to update sprint and return sprint ID
+          description: "succeed to update sprint and return sprint ID"
 
-  /sprint/{sprint_id}/active:
-    put:  # PUT sprint as active
+  /sprint/{sprint_id}/status:
+    put:
       tags:
         - "sprint"
-      description: Active Sprint
-      operationId: api.apiSprint.active_sprint
+      description: "Active/Disable Sprint"
+      operationId: api.apiSprint.update_sprint_status
       parameters:
         - name: sprint_id
           in: path
           required: true
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: succeed to active sprint
-
-  /sprint/{sprint_id}/disable:
-    put:  # PUT sprint as disable
-      tags:
-        - "sprint"
-      description: Active Sprint
-      operationId: api.apiSprint.disable_sprint
-      parameters:
-        - name: sprint_id
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
-      responses:
-        200:
-          description: succeed to disable sprint
+          description: "succeed to active sprint"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
 
 
   /issue/sync:
-    get:  # GET sync all sprints issue
+    get:
       tags:
         - "issue"
-      description: Sync All Sprints Issues
+      description: "Sync All Sprints Issues"
       operationId: api.apiIssue.sync_issue
       parameters:
         - name: sprint_id
@@ -648,17 +956,17 @@ paths:
           required: false
           schema:
             type: string
-            example: 'e095081f-b145-4df7-affa-0412fce2ea88'
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: succeed to sync data from issue tracker server
+          description: "succeed to sync data from issue tracker server"
 
   /issue/status:
-    get:  # GET issue status
+    get:
       tags:
         - "issue"
-      description: Get All Active Sprints Bug Verification
+      description: "Get All Active Sprints Bug Verification"
       operationId: api.apiIssue.get_active_sprint_issue_status
       responses:
         200:
-          description: succeed to get active sprint issue status
+          description: "succeed to get active sprint issue status"

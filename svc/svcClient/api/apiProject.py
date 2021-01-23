@@ -76,6 +76,10 @@ def update_project(project_id, body):
         raise DefaultError(title='Update Project Failed', detail=str(e))
 
 
+def update_project_status(project_id, body):
+    pass
+
+
 def delete_project(project_id):
     """
     DELETE /api/project/{project_id}

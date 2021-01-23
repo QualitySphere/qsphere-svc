@@ -59,26 +59,6 @@ paths:
           "
 
   /tracker:
-    get:  # List trackers
-      deprecated: true
-      tags:
-        - "tracker"
-      description: List All Trackers
-      operationId: api.apiTracker.list_tracker
-      responses:
-        200:
-          description: "succeed to list all trackers and return tracker info object
-            [{
-              'id': 'UUID',
-              'name': 'String',
-              'type': 'String',
-              'info': {
-                'host': 'String',
-                'account': 'String'
-              },
-              'status': 'String'
-            }]
-          "
     post: # POST tracker
       tags:
         - "tracker"
@@ -342,15 +322,6 @@ paths:
             description: succeed to list project and return project info object
 
   /project:
-    get:  # GET project
-      deprecated: true
-      tags:
-        - "project"
-      description: List All Projects
-      operationId: api.apiProject.list_project
-      responses:
-        200:
-          description: succeed to list project and return project info object
     post:  # POST project
       tags:
         - "project"
@@ -498,15 +469,6 @@ paths:
             description: succeed to list sprint and return sprint objects
 
   /sprint:
-    get:  # GET sprint
-      deprecated: true
-      tags:
-        - "sprint"
-      description: List All Sprint
-      operationId: api.apiSprint.list_sprint
-      responses:
-        200:
-          description: succeed to list sprint and return sprint objects
     post:  # POST sprint
       tags:
         - "sprint"

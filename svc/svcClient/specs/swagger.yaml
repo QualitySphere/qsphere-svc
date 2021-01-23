@@ -37,8 +37,30 @@ paths:
           description: succeed to list all machines status
 
 
+  /trackers:
+    get:  # List trackers
+      tags:
+        - "tracker"
+      description: List All Trackers
+      operationId: api.apiTracker.list_tracker
+      responses:
+        200:
+          description: "succeed to list all trackers and return tracker info object
+            [{
+              'id': 'UUID',
+              'name': 'String',
+              'type': 'String',
+              'info': {
+                'host': 'String',
+                'account': 'String'
+              },
+              'status': 'String'
+            }]
+          "
+
   /tracker:
-    get:  # GET tracker
+    get:  # List trackers
+      deprecated: true
       tags:
         - "tracker"
       description: List All Trackers
@@ -88,7 +110,7 @@ paths:
           description: succeed to add tracker and return tracker ID
 
   /tracker/{tracker_id}:
-    get:  # GET tracker ID
+    get:  # GET tracker
       tags:
         - "tracker"
       description: Get tracker information
@@ -192,7 +214,7 @@ paths:
         200:
           description: succeed to disable tracker and return True
 
-  /tracker/{tracker_id}/project:
+  /tracker/{tracker_id}/projects:
     get:  # GET projects from tracker
       tags:
         - "tracker"
@@ -209,7 +231,7 @@ paths:
         200:
           description: 'succeed to list project from tracker and return projects {key: value}'
 
-  /tracker/{tracker_id}/sprint:
+  /tracker/{tracker_id}/sprints:
     get:
       tags:
         - "tracker"
@@ -226,7 +248,7 @@ paths:
         200:
           description: 'succeed to list sprint from tracker and return sprints {key: value}'
 
-  /tracker/{tracker_id}/issue_field:
+  /tracker/{tracker_id}/issue_fields:
     get:
       tags:
         - "tracker"
@@ -274,6 +296,7 @@ paths:
 
   /tracker/{tracker_id}/issue_statuses:
     get:  # GET issue statuses from tracker
+      deprecated: true
       tags:
         - "tracker"
       description: "[replaced by /tracker/{tracker_id}/issue_field/{issue_field_is}] List issue statuses from tracker"
@@ -290,6 +313,7 @@ paths:
           description: 'succeed to list issue status from tracker and return statuses {key: value}'
 
   /tracker/{tracker_id}/issue_types:
+    deprecated: true
     get:  # GET issue types from tracker
       tags:
         - "tracker"
@@ -307,8 +331,19 @@ paths:
           description: 'succeed to list issue type from tracker and return types {key: value}'
 
 
+  /projects:
+      get:  # List projects
+        tags:
+          - "project"
+        description: List All Projects
+        operationId: api.apiProject.list_project
+        responses:
+          200:
+            description: succeed to list project and return project info object
+
   /project:
     get:  # GET project
+      deprecated: true
       tags:
         - "project"
       description: List All Projects
@@ -452,8 +487,19 @@ paths:
           description: succeed to active project
 
 
+  /sprints:
+      get:  # List sprints
+        tags:
+          - "sprint"
+        description: List All Sprint
+        operationId: api.apiSprint.list_sprint
+        responses:
+          200:
+            description: succeed to list sprint and return sprint objects
+
   /sprint:
     get:  # GET sprint
+      deprecated: true
       tags:
         - "sprint"
       description: List All Sprint
@@ -509,7 +555,7 @@ paths:
           description: succeed to add sprint and return sprint ID
 
   /sprint/{sprint_id}:
-    get:  # GET sprint ID
+    get:  # GET sprint
       tags:
         - "sprint"
       description: Get Sprint

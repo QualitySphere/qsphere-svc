@@ -76,6 +76,10 @@ def update_sprint(sprint_id, body):
         raise DefaultError(title='Update Sprint Failed', detail=str(e))
 
 
+def update_sprint_status(sprint_id, body):
+    pass
+
+
 def delete_sprint(sprint_id):
     """
     DELETE /api/sprint/{sprint_id}

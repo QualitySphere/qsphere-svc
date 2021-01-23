@@ -73,6 +73,10 @@ def update_tracker(tracker_id, body):
         raise DefaultError(title='Update Connection Failed', detail=str(e))
 
 
+def update_tracker_status():
+    pass
+
+
 def list_tracker():
     """
     GET /api/tracker

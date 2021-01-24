@@ -19,9 +19,11 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image for service base image
       run : |
+        cd ./${CODE_ROOT}
         docker build . --file Dockerfile-svc-base --tag ${IMG}:svc-base
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
         docker push ${IMG}:svc-base
+        cd ..
     - name: Build the Docker image for branch
       run: |
         git_ref_type=$(echo "${{ github.ref }}" | awk -F '/' '{print $2}')

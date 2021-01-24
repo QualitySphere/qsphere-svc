@@ -8,7 +8,7 @@ import json
 
 def health_check():
     return {
-        'Status': 'Healthy'
+        'status': 'healthy'
     }, 200
 
 

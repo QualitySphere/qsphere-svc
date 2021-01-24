@@ -1,5 +1,5 @@
 FROM bxwill/qsphere:svc-base
-MAINTAINER shiwei@baoxian-sz.com
+LABEL maintainer="v.stone@163.com"
 
 WORKDIR /workspace
 COPY . .

@@ -28,10 +28,12 @@ def add_tracker(body):
     :return: tracker_id
     """
     try:
-        tracker_id = svcTracker.add_tracker(tracker_name=body.get('name'),
-                                            tracker_type=body.get('type'),
-                                            tracker_info=body.get('info'),
-                                            tracker_secret=body.get('token'))
+        tracker_id = svcTracker.add_tracker(
+            tracker_name=body.get('name'),
+            tracker_type=body.get('type'),
+            tracker_info=body.get('info'),
+            tracker_token=body.get('token')
+        )
         return {
             'title': 'Succeed to add Tracker',
             'detail': tracker_id
@@ -48,11 +50,13 @@ def update_tracker(tracker_id, body):
     :return: tracker_id
     """
     try:
-        tracker_id = svcTracker.update_tracker(tracker_id=tracker_id,
-                                               tracker_name=body.get('name'),
-                                               tracker_type=body.get('type'),
-                                               tracker_info=body.get('info'),
-                                               tracker_secret=body.get('token'))
+        tracker_id = svcTracker.update_tracker(
+            tracker_id=tracker_id,
+            tracker_name=body.get('name'),
+            tracker_type=body.get('type'),
+            tracker_info=body.get('info'),
+            tracker_token=body.get('token')
+        )
         return {
             'title': 'Succeed to update Tracker',
             'detail': tracker_id
@@ -69,7 +73,10 @@ def update_tracker_status(tracker_id, status):
     :return:
     """
     try:
-        tracker_status = svcTracker.set_tracker_status(tracker_id=tracker_id, tracker_status=status)
+        tracker_status = svcTracker.set_tracker_status(
+            tracker_id=tracker_id,
+            tracker_status=status
+        )
         return {
             'title': 'Succeed to change Tracker status',
             'detail': tracker_status
@@ -85,7 +92,9 @@ def list_tracker():
     :return: [{}]
     """
     try:
-        trackers = svcTracker.list_tracker(tracker_status=['active', 'disable'])
+        trackers = svcTracker.list_tracker(
+            tracker_status=['active', 'disable']
+        )
         return {
             'title': 'Succeed to list Tracker',
             'detail': {
@@ -104,7 +113,10 @@ def delete_tracker(tracker_id):
     :return:
     """
     try:
-        svcTracker.set_tracker_status(tracker_id, 'delete')
+        svcTracker.set_tracker_status(
+            tracker_id=tracker_id,
+            tracker_status='delete'
+        )
         return {
             'title': 'Succeed to delete Tracker'
         }, 204
@@ -206,7 +218,9 @@ def list_tracker_sprint(tracker_id):
     :return: [{'key': '', 'value': ''}]
     """
     try:
-        sprints = svcTracker.list_tracker_sprint(tracker_id)
+        sprints = svcTracker.list_tracker_sprint(
+            tracker_id=tracker_id
+        )
         return {
             'title': 'Succeed to list Sprint from tracker',
             'detail': {
@@ -225,7 +239,9 @@ def list_tracker_issue_field(tracker_id):
     :return: [{'key': '', 'value': ''}]
     """
     try:
-        fields = svcTracker.list_tracker_issue_field(tracker_id)
+        fields = svcTracker.list_tracker_issue_field(
+            tracker_id=tracker_id
+        )
         return {
             'title': 'Succeed to list Issue Field from tracker',
             'detail': {

@@ -59,9 +59,8 @@ class JiraSession(object):
         """
         logging.info(u'Get JIRA Sprints')
         jira_sprints = list()
-        _boards = self.__session.boards()
-        for _board in _boards:
-            _sprints = self.__session.sprints(_board.id)
+        for board in self.__session.boards():
+            _sprints = self.__session.sprints(board.id)
             jira_sprints = jira_sprints + _sprints
         return jira_sprints
 

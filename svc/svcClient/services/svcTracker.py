@@ -176,6 +176,7 @@ def list_tracker_project(tracker_id: str):
     return projects
 
 
+@db_session
 def list_tracker_sprint(tracker_id: str):
     """
     List sprints from tracker server
@@ -203,6 +204,7 @@ def list_tracker_sprint(tracker_id: str):
     return sprints
 
 
+@db_session
 def list_tracker_issue_field(tracker_id: str):
     """
     List issue fields from tracker server
@@ -230,6 +232,7 @@ def list_tracker_issue_field(tracker_id: str):
     return fields
 
 
+@db_session
 def list_tracker_issue_field_value(tracker_id: str, project_id: str, field_key: str):
     values = list()
     items = list()

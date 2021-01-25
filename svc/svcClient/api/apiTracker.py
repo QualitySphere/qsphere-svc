@@ -36,7 +36,9 @@ def add_tracker(body):
         )
         return {
             'title': 'Succeed to add Tracker',
-            'detail': tracker_id
+            'detail': {
+                'id': tracker_id
+            }
         }, 200
     except Exception as e:
         raise DefaultError(title='Failed to add Tracker', detail=str(e))
@@ -59,7 +61,9 @@ def update_tracker(tracker_id, body):
         )
         return {
             'title': 'Succeed to update Tracker',
-            'detail': tracker_id
+            'detail': {
+                'id': tracker_id
+            }
         }, 200
     except Exception as e:
         raise DefaultError(title='Failed to update Tracker', detail=str(e))

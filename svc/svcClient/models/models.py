@@ -94,12 +94,15 @@ class Sprint(db.Entity):
     case_config = Optional(CaseConfig)
     # Status: active, disable, delete
     status = Required(str, default='active')
-    issue_project_latest = Set('IssueProjectLatest')
-    issue_customer_latest = Set('IssueCustomerLatest')
-    issue_sprint_latest = Set('IssueSprintLatest')
-    issue_req_latest = Set('IssueReqLatest')
-    issue_sprint = Set('IssueSprint')
-    issue_req = Set('IssueReq')
+    issue_capture_sprint_level = Set('IssueCaptureSprintLevel')
+    issue_capture_req_level = Set('IssueCaptureReqLevel')
+    issue_capture_latest = Set('IssueCaptureLatest')
+    # issue_project_latest = Set('IssueProjectLatest')
+    # issue_customer_latest = Set('IssueCustomerLatest')
+    # issue_sprint_latest = Set('IssueSprintLatest')
+    # issue_req_latest = Set('IssueReqLatest')
+    # issue_sprint = Set('IssueSprint')
+    # issue_req = Set('IssueReq')
 
 
 class IssueCaptureSprintLevel(db.Entity):

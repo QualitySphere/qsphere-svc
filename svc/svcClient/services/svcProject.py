@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-# Project Model
-# uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-# name = Required(str)
-# tracker = Optional(Json)  # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
-# project = Optional(Json)  # {'issue': {'key': ''}, 'case': {'key': ''}}
-# status = Required(str, default='active')  # active, disable, delete
-# sprints = Set('Sprint')
 
 
 from pony.orm import db_session, select, get

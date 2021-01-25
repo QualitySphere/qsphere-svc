@@ -1,13 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-# Tracker Model
-# uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-# name = Required(str)
-# type = Required(str)
-# info = Optional(Json)  # JIRA: {host: '', account: ''}
-# secret = Optional(str)  # JIRA: 'password'
-# status = Required(str, default='active')  # active, disable, delete
 
 
 from pony.orm import db_session, get, select

@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-# uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-# name = Required(str)
-# project = Required(Project)
-# version = Required(str)  # sprint version tag
-# requirements = Required(StrArray)  # list(): req1, req2
-# rcs = Required(StrArray)  # RC tags list: RC1, RC2
-# issue = Optional(Json)  # dict(): keys: types, found_since, statuses, categories
-# case = Optional(Json)
-# queries = Optional(Json)  # dict(): issue: jql,  ...  case: xx
-# status = Required(str, default='active')  # active, disable, delete
 
 
 from pony.orm import db_session, select, get
-from models.models import Tracker, Project, Sprint, IssueSprint
+from models.models import Tracker, Project, Sprint, IssueCaptureSprintLevel
 import logging
 from utils import generateQueries
 

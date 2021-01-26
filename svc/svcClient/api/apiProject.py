@@ -7,20 +7,16 @@ from utils.exceptionHandle import DefaultError
 
 def list_project():
     """
-    GET /api/project
+    GET /api/projects
     :return:
     """
     try:
-        projects = svcProject.list_project(project_status=['active', 'disable'])
         return {
-            'title': 'List Projects Succeed',
-            'detail': {
-                'count': len(projects),
-                'results': projects
-            }
+            'title': 'Succeed to List Project',
+            'detail': svcProject.list_project()
         }, 200
     except Exception as e:
-        raise DefaultError(title='List Projects Failed', detail=str(e))
+        raise DefaultError(title='Failed to List Project', detail=str(e))
 
 
 def get_project(project_id):
@@ -30,31 +26,27 @@ def get_project(project_id):
     :return:
     """
     try:
-        project = svcProject.get_project(project_id)
         return {
-            'title': 'Get Project Succeed',
-            'detail': project
+            'title': 'Succeed to Get Project',
+            'detail': svcProject.get_project(project_id)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Get Project Failed', detail=str(e))
+        raise DefaultError(title='Failed to Get Project', detail=str(e))
 
 
 def add_project(body):
     """
-    POST /api/project
+    POST /api/projects
     :param body:
     :return:
     """
     try:
-        project_id = svcProject.add_project(body)
         return {
-            'title': 'Create Project Succeed',
-            'detail': {
-                'id': project_id
-            }
+            'title': 'Succeed to Create Project',
+            'detail': svcProject.add_project(body)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Create Project Failed', detail=str(e))
+        raise DefaultError(title='Failed to Create Project', detail=str(e))
 
 
 def update_project(project_id, body):
@@ -65,19 +57,28 @@ def update_project(project_id, body):
     :return:
     """
     try:
-        svcProject.update_project(project_id, body)
         return {
-            'title': 'Update Project Succeed',
-            'detail': {
-                'id': project_id
-            }
+            'title': 'Succeed to Update Project',
+            'detail': svcProject.update_project(project_id, body)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Update Project Failed', detail=str(e))
+        raise DefaultError(title='Failed to Update Project', detail=str(e))
 
 
 def update_project_status(project_id, body):
-    pass
+    """
+    PUT /api/project/{project_id}/status
+    :param project_id:
+    :param body:
+    :return:
+    """
+    try:
+        return {
+            'title': 'Succeed to change Project Status',
+            'detail': svcProject.set_project_status(project_id, body)
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Failed to change Project Status', detail=str(e))
 
 
 def delete_project(project_id):
@@ -87,7 +88,7 @@ def delete_project(project_id):
     :return:
     """
     try:
-        svcProject.set_project_status(project_id, 'delete')
+        svcProject.set_project_status(project_id, {'status': 'delete'})
         return {
             'title': 'Delete Project Succeed',
         }, 204
@@ -95,31 +96,5 @@ def delete_project(project_id):
         raise DefaultError(title='Delete Project Failed', detail=str(e))
 
 
-def disable_project(project_id):
-    """
-    PUT /api/project/{project_id}/disable
-    :param project_id:
-    :return:
-    """
-    try:
-        svcProject.set_project_status(project_id, 'disable')
-        return {
-                   'title': 'Disable Project Succeed',
-               }, 200
-    except Exception as e:
-        raise DefaultError(title='Disable Project Failed', detail=str(e))
-
-
-def active_project(project_id):
-    """
-    PUT /api/project/{project_id}/active
-    :param project_id:
-    :return:
-    """
-    try:
-        svcProject.set_project_status(project_id, 'active')
-        return {
-                   'title': 'Active Project Succeed',
-               }, 200
-    except Exception as e:
-        raise DefaultError(title='Active Project Failed', detail=str(e))
+if __name__ == '__main__':
+    print('This is API for project')

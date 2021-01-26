@@ -23,6 +23,7 @@ class Tracker(db.Entity):
     token = Optional(str)
     # Status: active, disable, delete
     status = Required(str, default='active')
+    projects = Set('Project')
 
 
 class Project(db.Entity):
@@ -32,10 +33,14 @@ class Project(db.Entity):
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    # Issue Tracker: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
-    issue_tracker = Optional(Json)
-    # Case Tracker: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
-    case_tracker = Optional(Json)
+    # Issue Tracker
+    issue_tracker = Optional(Tracker)
+    # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
+    issue_project = Optional(Json)
+    # Case Tracker
+    case_tracker = Optional(Tracker)
+    # Case Project: {'project_key': 'string', 'project_value': 'string'}
+    case_project = Optional(Json)
     # Status: active, disable, delete
     status = Required(str, default='active')
     sprints = Set('Sprint')
@@ -97,12 +102,6 @@ class Sprint(db.Entity):
     issue_capture_sprint_level = Set('IssueCaptureSprintLevel')
     issue_capture_req_level = Set('IssueCaptureReqLevel')
     issue_capture_latest = Set('IssueCaptureLatest')
-    # issue_project_latest = Set('IssueProjectLatest')
-    # issue_customer_latest = Set('IssueCustomerLatest')
-    # issue_sprint_latest = Set('IssueSprintLatest')
-    # issue_req_latest = Set('IssueReqLatest')
-    # issue_sprint = Set('IssueSprint')
-    # issue_req = Set('IssueReq')
 
 
 class IssueCaptureSprintLevel(db.Entity):

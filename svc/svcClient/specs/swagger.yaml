@@ -124,8 +124,11 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-                example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "e095081f-b145-4df7-affa-0412fce2ea88"
 
   /tracker/{tracker_id}:
     get:
@@ -185,8 +188,11 @@ paths:
           content:
             application/json:
               schema:
-                type: string
-                example: "e095081f-b145-4df7-affa-0412fce2ea88"
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "e095081f-b145-4df7-affa-0412fce2ea88"
     delete:
       tags:
         - "tracker"

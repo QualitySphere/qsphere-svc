@@ -26,7 +26,8 @@ def add_tracker(
         with JiraSession(
                 tracker_info.get('host'),
                 tracker_info.get('account'),
-                tracker_token) as jira_session:
+                tracker_token
+        ) as jira_session:
             assert tracker_info.get('account') == jira_session.get_user()
     else:
         raise Exception('Only support JIRA')
@@ -60,7 +61,11 @@ def update_tracker(
     if not item:
         raise Exception('Wrong Tracker ID')
     if tracker_type.lower() == 'jira':
-        with JiraSession(tracker_info.get('host'), tracker_info.get('account'), tracker_token) as jira_session:
+        with JiraSession(
+                tracker_info.get('host'),
+                tracker_info.get('account'),
+                tracker_token
+        ) as jira_session:
             assert tracker_info.get('account') == jira_session.get_user()
     else:
         raise Exception('ONLY support JIRA')
@@ -233,11 +238,10 @@ def list_tracker_issue_field(tracker_id: str):
 
 
 @db_session
-def list_tracker_issue_field_value(tracker_id: str, project_id: str, field_key: str):
+def list_tracker_issue_field_value(tracker_id: str, field_key: str, project_key=None):
     values = list()
     items = list()
     tracker = get(t for t in Tracker if str(t.uuid) == tracker_id)
-    project = get(p for p in Project if str(p.uuid) == project_id)
     if tracker.type == 'jira':
         with JiraSession(
                 tracker.info.get('host'),
@@ -249,7 +253,10 @@ def list_tracker_issue_field_value(tracker_id: str, project_id: str, field_key: 
             elif field_key == 'issuetype':
                 items = jira_session.get_issue_types()
             elif field_key == 'versions':
-                items = jira_session.get_project_versions(pid=project.issue_tracker['project_key'])
+                if project_key:
+                    items = jira_session.get_project_versions(pid=project_key)
+                else:
+                    raise Exception('project_key is required')
             for item in items:
                 values.append({
                     'key': item.id,

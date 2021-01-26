@@ -16,7 +16,7 @@ class JiraSession(object):
         self.__password = password
         self.__jira_opts = {
             'server': self.__server,
-            'verify': True,
+            'verify': False,
         }
         self.__session = JIRA(self.__jira_opts, basic_auth=(self.__account, self.__password))
 

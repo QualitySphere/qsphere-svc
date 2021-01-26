@@ -25,10 +25,10 @@ def list_project():
         items.append({
             'id': item.uuid,
             'name': item.name,
-            'issue_tracker': item.issue_tracker.name,
-            'issue_project': item.issue_project.get('project_value'),
-            'case_tracker': item.case_tracker.name,
-            'case_project': item.case_project.get('project_value'),
+            'issue_tracker': get(t for t in Tracker if str(t.uuid) == item.issue_tracker.get('tracker_id')).name,
+            'issue_project': item.issue_tracker.get('project_value'),
+            'case_tracker': get(t for t in Tracker if str(t.uuid) == item.case_tracker.get('tracker_id')).name,
+            'case_project': item.case_tracker.get('project_value'),
             'status': item.status
         })
     return {
@@ -62,12 +62,12 @@ def get_project(project_id: str):
         item = {
             'id': project.uuid,
             'name': project.name,
-            'issue_tracker_id': project.issue_tracker.uuid,
-            'issue_tracker_name': project.issue_tracker.name,
-            'issue_project_key': project.issue_project.get('project_key'),
-            'issue_project_value': project.issue_project.get('project_value'),
-            'case_tracker_id': project.case_tracker.uuid,
-            'case_tracker_name': project.case_tracker.name,
+            'issue_tracker_id': project.issue_tracker.get('tracker_id'),
+            'issue_tracker_name': get(t for t in Tracker if str(t.uuid) == project.issue_tracker.get('tracker_id')).name,
+            'issue_project_key': project.issue_tracker.get('project_key'),
+            'issue_project_value': project.issue_tracker.get('project_value'),
+            'case_tracker_id': project.case_tracker.get('tracker_id'),
+            'case_tracker_name': get(t for t in Tracker if str(t.uuid) == project.case_tracker.get('tracker_id')).name,
             'case_project_key': project.case_project.get('project_value'),
             'case_project_value': project.case_project.get('project_value'),
             'status': project.status
@@ -98,13 +98,13 @@ def add_project(body: dict):
     c_tracker = body.get('case_tracker')
     project = Project(
         name=body.get('name'),
-        issue_tracker=get(t for t in Tracker if str(t.uuid) == i_tracker.get('tracker_id')),
-        issue_project={
+        issue_tracker={
+            'tracker_id': get(t for t in Tracker if str(t.uuid) == i_tracker.get('tracker_id')),
             'project_key': i_tracker.get('project_key'),
             'project_value': i_tracker.get('project_value')
         },
-        case_tracker=get(t for t in Tracker if str(t.uuid) == c_tracker.get('tracker_id')),
-        case_project={
+        case_tracker={
+            'tracker_id': get(t for t in Tracker if str(t.uuid) == c_tracker.get('tracker_id')),
             'project_key': c_tracker.get('project_key'),
             'project_value': c_tracker.get('project_value')
         }
@@ -112,12 +112,12 @@ def add_project(body: dict):
     return {
         'id': project.uuid,
         'name': project.name,
-        'issue_tracker_id': project.issue_tracker.uuid,
-        'issue_tracker_name': project.issue_tracker.name,
-        'issue_project_key': project.issue_project.get('project_key'),
-        'issue_project_value': project.issue_project.get('project_value'),
-        'case_tracker_id': project.case_tracker.uuid,
-        'case_tracker_name': project.case_tracker.name,
+        'issue_tracker_id': project.issue_tracker.get('tracker_id'),
+        'issue_tracker_name': get(t for t in Tracker if str(t.uuid) == project.issue_tracker.get('tracker_id')).name,
+        'issue_project_key': project.issue_tracker.get('project_key'),
+        'issue_project_value': project.issue_tracker.get('project_value'),
+        'case_tracker_id': project.case_tracker.get('tracker_id'),
+        'case_tracker_name': get(t for t in Tracker if str(t.uuid) == project.case_tracker.get('tracker_id')).name,
         'case_project_key': project.case_project.get('project_value'),
         'case_project_value': project.case_project.get('project_value'),
         'status': project.status
@@ -148,27 +148,27 @@ def update_project(project_id: str, body: dict):
     c_tracker = body.get('case_tracker')
     project = get(p for p in Project if str(p.uuid) == project_id)
     project.name = body.get('name')
-    project.issue_tracker = get(t for t in Tracker if str(t.uuid) == i_tracker.get('tracker_id')),
-    project.issue_project = {
+    project.issue_tracker = {
+        'tracker_id': i_tracker.get('tracker_id'),
         'project_key': i_tracker.get('project_key'),
         'project_value': i_tracker.get('project_value')
     }
-    project.case_tracker = get(t for t in Tracker if str(t.uuid) == c_tracker.get('tracker_id')),
-    project.case_project = {
+    project.case_tracker = {
+        'tracker_id': c_tracker.get('tracker_id'),
         'project_key': c_tracker.get('project_key'),
         'project_value': c_tracker.get('project_value')
     }
     return {
         'id': project.uuid,
         'name': project.name,
-        'issue_tracker_id': project.issue_tracker.uuid,
-        'issue_tracker_name': project.issue_tracker.name,
-        'issue_project_key': project.issue_project.get('project_key'),
-        'issue_project_value': project.issue_project.get('project_value'),
-        'case_tracker_id': project.case_tracker.uuid,
-        'case_tracker_name': project.case_tracker.name,
-        'case_project_key': project.case_project.get('project_value'),
-        'case_project_value': project.case_project.get('project_value'),
+        'issue_tracker_id': project.issue_tracker.get('tracker_id'),
+        'issue_tracker_name': get(t for t in Tracker if str(t.uuid) == project.issue_tracker.get('tracker_id')).name,
+        'issue_project_key': project.issue_tracker.get('project_key'),
+        'issue_project_value': project.issue_tracker.get('project_value'),
+        'case_tracker_id': project.case_tracker.get('tracker_id'),
+        'case_tracker_name': get(t for t in Tracker if str(t.uuid) == project.case_tracker.get('tracker_id')).name,
+        'case_project_key': project.case_tracker.get('project_value'),
+        'case_project_value': project.case_tracker.get('project_value'),
         'status': project.status
     }
 

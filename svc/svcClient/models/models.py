@@ -3,13 +3,15 @@
 
 
 from db.db import db
-from pony.orm import Database, Required, PrimaryKey, Set, StrArray, IntArray, Json, Optional
+from pony.orm import Required, PrimaryKey, Set, Json, Optional
 import uuid
 from datetime import datetime
 
 
 class Tracker(db.Entity):
-    # Tracker Information
+    """
+    Tracker Information
+    """
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
@@ -21,29 +23,28 @@ class Tracker(db.Entity):
     token = Optional(str)
     # Status: active, disable, delete
     status = Required(str, default='active')
-    projects = Set('Project')
 
 
 class Project(db.Entity):
-    # Project Information
+    """
+    Project Information
+    """
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    # Issue Tracker
-    issue_tracker = Optional(Tracker)
-    # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
-    issue_project = Optional(Json)
-    # Case Tracker
-    case_tracker = Optional(Tracker)
-    # Case Project: {'project_key': 'string', 'project_value': 'string'}
-    case_project = Optional(Json)
+    # Issue Tracker Info: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
+    issue_tracker = Optional(Json)
+    # Case Tracker Info: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
+    case_tracker = Optional(Json)
     # Status: active, disable, delete
     status = Required(str, default='active')
     sprints = Set('Sprint')
 
 
 class IssueConfig(db.Entity):
-    # Sprint Issue Configuration
+    """
+    Sprint Issue Configuration
+    """
     _table_ = 'issue_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     # Issue Found in Sprint: {'field': 'string', 'value': ['string']}
@@ -73,14 +74,18 @@ class IssueConfig(db.Entity):
 
 
 class CaseConfig(db.Entity):
-    # Sprint Case Configuration
+    """
+    Sprint Case Configuration
+    """
     _table_ = 'case_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     sprints = Set('Sprint')
 
 
 class Sprint(db.Entity):
-    # Sprint Information
+    """
+    Sprint Information
+    """
     _table_ = 'sprint'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
@@ -95,7 +100,9 @@ class Sprint(db.Entity):
 
 
 class IssueCaptureSprintLevel(db.Entity):
-    # Capture for Sprint Level Issue Data
+    """
+    Capture for Sprint Level Issue Data
+    """
     _table_ = 'issue_capture_sprint_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
@@ -111,7 +118,9 @@ class IssueCaptureSprintLevel(db.Entity):
 
 
 class IssueCaptureReqLevel(db.Entity):
-    # Capture for Sprint Requirement Level Issue Data
+    """
+    Capture for Sprint Requirement Level Issue Data
+    """
     _table_ = 'issue_capture_req_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
@@ -125,7 +134,9 @@ class IssueCaptureReqLevel(db.Entity):
 
 
 class IssueCaptureLatest(db.Entity):
-    # Capture for Latest Issue Data
+    """
+    Capture for Latest Issue Data
+    """
     _table_ = 'issue_capture_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)

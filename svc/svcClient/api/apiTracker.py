@@ -79,7 +79,7 @@ def update_tracker_status(tracker_id, status):
     try:
         tracker_status = svcTracker.set_tracker_status(
             tracker_id=tracker_id,
-            tracker_status=status
+            tracker_status=status.get('status')
         )
         return {
             'title': 'Succeed to change Tracker status',
@@ -238,7 +238,7 @@ def list_tracker_sprint(tracker_id):
 
 def list_tracker_issue_field(tracker_id):
     """
-    GET /api/tracker/{tracker_id}/issue_field
+    GET /api/tracker/{tracker_id}/issue_fields
     :param tracker_id:
     :return: [{'key': '', 'value': ''}]
     """

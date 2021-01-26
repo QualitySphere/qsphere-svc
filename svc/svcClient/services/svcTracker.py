@@ -256,7 +256,7 @@ def list_tracker_issue_field_value(tracker_id: str, field_key: str, project_key=
                 if project_key:
                     items = jira_session.get_project_versions(pid=project_key)
                 else:
-                    raise Exception('project_key is required')
+                    raise Exception('project is required')
             for item in items:
                 values.append({
                     'key': item.id,

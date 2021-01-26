@@ -9,9 +9,7 @@ from datetime import datetime
 
 
 class Tracker(db.Entity):
-    """
-    Tracker Information
-    """
+    # Tracker Information
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
@@ -27,9 +25,7 @@ class Tracker(db.Entity):
 
 
 class Project(db.Entity):
-    """
-    Project Information
-    """
+    # Project Information
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
@@ -47,9 +43,7 @@ class Project(db.Entity):
 
 
 class IssueConfig(db.Entity):
-    """
-    Sprint Issue Configuration
-    """
+    # Sprint Issue Configuration
     _table_ = 'issue_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     # Issue Found in Sprint: {'field': 'string', 'value': ['string']}
@@ -79,18 +73,14 @@ class IssueConfig(db.Entity):
 
 
 class CaseConfig(db.Entity):
-    """
-    Sprint Case Configuration
-    """
+    # Sprint Case Configuration
     _table_ = 'case_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     sprints = Set('Sprint')
 
 
 class Sprint(db.Entity):
-    """
-    Sprint Information
-    """
+    # Sprint Information
     _table_ = 'sprint'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
@@ -105,10 +95,7 @@ class Sprint(db.Entity):
 
 
 class IssueCaptureSprintLevel(db.Entity):
-    """
-    Capture for Sprint Level Issue Data
-    # _table_ = 'issue_sprint'
-    """
+    # Capture for Sprint Level Issue Data
     _table_ = 'issue_capture_sprint_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
@@ -124,10 +111,7 @@ class IssueCaptureSprintLevel(db.Entity):
 
 
 class IssueCaptureReqLevel(db.Entity):
-    """
-    Capture for Sprint Requirement Level Issue Data
-    # _table_ = 'issue_req'
-    """
+    # Capture for Sprint Requirement Level Issue Data
     _table_ = 'issue_capture_req_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)
@@ -141,9 +125,7 @@ class IssueCaptureReqLevel(db.Entity):
 
 
 class IssueCaptureLatest(db.Entity):
-    """
-    Capture for Latest Issue Data
-    """
+    # Capture for Latest Issue Data
     _table_ = 'issue_capture_latest'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime)

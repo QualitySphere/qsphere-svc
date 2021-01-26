@@ -102,8 +102,8 @@ def update_tracker(tracker_id: str, body: dict):
             assert body.get('info').get('account') == jira_session.get_user()
     else:
         raise Exception('ONLY support JIRA')
-    item.name = body.get('name'),
-    item.type = body.get('type'),
+    item.name = body.get('name')
+    item.type = body.get('type')
     item.info = {
         'host': body.get('info').get('host'),
         'account': body.get('info').get('account'),

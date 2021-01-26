@@ -69,17 +69,17 @@ def update_tracker(tracker_id, body):
         raise DefaultError(title='Failed to update Tracker', detail=str(e))
 
 
-def update_tracker_status(tracker_id, status):
+def update_tracker_status(tracker_id, body):
     """
     PUT /api/tracker/{tracker_id}/status
     :param tracker_id:
-    :param status:
+    :param body:
     :return:
     """
     try:
         tracker_status = svcTracker.set_tracker_status(
             tracker_id=tracker_id,
-            tracker_status=status.get('status')
+            tracker_status=body.get('status')
         )
         return {
             'title': 'Succeed to change Tracker status',

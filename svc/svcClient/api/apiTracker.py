@@ -257,19 +257,19 @@ def list_tracker_issue_field(tracker_id):
         raise DefaultError(title='Failed to list Issue Field from tracker', detail=str(e))
 
 
-def list_tracker_issue_field_value(tracker_id, issue_field_id, project_id):
+def list_tracker_issue_field_value(tracker_id: str, field: str, project=None):
     """
     GET /api/tracker/{tracker_id}/issue_field/{issue_field_id}
     :param tracker_id:
-    :param issue_field_id:
-    :param project_id:
+    :param field:
+    :param project:
     :return: [{'key': '', 'value': ''}]
     """
     try:
         values = svcTracker.list_tracker_issue_field_value(
             tracker_id=tracker_id,
-            project_id=project_id,
-            field_key=issue_field_id,
+            project_key=project,
+            field_key=field,
         )
         return {
             'title': 'Succeed to list Issue Field Value from tracker',

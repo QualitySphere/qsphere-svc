@@ -18,7 +18,7 @@ class Tracker(db.Entity):
     # Type: jira
     type = Required(str)
     # jira: {'host': 'string', 'account': 'string'}
-    info = Optional(Json)
+    info = Required(Json, default={'host': '', 'account': ''})
     # jira: password
     token = Optional(str)
     # Status: active, disable, delete
@@ -37,11 +37,11 @@ class Project(db.Entity):
     # Issue Tracker
     issue_tracker = Optional(Tracker)
     # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
-    issue_project = Optional(Json)
+    issue_project = Required(Json, default={'project_key': '', 'project_value': ''})
     # Case Tracker
     case_tracker = Optional(Tracker)
     # Case Project Info: {'project_key': 'string', 'project_value': 'string'}
-    case_project = Optional(Json)
+    case_project = Required(Json, default={'project_key': '', 'project_value': ''})
     # Status: active, disable, delete
     status = Required(str, default='active')
     sprints = Set('Sprint')

@@ -14,13 +14,13 @@ class Tracker(db.Entity):
     """
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    name = Required(str, default='')
+    name = Required(str)
     # Type: jira
-    type = Required(str, default='')
+    type = Required(str)
     # jira: {'host': 'string', 'account': 'string'}
     info = Required(Json, default={'host': '', 'account': ''})
     # jira: password
-    token = Required(str, default='')
+    token = Required(str)
     # Status: active, disable, delete
     status = Required(str, default='active')
     issue_projects = Set('Project', reverse='issue_tracker')
@@ -33,7 +33,7 @@ class Project(db.Entity):
     """
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    name = Required(str, default='')
+    name = Required(str)
     # Issue Tracker
     issue_tracker = Optional(Tracker)
     # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}

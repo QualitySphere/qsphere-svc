@@ -3,9 +3,6 @@
 
 
 from jira import JIRA
-import connexion
-from flask import current_app
-from pony.orm import *
 import logging
 
 

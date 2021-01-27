@@ -14,13 +14,13 @@ class Tracker(db.Entity):
     """
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    name = Required(str)
+    name = Required(str, default='')
     # Type: jira
-    type = Required(str)
+    type = Required(str, default='')
     # jira: {'host': 'string', 'account': 'string'}
     info = Required(Json, default={'host': '', 'account': ''})
     # jira: password
-    token = Optional(str)
+    token = Required(str, default='')
     # Status: active, disable, delete
     status = Required(str, default='active')
     issue_projects = Set('Project', reverse='issue_tracker')
@@ -33,7 +33,7 @@ class Project(db.Entity):
     """
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    name = Required(str)
+    name = Required(str, default='')
     # Issue Tracker
     issue_tracker = Optional(Tracker)
     # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
@@ -53,29 +53,22 @@ class IssueConfig(db.Entity):
     """
     _table_ = 'issue_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    # Issue Found in Sprint: {'field': 'string', 'value': ['string']}
-    issue_sprint = Required(Json)
-    # Issue Found in Requirement: {'field': 'string', 'value': ['string']}
-    issue_requirement = Required(Json)
-    # Issue Found in Version: {'field': 'string', 'value': ['string']}
-    issue_version = Required(Json)
-    # Issue Found in RC: {'field': 'string', 'value': ['string']}
-    issue_rc = Required(Json)
-    # Issue Type: {'field': 'string', 'value': ['string']}
-    issue_type = Required(Json)
-    # Issue Found Since:
-    # {'field': 'string',
-    # 'newfeature': ['string'], 'improve': ['string'],
-    # 'customer': ['string'], 'qamissed': ['string']}
-    issue_since = Required(Json)
-    # Issue Category:
-    # {'field': 'string',
-    # 'newfeature': ['string'], 'regression': ['string'], 'previous': ['string']}
-    issue_category = Required(Json)
-    # Issue Status:
-    # {'field': 'string',
-    # 'fixing': ['string'], 'fixed': ['string'], 'verified': ['string']}
-    issue_status = Required(Json)
+    # Issue Found in Sprint
+    sprint = Required(Json, default={'field': '', 'value': []})
+    # Issue Found in Requirement
+    requirement = Required(Json, default={'field': '', 'value': []})
+    # Issue Found in Version
+    version = Required(Json, default={'field': '', 'value': []})
+    # Issue Found in RC
+    rc = Required(Json, default={'field': '', 'value': []})
+    # Issue Type
+    type = Required(Json, default={'field': '', 'value': []})
+    # Issue Found Since
+    since = Required(Json, default={'field': '', 'newfeature': [], 'improve': [], 'customer': [], 'qamissed': []})
+    # Issue Category
+    category = Required(Json, default={'field': '', 'newfeature': [], 'regression': [], 'previous': []})
+    # Issue Status
+    status = Required(Json, default={'field': '', 'fixing': [], 'fixed': [], 'verified': []})
     sprints = Set('Sprint')
 
 
@@ -85,6 +78,12 @@ class CaseConfig(db.Entity):
     """
     _table_ = 'case_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    # Case Created in Sprint
+    sprint = Required(Json, default={'field': '', 'value': []})
+    # Case Created in Requirement
+    requirement = Required(Json, default={'field': '', 'value': []})
+    # Case Created in Version
+    version = Required(Json, default={'field': '', 'value': []})
     sprints = Set('Sprint')
 
 
@@ -96,8 +95,8 @@ class Sprint(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
     project = Required(Project)
-    issue_config = Optional(IssueConfig)
-    case_config = Optional(CaseConfig)
+    issue_config = Required(IssueConfig)
+    case_config = Required(CaseConfig)
     # Status: active, disable, delete
     status = Required(str, default='active')
     issue_capture_sprint_level = Set('IssueCaptureSprintLevel')

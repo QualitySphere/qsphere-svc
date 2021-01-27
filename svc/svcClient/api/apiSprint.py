@@ -7,20 +7,16 @@ from utils.exceptionHandle import DefaultError
 
 def list_sprint():
     """
-    GET /api/sprint
+    GET /api/sprints
     :return:
     """
     try:
-        sprints = svcSprint.list_sprint(sprint_status=['active', 'disable'])
         return {
-            'title': 'List All Sprint Succeed',
-            'detail': {
-                'count': len(sprints),
-                'results': sprints
-            }
+            'title': 'Succeed to List All Sprint',
+            'detail': svcSprint.list_sprint(sprint_status=['active', 'disable'])
         }, 200
     except Exception as e:
-        raise DefaultError(title='List All Sprint Failed', detail=str(e))
+        raise DefaultError(title='Failed to List All Sprint', detail=str(e))
 
 
 def get_sprint(sprint_id):
@@ -30,31 +26,27 @@ def get_sprint(sprint_id):
     :return:
     """
     try:
-        sprint = svcSprint.get_sprint(sprint_id)
         return {
-            'title': 'Get Sprint Succeed',
-            'detail': sprint
+            'title': 'Succeed to Get Sprint',
+            'detail': svcSprint.get_sprint(sprint_id)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Get Sprint Failed', detail=str(e))
+        raise DefaultError(title='Failed to Get Sprint', detail=str(e))
 
 
 def add_sprint(body):
     """
-    POST /api/sprint
+    POST /api/sprints
     :param body:
     :return:
     """
     try:
-        sprint_id = svcSprint.add_sprint(body)
         return {
-            'title': 'Add Sprint Succeed',
-            'detail': {
-                'id': sprint_id
-            }
+            'title': 'Succeed to Add Sprint',
+            'detail': svcSprint.add_sprint(body)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Add Sprint Failed', detail=str(e))
+        raise DefaultError(title='Failed to Add Sprint', detail=str(e))
 
 
 def update_sprint(sprint_id, body):
@@ -65,19 +57,30 @@ def update_sprint(sprint_id, body):
     :return:
     """
     try:
-        svcSprint.update_sprint(sprint_id, body)
         return {
-            'title': 'Update Sprint Succeed',
-            'detail': {
-                'id': sprint_id
-            }
+            'title': 'Succeed to Update Sprint',
+            'detail': svcSprint.update_sprint(sprint_id, body)
         }, 200
     except Exception as e:
-        raise DefaultError(title='Update Sprint Failed', detail=str(e))
+        raise DefaultError(title='Failed to Update Sprint', detail=str(e))
 
 
 def update_sprint_status(sprint_id, body):
-    pass
+    """
+    PUT /api/sprint/{sprint_id}/status
+    :param sprint_id:
+    :param body: {
+        'status': 'active',  # 'disable', 'active'
+    }
+    :return:
+    """
+    try:
+        return {
+            'title': 'Succeed to Change Sprint Status',
+            'detail': svcSprint.set_sprint_status(sprint_id, body)
+        }, 200
+    except Exception as e:
+        raise DefaultError(title='Failed to Change Sprint Status', detail=str(e))
 
 
 def delete_sprint(sprint_id):
@@ -87,7 +90,7 @@ def delete_sprint(sprint_id):
     :return:
     """
     try:
-        svcSprint.set_sprint_status(sprint_id, sprint_status='delete')
+        svcSprint.set_sprint_status(sprint_id, {'status': 'delete'})
         return {
             'title': 'Delete Sprint Succeed',
         }, 204
@@ -95,31 +98,5 @@ def delete_sprint(sprint_id):
         raise DefaultError(title='Delete Sprint Failed', detail=str(e))
 
 
-def disable_sprint(sprint_id):
-    """
-    PUT /api/sprint/{sprint_id}/disable
-    :param sprint_id:
-    :return:
-    """
-    try:
-        svcSprint.set_sprint_status(sprint_id, sprint_status='disable')
-        return {
-            'title': 'Disable Sprint Succeed',
-        }, 204
-    except Exception as e:
-        raise DefaultError(title='Disable Sprint Failed', detail=str(e))
-
-
-def active_sprint(sprint_id):
-    """
-    PUT /api/sprint/{sprint_id}/active
-    :param sprint_id:
-    :return:
-    """
-    try:
-        svcSprint.set_sprint_status(sprint_id, sprint_status='active')
-        return {
-            'title': 'Active Sprint Succeed',
-        }, 204
-    except Exception as e:
-        raise DefaultError(title='Active Sprint Failed', detail=str(e))
+if __name__ == '__main__':
+    print(u'This is API of sprint')

@@ -15,7 +15,10 @@ import requests
 from utils.wechatRobot import WechatRobotSender
 
 
-logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
+if os.getenv('DEBUG'):
+    logging.basicConfig(level=logging.DEBUG, format='[ %(asctime)s ] %(levelname)s %(message)s')
+else:
+    logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
 
 
 def svc_job():

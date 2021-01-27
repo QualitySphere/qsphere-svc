@@ -107,7 +107,7 @@ def list_tracker_project(tracker_id):
         return {
            'title': 'Succeed to list Project from Tracker',
            'detail': svcTracker.list_tracker_project(tracker_id)
-       }, 200
+        }, 200
     except Exception as e:
         raise DefaultError(title='Failed to list Project from Tracker', detail=str(e))
 

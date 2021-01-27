@@ -23,6 +23,8 @@ class Tracker(db.Entity):
     token = Optional(str)
     # Status: active, disable, delete
     status = Required(str, default='active')
+    issue_projects = Set('Project', reverse='issue_tracker')
+    case_projects = Set('Project', reverse='case_tracker')
 
 
 class Project(db.Entity):
@@ -32,10 +34,14 @@ class Project(db.Entity):
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    # Issue Tracker Info: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
-    issue_tracker = Optional(Json)
-    # Case Tracker Info: {'tracker_id': 'string', 'project_key': 'string', 'project_value': 'string'}
-    case_tracker = Optional(Json)
+    # Issue Tracker
+    issue_tracker = Optional(Tracker)
+    # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
+    issue_project = Optional(Json)
+    # Case Tracker
+    case_tracker = Optional(Tracker)
+    # Case Project Info: {'project_key': 'string', 'project_value': 'string'}
+    case_project = Optional(Json)
     # Status: active, disable, delete
     status = Required(str, default='active')
     sprints = Set('Sprint')

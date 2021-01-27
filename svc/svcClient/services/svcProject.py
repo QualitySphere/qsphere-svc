@@ -13,10 +13,14 @@ def list_project():
     :return:[{
         'id': string,
         'name': string,
-        'issue_tracker': string,
-        'issue_project': string,
-        'case_tracker': string,
-        'case_project': string,
+        'issue_tracker': {
+            'tracker_name': string,
+            'project_name': string,
+        },
+        'case_tracker': {
+            'tracker_name': string,
+            'project_name': string,
+        },
         'status': string
     }]
     """
@@ -25,10 +29,14 @@ def list_project():
         items.append({
             'id': item.uuid,
             'name': item.name,
-            'issue_tracker': item.issue_tracker.name,
-            'issue_project': item.issue_project.get('project_value'),
-            'case_tracker': item.case_tracker.name,
-            'case_project': item.case_project.get('project_value'),
+            'issue_tracker': {
+                'tracker_name': item.issue_tracker.name if item.issue_tracker else '',
+                'project_name': item.issue_project.get('project_value')
+            },
+            'case_tracker': {
+                'tracker_name': item.case_tracker.name if item.case_tracker else '',
+                'project_name': item.case_project.get('project_value')
+            },
             'status': item.status
         })
     return {
@@ -45,14 +53,18 @@ def get_project(project_id: str):
     :return: {
         'id': string,
         'name': string,
-        'issue_tracker_id': string,
-        'issue_tracker_id': string,
-        'issue_project_key': string,
-        'issue_project_value': string,
-        'case_tracker_id': string,
-        'case_tracker_id': string,
-        'case_project_key': string,
-        'case_project_value': string,
+        'issue_tracker': {
+            'tracker_id': string,
+            'tracker_name': string,
+            'project_key': string,
+            'project_name': string,
+        },
+        'case_tracker': {
+            'tracker_id': string,
+            'tracker_name': string,
+            'project_key': string,
+            'project_name': string,
+        },
         'status': string
     }
     """
@@ -62,14 +74,18 @@ def get_project(project_id: str):
         item = {
             'id': project.uuid,
             'name': project.name,
-            'issue_tracker_id': project.issue_tracker.uuid,
-            'issue_tracker_name': project.issue_tracker.name,
-            'issue_project_key': project.issue_project.get('project_key'),
-            'issue_project_value': project.issue_project.get('project_value'),
-            'case_tracker_id': project.case_tracker.uuid,
-            'case_tracker_name': project.case_tracker.name,
-            'case_project_key': project.case_project.get('project_value'),
-            'case_project_value': project.case_project.get('project_value'),
+            'issue_tracker': {
+                'tracker_id': project.issue_tracker.uuid if project.issue_tracker else '',
+                'tracker_name': project.issue_tracker.name if project.issue_tracker else '',
+                'project_key': project.issue_project.get('project_key'),
+                'project_value': project.issue_project.get('project_value'),
+            },
+            'case_tracker': {
+                'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
+                'tracker_name': project.case_tracker.name if project.case_tracker else '',
+                'project_key': project.case_project.get('project_value'),
+                'project_value': project.case_project.get('project_value'),
+            },
             'status': project.status
         }
     return item
@@ -112,14 +128,18 @@ def add_project(body: dict):
     return {
         'id': project.uuid,
         'name': project.name,
-        'issue_tracker_id': project.issue_tracker.uuid,
-        'issue_tracker_name': project.issue_tracker.name,
-        'issue_project_key': project.issue_tracker.get('project_key'),
-        'issue_project_value': project.issue_tracker.get('project_value'),
-        'case_tracker_id': project.case_tracker.uuid,
-        'case_tracker_name': project.case_tracker.name,
-        'case_project_key': project.case_project.get('project_value'),
-        'case_project_value': project.case_project.get('project_value'),
+        'issue_tracker': {
+            'tracker_id': project.issue_tracker.uuid if project.issue_tracker else '',
+            'tracker_name': project.issue_tracker.name if project.issue_tracker else '',
+            'project_key': project.issue_project.get('project_key'),
+            'project_value': project.issue_project.get('project_value'),
+        },
+        'case_tracker': {
+            'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
+            'tracker_name': project.case_tracker.name if project.case_tracker else '',
+            'project_key': project.case_project.get('project_value'),
+            'project_value': project.case_project.get('project_value'),
+        },
         'status': project.status
     }
 
@@ -164,14 +184,18 @@ def update_project(project_id: str, body: dict):
     return {
         'id': project.uuid,
         'name': project.name,
-        'issue_tracker_id': project.issue_tracker.uuid,
-        'issue_tracker_name': project.issue_tracker.name,
-        'issue_project_key': project.issue_project.get('project_key'),
-        'issue_project_value': project.issue_project.get('project_value'),
-        'case_tracker_id': project.case_tracker.uuid,
-        'case_tracker_name': project.case_tracker.name,
-        'case_project_key': project.case_project.get('project_value'),
-        'case_project_value': project.case_project.get('project_value'),
+        'issue_tracker': {
+            'tracker_id': project.issue_tracker.uuid if project.issue_tracker else '',
+            'tracker_name': project.issue_tracker.name if project.issue_tracker else '',
+            'project_key': project.issue_project.get('project_key'),
+            'project_value': project.issue_project.get('project_value'),
+        },
+        'case_tracker': {
+            'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
+            'tracker_name': project.case_tracker.name if project.case_tracker else '',
+            'project_key': project.case_project.get('project_value'),
+            'project_value': project.case_project.get('project_value'),
+        },
         'status': project.status
     }
 

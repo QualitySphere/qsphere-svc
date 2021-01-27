@@ -107,7 +107,7 @@ def update_tracker(tracker_id: str, body: dict):
     item.info = {
         'host': body.get('info').get('host'),
         'account': body.get('info').get('account'),
-    },
+    }
     item.token = body.get('token')
     return {
         'id': item.uuid,

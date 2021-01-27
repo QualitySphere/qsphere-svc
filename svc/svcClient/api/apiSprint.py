@@ -13,7 +13,7 @@ def list_sprint():
     try:
         return {
             'title': 'Succeed to List All Sprint',
-            'detail': svcSprint.list_sprint(sprint_status=['active', 'disable'])
+            'detail': svcSprint.list_sprint()
         }, 200
     except Exception as e:
         raise DefaultError(title='Failed to List All Sprint', detail=str(e))

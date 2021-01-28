@@ -39,8 +39,10 @@ def get_sprint(sprint_id: str):
     :return:
     """
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    capture_time_list = select(i.capture_time for i in IssueCaptureSprintLevel
-                               if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time)
+    capture_time_list = list()
+    for capture in select(i for i in IssueCaptureSprintLevel
+                          if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time):
+        capture_time_list.append(capture.capture_time)
     return {
         'id': sprint.uuid,
         'name': sprint.name,
@@ -201,8 +203,10 @@ def update_sprint(sprint_id: str, body: dict):
     :return:
     """
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    capture_time_list = select(i.capture_time for i in IssueCaptureSprintLevel
-                               if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time)
+    capture_time_list = list()
+    for capture in select(i for i in IssueCaptureSprintLevel
+                          if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time):
+        capture_time_list.append(capture.capture_time)
     project = get(p for p in Project if str(p.uuid) == body.get('project_id'))
     sprint.name = body.get('name')
     sprint.project = project

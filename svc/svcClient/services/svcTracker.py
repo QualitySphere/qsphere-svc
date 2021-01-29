@@ -234,7 +234,7 @@ def list_tracker_issue_field(tracker_id: str):
         ) as jira_session:
             for f in jira_session.get_issue_fields():
                 fields.append({
-                    'key': f['id'],
+                    'key': f['id'] if 'customfield_' not in f['id'] else 'cf[%s]' % f['id'].replace('customfield_', ''),
                     'value': f['name']
                 })
     else:

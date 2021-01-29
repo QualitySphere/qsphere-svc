@@ -17,87 +17,87 @@ def __generate_jql(sprint):
     """
     customer_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
-        '%s IN (%s)' % (sprint.issue_config.type['field'], ', '.join(sprint.issue_config.type['value'])),
-        '%s IN (%s)' % (sprint.issue_config.version['field'], ', '.join(sprint.issue_config.version['value'])),
-        '%s IN (%s)' % (sprint.issue_config.since['field'], ', '.join(sprint.issue_config.since['customer'])),
+        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['customer']).strip('[|]'))
         ])
     sprint_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
-        '%s IN (%s)' % (sprint.issue_config.type['field'], ', '.join(sprint.issue_config.type['value'])),
-        '%s IN (%s)' % (sprint.issue_config.sprint['field'], ', '.join(sprint.issue_config.sprint['value'])),
-        '%s IN (%s)' % (sprint.issue_config.version['field'], ', '.join(sprint.issue_config.version['value']))
+        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.sprint['field'], str(sprint.issue_config.sprint['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]'))
     ])
     jqls = {
         'sprint.status.fixing': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['fixing']))
+            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixing']).strip('[|]'))
         ]),
         'sprint.status.fixed': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['fixed']))
+            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixed']).strip('[|]'))
         ]),
         'sprint.status.verified': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['verified']))
+            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['verified']).strip('[|]'))
         ]),
         'sprint.category.newfeature': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], ', '.join(sprint.issue_config.category['newfeature']))
+            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['newfeature']).strip('[|]'))
         ]),
         'sprint.category.regression': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], ', '.join(sprint.issue_config.category['regression']))
+            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['regression']).strip('[|]'))
         ]),
         'sprint.category.previous': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], ', '.join(sprint.issue_config.category['previous']))
+            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['previous']).strip('[|]'))
         ]),
         'sprint.since.newfeature': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], ', '.join(sprint.issue_config.since['newfeature']))
+            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['newfeature']).strip('[|]'))
         ]),
         'sprint.since.improve': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], ', '.join(sprint.issue_config.since['improve']))
+            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['improve']).strip('[|]'))
         ]),
         'sprint.since.qamissed': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], ', '.join(sprint.issue_config.since['qamissed']))
+            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['qamissed']).strip('[|]'))
         ]),
         'project.since.customer': customer_jql_base,  # Customer issue should be tracked out of Sprint
     }
     for rc in sprint.issue_config.rc['value']:
         jqls['sprint.rc.%s' % rc] = ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.rc['field'], rc)
+            '%s IN ("%s")' % (sprint.issue_config.rc['field'], rc)
         ])
     for req in sprint.issue_config.requirement['value']:
         jqls['req.%s.status.fixing' % req] = ' AND '.join([
             sprint_jql_base,
-            '%s in (%s)' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['fixing']))
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixing']).strip('[|]'))
         ])
         jqls['req.%s.status.fixed' % req] = ' AND '.join([
             sprint_jql_base,
-            '%s in (%s)' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['fixed']))
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixed']).strip('[|]'))
         ])
         jqls['req.%s.status.verified' % req] = ' AND '.join([
             sprint_jql_base,
-            '%s in (%s)' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], ', '.join(sprint.issue_config.status['verified']))
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['verified']).strip('[|]'))
         ])
         for rc in sprint.issue_config.rc['value']:
             jqls['req.%s.rc.%s' % (req, rc)] = ' AND '.join([
                 jqls['sprint.rc.%s' % rc],
-                '%s in (%s)' % (sprint.issue_config.requirement['field'], req)
+                '%s in ("%s")' % (sprint.issue_config.requirement['field'], req)
             ])
     return jqls
 
 
 def __get_issue_count_from_jira(jira_info, jqls):
     """
-    Search JIRA Issues and get count
+    Search JIRA Issues and return count summary
     :param jira_info: JIRA info
     :param jqls: JIRA JQLs
     :return:
@@ -294,9 +294,9 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     capture_time = datetime.now()
     customer_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
-        '%s IN (%s)' % (sprint.issue_config.type['field'], ', '.join(sprint.issue_config.type['value'])),
-        '%s IN (%s)' % (sprint.issue_config.version['field'], ', '.join(sprint.issue_config.version['value'])),
-        '%s IN (%s)' % (sprint.issue_config.since['field'], ', '.join(sprint.issue_config.since['customer'])),
+        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['customer']).strip('[|]')),
         ])
     with JiraSession(
         project.issue_tracker.info['host'],

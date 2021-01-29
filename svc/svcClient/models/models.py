@@ -15,14 +15,19 @@ class Tracker(db.Entity):
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
+
     # Type: jira
     type = Required(str)
+
     # jira: {'host': 'string', 'account': 'string'}
     info = Required(Json, default={'host': '', 'account': ''})
+
     # jira: password
     token = Required(str)
+
     # Status: active, disable, delete
     status = Required(str, default='active')
+
     issue_projects = Set('Project', reverse='issue_tracker')
     case_projects = Set('Project', reverse='case_tracker')
 
@@ -34,17 +39,24 @@ class Project(db.Entity):
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
+
     # Issue Tracker
     issue_tracker = Optional(Tracker)
+
     # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
     issue_project = Required(Json, default={'project_key': '', 'project_value': ''})
+
     # Case Tracker
     case_tracker = Optional(Tracker)
+
     # Case Project Info: {'project_key': 'string', 'project_value': 'string'}
     case_project = Required(Json, default={'project_key': '', 'project_value': ''})
+
     # Status: active, disable, delete
     status = Required(str, default='active')
+
     sprints = Set('Sprint')
+    issue_capture_static_overview = Set('IssueCaptureStaticOverview')
 
 
 class IssueConfig(db.Entity):
@@ -53,22 +65,31 @@ class IssueConfig(db.Entity):
     """
     _table_ = 'issue_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+
     # Issue Found in Sprint
     sprint = Required(Json, default={'field': '', 'value': []})
+
     # Issue Found in Requirement
     requirement = Required(Json, default={'field': '', 'value': []})
+
     # Issue Found in Version
     version = Required(Json, default={'field': '', 'value': []})
+
     # Issue Found in RC
     rc = Required(Json, default={'field': '', 'value': []})
+
     # Issue Type
     type = Required(Json, default={'field': '', 'value': []})
+
     # Issue Found Since
     since = Required(Json, default={'field': '', 'newfeature': [], 'improve': [], 'customer': [], 'qamissed': []})
+
     # Issue Category
     category = Required(Json, default={'field': '', 'newfeature': [], 'regression': [], 'previous': []})
+
     # Issue Status
     status = Required(Json, default={'field': '', 'fixing': [], 'fixed': [], 'verified': []})
+
     sprints = Set('Sprint')
 
 
@@ -78,12 +99,16 @@ class CaseConfig(db.Entity):
     """
     _table_ = 'case_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+
     # Case Created in Sprint
     sprint = Required(Json, default={'field': '', 'value': []})
+
     # Case Created in Requirement
     requirement = Required(Json, default={'field': '', 'value': []})
+
     # Case Created in Version
     version = Required(Json, default={'field': '', 'value': []})
+
     sprints = Set('Sprint')
 
 
@@ -97,11 +122,14 @@ class Sprint(db.Entity):
     project = Required(Project)
     issue_config = Required(IssueConfig)
     case_config = Required(CaseConfig)
+
     # Status: active, disable, delete
     status = Required(str, default='active')
+
     issue_capture_sprint_level = Set('IssueCaptureSprintLevel')
     issue_capture_req_level = Set('IssueCaptureReqLevel')
-    issue_capture_latest = Set('IssueCaptureLatest')
+    issue_capture_static_project = Set('IssueCaptureStaticProject')
+    issue_capture_static_sprint = Set('IssueCaptureStaticSprint')
 
 
 class IssueCaptureSprintLevel(db.Entity):
@@ -110,14 +138,18 @@ class IssueCaptureSprintLevel(db.Entity):
     """
     _table_ = 'issue_capture_sprint_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
+
     # Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}
     status = Required(Json)
+
     # Issue Category: {'newfeature': int, 'regression': int, 'previous': int, 'others': int}
     category = Required(Json)
-    # Issue Found Since: {'newfeature': int, 'improve': int, 'qamissed': int}
+
+    # Issue Found Since: {'newfeature': int, 'improve': int, 'qamissed': int, 'customer': int, 'others': int}
     since = Required(Json)
+
     # Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}
     rc = Required(Json)
 
@@ -128,81 +160,51 @@ class IssueCaptureReqLevel(db.Entity):
     """
     _table_ = 'issue_capture_req_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
+
     # Requirement Name
     name = Required(str)
+
     # Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}
-    status = Required(Json)
+    status = Required(Json, default={"total": 0, "fixing": 0, "fixed": 0, "verified": 0})
+
     # Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}
-    rc = Optional(Json)
+    rc = Required(Json, default={})
 
 
-class IssueCaptureLatest(db.Entity):
+class IssueCaptureStaticOverview(db.Entity):
     """
-    Capture for Latest Issue Data
+    Capture Static Data for Overview
     """
-    _table_ = 'issue_capture_latest'
+    _table_ = 'issue_capture_static_overview'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
-    sprint = Required(Sprint)
-    # Capture for project level: {
-    # 'category': {'newfeature': int, 'regression': int, 'previous': int, 'others': int},
-    # 'since': {'newfeature': int, 'improve': int, 'customer': int, 'qamissed': int}
-    # }
-    capture_issue_project = Optional(Json)
-    # Capture for customer level: {
-    # 'customer': int
-    # }
-    capture_issue_customer = Optional(Json)
-    # Capture for sprint level: {
-    # 'rc1': int, 'rc2': int, ...
-    # }
-    capture_issue_sprint = Optional(Json)
-    # Capture for requirement level: {
-    # 'req1': {'total': int, 'fixing': int, 'fixed': int, 'verified': int},
-    # 'req2': {'total': int, 'fixing': int, 'fixed': int, 'verified': int},
-    # }
-    capture_issue_req = Optional(Json)
+    capture_time = Required(datetime, default=datetime.now())
+    project = Required(Project)
+    in_release = Required(Json, default={"total": 0})
+    from_customer = Required(Json, default={"total": 0})
 
-#
-# class IssueProjectLatest(db.Entity):
-#     """
-#     项目维度 最新缺陷数据
-#     """
-#     _table_ = 'issue_project_latest'
-#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-#     capture_time = Required(datetime)
-#     sprint = Required(Sprint)
-#     categories = Required(Json)  # 缺陷类别:
-#     found_since = Required(Json)  # 缺陷发现来源: new_feature: '', regression_improve: '', qa_missed: ''
-#
-#
-# class IssueCustomerLatest(db.Entity):
-#     # 项目维度 最新客户反馈缺陷数量
-#     _table_ = 'issue_customer_latest'
-#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-#     capture_time = Required(datetime)
-#     sprint = Required(Sprint)
-#     count = Required(int)  # 客户反馈的缺陷数量, 缺陷发现来源: customer
-#
-#
-# class IssueSprintLatest(db.Entity):
-#     # 迭代版本维度 最新缺陷数据
-#     _table_ = 'issue_sprint_latest'
-#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-#     capture_time = Required(datetime)
-#     sprint = Required(Sprint)
-#     rc = Required(str)  # 迭代版本 RC
-#     count = Required(int)  # 缺陷数量
-#
-#
-# class IssueReqLatest(db.Entity):
-#     # 迭代版本需求维度 最新缺陷数据
-#     _table_ = 'issue_req_latest'
-#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-#     capture_time = Required(datetime)
-#     sprint = Required(Sprint)
-#     name = Required(str)  # 需求名称
-#     status = Required(Json)  # 缺陷状态: total: '', fixing: '', fixed: '', verified: ''
-#
+
+class IssueCaptureStaticProject(db.Entity):
+    """
+    Capture Static Data for Project
+    """
+    _table_ = 'issue_capture_static_project'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+    in_release = Required(Json, default={"total": 0})
+    from_customer = Required(Json, default={"total": 0})
+
+
+class IssueCaptureStaticSprint(db.Entity):
+    """
+    Capture Static Data for Sprint
+    """
+    _table_ = 'issue_capture_static_sprint'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+    in_rc = Required(Json, default={})
+    found_since = Required(Json, default={"newfeature": 0, "improve": 0, "qamissed": 0, "others": 0})
+    in_req = Required(Json, default={})

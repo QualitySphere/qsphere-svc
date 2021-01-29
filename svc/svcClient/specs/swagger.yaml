@@ -1005,8 +1005,8 @@ paths:
     get:
       tags:
         - "issue"
-      description: "Sync All Sprints Issues"
-      operationId: api.apiIssue.sync_issue
+      description: "Sync Sprint(s) Issue Data"
+      operationId: api.apiIssue.sync_issue_data
       parameters:
         - name: sprint_id
           in: query
@@ -1022,8 +1022,15 @@ paths:
     get:
       tags:
         - "issue"
-      description: "Get All Active Sprints Bug Verification"
-      operationId: api.apiIssue.get_active_sprint_issue_status
+      description: "Get Sprint(s) Bug Verification Status"
+      operationId: api.apiIssue.get_issue_status
+      parameters:
+        - name: sprint_id
+          in: query
+          required: false
+          schema:
+            type: string
+            example: "e095081f-b145-4df7-affa-0412fce2ea88"
       responses:
         200:
-          description: "succeed to get active sprint issue status"
+          description: "succeed to get sprint issue status"

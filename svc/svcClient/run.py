@@ -96,11 +96,11 @@ if __name__ == '__main__':
     db.generate_mapping(create_tables=True)
 
     # schedule task, execute hourly
-    scheduler = APScheduler()
-    scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
+    # scheduler = APScheduler()
+    # scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
     # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
     # scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
-    scheduler.start()
+    # scheduler.start()
 
     # Start flask app
     app.run(port=80, debug=True)

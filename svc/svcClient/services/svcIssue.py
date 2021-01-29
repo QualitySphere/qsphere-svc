@@ -69,7 +69,7 @@ def __generate_jql(sprint):
     for rc in sprint.issue_config.rc['value']:
         jqls['sprint.rc.%s' % rc] = ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.rc['field'], ', '.join(sprint.issue_config.rc[rc]))
+            '%s IN (%s)' % (sprint.issue_config.rc['field'], rc)
         ])
     for req in sprint.issue_config.requirement['value']:
         jqls['req.%s.status.fixing' % req] = ' AND '.join([

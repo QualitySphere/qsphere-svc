@@ -5,7 +5,6 @@
 from pony.orm import db_session, select, get
 from models.models import Tracker, Project, Sprint, IssueCaptureSprintLevel, IssueConfig, CaseConfig
 import logging
-from utils import generateQueries
 
 
 @db_session

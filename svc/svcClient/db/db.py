@@ -12,5 +12,5 @@ db = Database(
     password=os.getenv('PG_PASS') or 'password',
     host=os.getenv('PG_HOST') or '127.0.0.1',
     port=os.getenv('PG_PORT') or '5432',
-    database='qsphere'
+    database=os.getenv('PG_NAME') or 'qsphere'
 )

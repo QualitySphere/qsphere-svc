@@ -51,7 +51,7 @@ class JiraSession(object):
         """
         logging.info(u'JIRA Issue Count: %s' % jql)
         issue_summary[issue_key] = int(self.search_issues(jql).get('total'))
-        return issue_summary[issue_key]
+        return True
 
     def get_projects(self):
         """

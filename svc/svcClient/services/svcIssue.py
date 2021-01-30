@@ -95,6 +95,12 @@ def __generate_jql(sprint):
     return jqls
 
 
+def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
+    with JiraSession(jira_info.get('host'), jira_info.get('account'), jira_info.get('password')) as jira_session:
+        summary_dict[dict_key] = int(jira_session.search_issues(jql).get('total'))
+    return True
+
+
 def __get_issue_count_from_jira(jira_info, jqls):
     """
     Search JIRA Issues and return count summary
@@ -103,26 +109,32 @@ def __get_issue_count_from_jira(jira_info, jqls):
     :return:
     """
     issue_summary = dict()
-    # 多线程登录 JIRA 用 JQL 收集所有数据
+    logging.info(u'多线程登录 JIRA 用 JQL 收集所有数据')
     threads = list()
-    with JiraSession(jira_info.get('host'), jira_info.get('account'), jira_info.get('password')) as jira_session:
-        for key, jql in jqls.items():
-            threads.append(
-                Thread(
-                    target=jira_session.get_issue_count,
-                    args=(jql, issue_summary, key)
-                )
+    for key, jql in jqls.items():
+        threads.append(
+            Thread(
+                target=__get_issue_count_from_jira_thread,
+                args=(jira_info, jql, issue_summary, key)
             )
-        for t in threads:
-            t.setDaemon(True)
-            t.start()
-        for t in threads:
-            t.join()
+        )
+    for t in threads:
+        t.setDaemon(True)
+        t.start()
+    for t in threads:
+        t.join()
     return issue_summary
 
 
 def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
-    # Init formatted data
+    """
+    Format issue source data
+    :param source_data:
+    :param source_rc:
+    :param source_req:
+    :return:
+    """
+    logging.info('Init formatted data')
     formatted_data = {
         'sprint': {
             'status': {
@@ -146,20 +158,25 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
         'requirement': dict(),
         'static': dict(),
     }
-    # Calculate sprint.status.total
+
+    logging.info('Calculate sprint.status.total')
     formatted_data['sprint']['status']['total'] = sum(formatted_data['sprint']['status'].values())
+
     # Calculate sprint.category.others
     formatted_data['sprint']['category']['others'] = \
         formatted_data['sprint']['status']['total'] - sum(formatted_data['sprint']['category'].values())
+
     # Calculate sprint.since.others
     formatted_data['sprint']['since']['others'] = \
         formatted_data['sprint']['status']['total'] - \
         formatted_data['sprint']['since']['newfeature'] - \
         formatted_data['sprint']['since']['improve'] - \
         formatted_data['sprint']['since']['qamissed']
+
     # Calculate sprint.rc
     for __rc in source_rc:
         formatted_data['sprint']['rc'][__rc] = source_data['sprint.rc.%s' % __rc]
+
     # Calculate req.$req.status and req.$req.rc
     for __req in source_req:
         formatted_data['requirement'][__req] = {
@@ -172,19 +189,24 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
         }
         for __rc in source_rc:
             formatted_data['requirement']['rc'][__rc] = source_data['req.%s.rc.%s' % (__req, __rc)]
+
     # Update static sprint.found_since
     formatted_data['static']['sprint.in_req'] = dict()
     for __req in source_req:
         formatted_data['static']['sprint.in_req'][__req] = sum(formatted_data['requirement'][__req]['status'].values())
+
     # Update static sprint.found_since
     formatted_data['static']['sprint.found_since'] = formatted_data['sprint']['since']
+
     # Update static sprint.in_rc
     formatted_data['static']['sprint.in_rc'] = formatted_data['sprint']['rc']
+
     # Update static project.in_release
     formatted_data['static']['project.in_release'] = {
         'total': formatted_data['sprint']['status']['total'],
     }
-    # Update static project.from_customer
+
+    logging.info('Update static project.from_customer')
     formatted_data['static']['project.from_customer'] = {
         'total': formatted_data['sprint']['since']['customer'],
     }

@@ -107,3 +107,4 @@ venv.bak/
 ui/node_modules/
 debug.*
 vue.config.js
+svc/svcClient/debug.py

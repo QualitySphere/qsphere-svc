@@ -15,6 +15,7 @@ def __generate_jql(sprint):
     :param sprint: object in DB
     :return:
     """
+    logging.info('Start to generate JQL for %s' % sprint.uuid)
     customer_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
         '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
@@ -92,6 +93,7 @@ def __generate_jql(sprint):
                 jqls['sprint.rc.%s' % rc],
                 '%s in ("%s")' % (sprint.issue_config.requirement['field'], req)
             ])
+    logging.info('JQLs: %s' % jqls)
     return jqls
 
 
@@ -104,8 +106,13 @@ def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
     :param dict_key:
     :return:
     """
+    logging.info('Get issue count via JQL[%s]' % jql)
     with JiraSession(jira_info.get('host'), jira_info.get('account'), jira_info.get('password')) as jira_session:
-        summary_dict[dict_key] = int(jira_session.search_issues(jql).get('total'))
+        jira_rsp = jira_session.search_issues(jql)
+    if jira_rsp.get('total') is None:
+        raise Exception(str(jira_rsp))
+    summary_dict[dict_key] = int(jira_rsp['total'])
+    logging.debug('Succeed to get %s issue count: %s' % (dict_key, summary_dict[dict_key]))
     return True
 
 
@@ -159,7 +166,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
                 'newfeature': source_data['sprint.since.newfeature'],
                 'improve': source_data['sprint.since.improve'],
                 'qamissed': source_data['sprint.since.qamissed'],
-                'customer': source_data['sprint.since.customer'],
+                'customer': source_data['project.since.customer'],
             },
             'rc': dict(),
         },
@@ -196,7 +203,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
             'rc': dict(),
         }
         for __rc in source_rc:
-            formatted_data['requirement']['rc'][__rc] = source_data['req.%s.rc.%s' % (__req, __rc)]
+            formatted_data['requirement'][__req]['rc'][__rc] = source_data['req.%s.rc.%s' % (__req, __rc)]
 
     # Update static sprint.found_since
     formatted_data['static']['sprint.in_req'] = dict()
@@ -228,6 +235,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     :param sprint_id:
     :return:
     """
+    logging.info('Start to collect ACTIVE sprint issue data: %s' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
@@ -319,6 +327,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     :param sprint_id:
     :return:
     """
+    logging.info('Start to collect DISABLE sprint issue data: %s' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
@@ -390,7 +399,7 @@ def sync_issue_data(sprint_id=None):
         threads.append(
             Thread(
                 target=__sync_sprint_issue_data,
-                args=(str(sprint.uuid))
+                args=(str(sprint.uuid),)
             )
         )
     for t in threads:

@@ -96,6 +96,14 @@ def __generate_jql(sprint):
 
 
 def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
+    """
+    Single thread to get issue count from jira
+    :param jira_info:
+    :param jql:
+    :param summary_dict:
+    :param dict_key:
+    :return:
+    """
     with JiraSession(jira_info.get('host'), jira_info.get('account'), jira_info.get('password')) as jira_session:
         summary_dict[dict_key] = int(jira_session.search_issues(jql).get('total'))
     return True
@@ -382,7 +390,7 @@ def sync_issue_data(sprint_id=None):
         threads.append(
             Thread(
                 target=__sync_sprint_issue_data,
-                args=(str(sprint.uuid),)
+                args=(str(sprint.uuid))
             )
         )
     for t in threads:

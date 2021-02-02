@@ -22,8 +22,12 @@ else:
 
 
 def svc_job():
+    """
+    Trigger svc job to sync issue from tracker
+    :return:
+    """
     # 调用同步接口
-    requests.get(url='http://127.0.0.1:6001/api/issue/sync', timeout=30)
+    requests.get(url='http://127.0.0.1/api/issue/sync', timeout=30)
 
 
 def _generate_bug_status_markdown_text(bug_info: dict):
@@ -42,7 +46,7 @@ def wechat_robot_job():
     # 微信机器人消息
     if os.getenv('WECHAT_ROBOT_KEY'):
         try:
-            bugs = requests.get(url='http://127.0.0.1:6001/api/issue/status', timeout=30).json()
+            bugs = requests.get(url='http://127.0.0.1/api/issue/status', timeout=30).json()
             robot = WechatRobotSender(robot_key=os.getenv('WECHAT_ROBOT_KEY'))
             markdown_text = ''
             for bug in bugs.get('detail'):
@@ -95,7 +99,7 @@ if __name__ == '__main__':
     set_sql_debug(True)
     db.generate_mapping(create_tables=True)
 
-    # schedule task, execute hourly
+    # Schedule Task/h
     # scheduler = APScheduler()
     # scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
     # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)

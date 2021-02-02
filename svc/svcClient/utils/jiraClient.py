@@ -41,17 +41,17 @@ class JiraSession(object):
         logging.info(u'JIRA Search: %s' % jql)
         return self.__session.search_issues(jql_str=jql, maxResults=128, json_result=True)
 
-    def get_issue_count(self, jql: str, issue_summary: dict, issue_key: str):
-        """
-        Search issues via JQL and return count
-        :param jql:
-        :param issue_summary:
-        :param issue_key:
-        :return:
-        """
-        logging.info(u'JIRA Issue Count: %s' % jql)
-        issue_summary[issue_key] = int(self.search_issues(jql).get('total'))
-        return True
+    # def get_issue_count(self, jql: str, issue_summary: dict, issue_key: str):
+    #     """
+    #     Search issues via JQL and return count
+    #     :param jql:
+    #     :param issue_summary:
+    #     :param issue_key:
+    #     :return:
+    #     """
+    #     logging.info(u'JIRA Issue Count: %s' % jql)
+    #     issue_summary[issue_key] = int(self.search_issues(jql).get('total'))
+    #     return True
 
     def get_projects(self):
         """

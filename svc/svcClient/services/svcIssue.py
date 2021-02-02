@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pony.orm import db_session, select, get, sum
+from pony.orm import db_session, select, get
 from models.models import *
 from utils.jiraClient import JiraSession
 from threading import Thread
@@ -313,13 +313,18 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
     if static_overview:
         static_overview.capture_time = capture_time
+        items = select(s for s in IssueCaptureStaticProject
+                       if str(s.sprint.project.uuid) == str(project.uuid))
+        in_release_total = list()
+        from_customer_total = list()
+        for item in items:
+            in_release_total.append(int(item.in_release['total']))
+            from_customer_total.append(int(item.from_customer['total']))
         static_overview.in_release = {
-            'total': sum(s.in_release for s in IssueCaptureStaticProject
-                         if str(s.sprint.project.uuid) == str(project.uuid))
+            'total': sum(in_release_total)
         }
         static_overview.from_customer = {
-            'total': sum(s.from_customer for s in IssueCaptureStaticProject
-                         if str(s.sprint.project.uuid) == str(project.uuid))
+            'total': sum(from_customer_total)
         }
     else:
         IssueCaptureStaticOverview(
@@ -366,10 +371,14 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
 
     # Add/Update overview static data into DB
     static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
+    items = select(s for s in IssueCaptureStaticProject if str(s.project.uuid) == str(project.uuid))
+    from_customer_total = list()
+    for item in items:
+        from_customer_total.append(int(item.from_customer['total']))
     if static_overview:
         static_overview.capture_time = capture_time
         static_overview.from_customer = {
-            'total': sum(s.from_customer for s in IssueCaptureStaticProject if str(s.project.uuid) == str(project.uuid))
+            'total': sum(from_customer_total)
         }
 
     return True

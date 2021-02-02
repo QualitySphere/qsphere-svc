@@ -314,10 +314,12 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     if static_overview:
         static_overview.capture_time = capture_time
         static_overview.in_release = {
-            'total': sum(s.in_release for s in IssueCaptureStaticProject if str(s.project.uuid) == str(project.uuid))
+            'total': sum(s.in_release for s in IssueCaptureStaticProject
+                         if str(s.sprint.project.uuid) == str(project.uuid))
         }
         static_overview.from_customer = {
-            'total': sum(s.from_customer for s in IssueCaptureStaticProject if str(s.project.uuid) == str(project.uuid))
+            'total': sum(s.from_customer for s in IssueCaptureStaticProject
+                         if str(s.sprint.project.uuid) == str(project.uuid))
         }
     else:
         IssueCaptureStaticOverview(

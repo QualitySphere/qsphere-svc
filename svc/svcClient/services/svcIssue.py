@@ -9,6 +9,16 @@ from datetime import datetime
 import logging
 
 
+def __jql_condition(field_name: str, field_value_list: list):
+    """
+    Generate JQL Condition
+    :param field_name:
+    :param field_value_list:
+    :return: 'filed IN (value_1, value_2)'
+    """
+    return '%s IN (%s)' % (field_name, str(field_value_list).strip('[|]'))
+
+
 def __generate_jql(sprint):
     """
     Generate JQLs for sprint
@@ -18,52 +28,52 @@ def __generate_jql(sprint):
     logging.info('Start to generate JQL for %s' % sprint.uuid)
     customer_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
-        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
-        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]')),
-        '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['customer']).strip('[|]'))
+        __jql_condition(sprint.issue_config.type['field'], sprint.issue_config.type['value']),
+        __jql_condition(sprint.issue_config.version['field'], sprint.issue_config.version['value']),
+        __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['value'])
         ])
     sprint_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
-        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
-        '%s IN (%s)' % (sprint.issue_config.sprint['field'], str(sprint.issue_config.sprint['value']).strip('[|]')),
-        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]'))
+        __jql_condition(sprint.issue_config.type['field'], sprint.issue_config.type['value']),
+        __jql_condition(sprint.issue_config.sprint['field'], sprint.issue_config.sprint['value']),
+        __jql_condition(sprint.issue_config.version['field'], sprint.issue_config.version['value'])
     ])
     jqls = {
         'sprint.status.fixing': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixing']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixing'])
         ]),
         'sprint.status.fixed': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixed']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixed'])
         ]),
         'sprint.status.verified': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['verified']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['verified'])
         ]),
         'sprint.category.newfeature': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['newfeature']).strip('[|]'))
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['newfeature'])
         ]),
         'sprint.category.regression': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['regression']).strip('[|]'))
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['regression'])
         ]),
         'sprint.category.previous': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.category['field'], str(sprint.issue_config.category['previous']).strip('[|]'))
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['previous'])
         ]),
         'sprint.since.newfeature': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['newfeature']).strip('[|]'))
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['newfeature'])
         ]),
         'sprint.since.improve': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['improve']).strip('[|]'))
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['improve'])
         ]),
         'sprint.since.qamissed': ' AND '.join([
             sprint_jql_base,
-            '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['qamissed']).strip('[|]'))
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['qamissed'])
         ]),
         'project.since.customer': customer_jql_base,  # Customer issue should be tracked out of Sprint
     }
@@ -76,17 +86,17 @@ def __generate_jql(sprint):
         jqls['req.%s.status.fixing' % req] = ' AND '.join([
             sprint_jql_base,
             '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixing']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixing'])
         ])
         jqls['req.%s.status.fixed' % req] = ' AND '.join([
             sprint_jql_base,
             '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['fixed']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixed'])
         ])
         jqls['req.%s.status.verified' % req] = ' AND '.join([
             sprint_jql_base,
             '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
-            '%s in (%s)' % (sprint.issue_config.status['field'], str(sprint.issue_config.status['verified']).strip('[|]'))
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['verified'])
         ])
         for rc in sprint.issue_config.rc['value']:
             jqls['req.%s.rc.%s' % (req, rc)] = ' AND '.join([
@@ -107,7 +117,7 @@ def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
     :return:
     """
     logging.info('Get issue count via JQL[%s]' % jql)
-    with JiraSession(jira_info.get('host'), jira_info.get('account'), jira_info.get('password')) as jira_session:
+    with JiraSession(jira_info['host'], jira_info['account'], jira_info['password']) as jira_session:
         jira_rsp = jira_session.search_issues(jql)
     if jira_rsp.get('total') is None:
         raise Exception(str(jira_rsp))
@@ -256,7 +266,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         capture_time=capture_time,
         sprint=sprint,
         status=issue_data['sprint']['status'],
-        category=issue_data['sprint']['status'],
+        category=issue_data['sprint']['category'],
         since=issue_data['sprint']['since'],
         rc=issue_data['sprint']['rc']
     )
@@ -342,7 +352,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
         project.issue_tracker.info['account'],
         project.issue_tracker.token
     ) as jira_session:
-        customer_total = jira_session.search_issues(customer_jql_base).get('total')
+        customer_total = jira_session.search_issues(customer_jql_base)['total']
 
     # Add/Update project static data into DB
     static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))

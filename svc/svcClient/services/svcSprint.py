@@ -59,8 +59,8 @@ def get_sprint(sprint_id: str):
         },
         'case_config': {},
         'status': sprint.status,
-        'start_time': int(capture_time_list[0]) if len(capture_time_list) > 0 else '',
-        'end_time': int(capture_time_list[-1]) if len(capture_time_list) > 0 else '',
+        'start_time': int(capture_time_list[0].timestamp()) if len(capture_time_list) > 0 else '',
+        'end_time': int(capture_time_list[-1].timestamp()) if len(capture_time_list) > 0 else '',
     }
 
 
@@ -235,8 +235,8 @@ def update_sprint(sprint_id: str, body: dict):
         },
         'case_config': {},
         'status': sprint.status,
-        'start_time': int(capture_time_list[0]) if len(capture_time_list) > 0 else '',
-        'end_time': int(capture_time_list[-1]) if len(capture_time_list) > 0 else '',
+        'start_time': int(capture_time_list[0].timestamp()) if len(capture_time_list) > 0 else '',
+        'end_time': int(capture_time_list[-1].timestamp()) if len(capture_time_list) > 0 else '',
     }
 
 

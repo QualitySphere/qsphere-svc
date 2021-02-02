@@ -1,4 +1,4 @@
-![Quality Assuracen Platform](https://qualitysphere.github.io/images/qap.png)
+![Quality Assurance Platform](https://qualitysphere.github.io/images/qap.png)
 
 # Quality Sphere
 
@@ -27,15 +27,15 @@
 
 #### Deploy/Upgrade QSphere
 
-[QSphere Deployment](https://qualitysphere.github.io/deploy/)
+[QSphere Deployment](https://qualitysphere.github.io/1_deploy/)
 
 #### Usage
 
-[QSphere Quick Start](https://qualitysphere.github.io/usage/)
+[QSphere Quick Start](https://qualitysphere.github.io/1_usage/)
 
 ## More
 
-- Web Site: https://QualitySphere.github.io
+- Homepage: https://QualitySphere.github.io
 - GitHub: https://github.com/QualitySphere
 - Docker: https://hub.docker.com/r/bxwill/qsphere
 

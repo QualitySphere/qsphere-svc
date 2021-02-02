@@ -57,6 +57,8 @@ class Project(db.Entity):
 
     sprints = Set('Sprint')
     issue_capture_static_overview = Set('IssueCaptureStaticOverview')
+    case_capture_static_overview = Set('CaseCaptureStaticOverview')
+    grade_report = Set('GradeReportProject')
 
 
 class IssueConfig(db.Entity):
@@ -130,6 +132,11 @@ class Sprint(db.Entity):
     issue_capture_req_level = Set('IssueCaptureReqLevel')
     issue_capture_static_project = Set('IssueCaptureStaticProject')
     issue_capture_static_sprint = Set('IssueCaptureStaticSprint')
+    case_capture_sprint_level = Set('CaseCaptureSprintLevel')
+    case_capture_req_level = Set('CaseCaptureReqLevel')
+    case_capture_static_project = Set('CaseCaptureStaticProject')
+    case_capture_static_sprint = Set('CaseCaptureStaticSprint')
+    grade_report = Set('GradeReportSprint')
 
 
 class IssueCaptureSprintLevel(db.Entity):
@@ -208,3 +215,78 @@ class IssueCaptureStaticSprint(db.Entity):
     in_rc = Required(Json, default={})
     found_since = Required(Json, default={"newfeature": 0, "improve": 0, "qamissed": 0, "others": 0})
     in_req = Required(Json, default={})
+
+
+class CaseCaptureSprintLevel(db.Entity):
+    _table_ = 'case_capture_sprint_level'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class CaseCaptureReqLevel(db.Entity):
+    _table_ = 'case_capture_req_level'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class CaseCaptureStaticOverview(db.Entity):
+    _table_ = 'case_capture_static_overview'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    project = Required(Project)
+
+
+class CaseCaptureStaticProject(db.Entity):
+    _table_ = 'case_capture_static_project'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class CaseCaptureStaticSprint(db.Entity):
+    _table_ = 'case_capture_static_sprint'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class GradePolicy(db.Entity):
+    """
+    Grade Policy
+    """
+    _table_ = 'grade_policy'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    create_time = Required(datetime, default=datetime.now())
+    update_time = Required(datetime, default=datetime.now())
+    # Grade Policy Configuration for issue
+    issue_policy = Required(Json, default={})
+    # Grade Policy Configuration for case
+    case_policy = Required(Json, default={})
+    # Status: active, delete
+    status = Required(str, default='active')
+    grade_report_project = Set('GradeReportProject')
+    grade_report_sprint = Set('GradeReportSprint')
+
+
+class GradeReportProject(db.Entity):
+    _table_ = 'grade_report_project'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    policy = Required(GradePolicy)
+    project = Required(Project)
+    report = Required(Json)
+    # Status: active, delete
+    status = Required(str, default='active')
+
+
+class GradeReportSprint(db.Entity):
+    _table_ = 'grade_report_sprint'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    policy = Required(GradePolicy)
+    sprint = Required(Sprint)
+    report = Required(Json)
+    # Status: active, delete
+    status = Required(str, default='active')

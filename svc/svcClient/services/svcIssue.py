@@ -34,8 +34,8 @@ def __generate_jql(sprint):
         ])
     sprint_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
+        '%s = %s' % (sprint.issue_config.sprint['field'], sprint.issue_config.sprint['value'][0]),
         __jql_condition(sprint.issue_config.type['field'], sprint.issue_config.type['value']),
-        __jql_condition(sprint.issue_config.sprint['field'], sprint.issue_config.sprint['value']),
         __jql_condition(sprint.issue_config.version['field'], sprint.issue_config.version['value'])
     ])
     jqls = {

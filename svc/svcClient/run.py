@@ -108,4 +108,7 @@ if __name__ == '__main__':
         scheduler.start()
 
     # Start flask app
-    app.run(port=80, debug=True)
+    app.run(
+        port=80,
+        debug=True if os.getenv('LOG_DEBUG').lower() == 'true' else False
+    )

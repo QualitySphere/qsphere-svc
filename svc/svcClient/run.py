@@ -15,7 +15,7 @@ import requests
 from utils.wechatRobot import WechatRobotSender
 
 
-if os.getenv('DEBUG'):
+if os.getenv('LOG_DEBUG').lower() == 'true':
     logging.basicConfig(level=logging.DEBUG, format='[ %(asctime)s ] %(levelname)s %(message)s')
 else:
     logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
@@ -100,11 +100,12 @@ if __name__ == '__main__':
     db.generate_mapping(create_tables=True)
 
     # Schedule Task/h
-    # scheduler = APScheduler()
-    # scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
-    # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
-    # scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
-    # scheduler.start()
+    if os.getenv('AUTO_SYNC').lower() == 'true':
+        scheduler = APScheduler()
+        scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
+        # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
+        # scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
+        scheduler.start()
 
     # Start flask app
     app.run(port=80, debug=True)

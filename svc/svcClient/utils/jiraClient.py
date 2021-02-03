@@ -7,13 +7,20 @@ import logging
 
 
 class JiraSession(object):
-    def __init__(self, server, account, password):
+    def __init__(self, server, account, password, verify=True):
+        """
+        Init Jira Session
+        :param server:
+        :param account:
+        :param password:
+        :param verify:
+        """
         self.__server = server
         self.__account = account
         self.__password = password
         self.__jira_opts = {
             'server': self.__server,
-            'verify': False,
+            'verify': verify,
         }
         self.__session = JIRA(self.__jira_opts, basic_auth=(self.__account, self.__password))
 

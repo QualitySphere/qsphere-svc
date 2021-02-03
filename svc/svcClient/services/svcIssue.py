@@ -139,6 +139,7 @@ def __get_issue_count_from_jira(jira_info, jqls):
     for key, jql in jqls.items():
         threads.append(
             Thread(
+                name='SearchJiraThread-%s' % key,
                 target=__get_issue_count_from_jira_thread,
                 args=(jira_info, jql, issue_summary, key)
             )
@@ -419,6 +420,7 @@ def sync_issue_data(sprint_id=None):
         logging.info('Start to sync data for sprint %s' % sprint.name)
         threads.append(
             Thread(
+                name='SyncIssueDataThread-%s' % str(sprint.uuid),
                 target=__sync_sprint_issue_data,
                 args=(str(sprint.uuid),)
             )

@@ -15,7 +15,7 @@ def list_sprint():
     """
     sprints = list()
     for item in select(s for s in Sprint if s.status in ['active', 'disable']).order_by(Sprint.name):
-        logging.debug('Get sprint %s[%s] info' % (item.uuid, item.name))
+        logging.info('Get sprint %s[%s] info' % (item.uuid, item.name))
         sprints.append({
             'id': item.uuid,
             'name': item.name,
@@ -134,13 +134,13 @@ def add_sprint(body: dict):
     }
     :return:
     """
-    logging.debug('Get Project %s' % body.get('project_id'))
+    logging.info('Get Project %s' % body.get('project_id'))
     project = get(p for p in Project if str(p.uuid) == body.get('project_id'))
     if project:
-        logging.debug('Got it')
+        logging.info('Got it')
     else:
-        logging.debug('No this project')
-    logging.debug('Generate PROJECT[%s] Issue Config' % project.name)
+        logging.info('No this project')
+    logging.info('Generate PROJECT[%s] Issue Config' % project.name)
     issue_config = IssueConfig(
         sprint=body['issue_config'].get('sprint'),
         requirement=body['issue_config'].get('requirement'),
@@ -151,16 +151,16 @@ def add_sprint(body: dict):
         category=body['issue_config'].get('category'),
         status=body['issue_config'].get('status')
     )
-    logging.debug('Generate PROJECT[%s] Case Config' % project.name)
+    logging.info('Generate PROJECT[%s] Case Config' % project.name)
     case_config = CaseConfig()
-    logging.debug('Add New Sprint %s' % body.get('name'))
+    logging.info('Add New Sprint %s' % body.get('name'))
     sprint = Sprint(
         name=body.get('name'),
         project=project,
         issue_config=issue_config,
         case_config=case_config
     )
-    logging.debug('Complete to add sprint[%s]' % sprint.uuid)
+    logging.info('Complete to add sprint[%s]' % sprint.uuid)
     # logging.debug('Get issue tracker %s' % _project.tracker.get('issue').get('id'))
     # _issue_tracker = get(t for t in Tracker if str(t.uuid) == _project.tracker.get('issue').get('id'))
     # if _issue_tracker.type == 'jira':

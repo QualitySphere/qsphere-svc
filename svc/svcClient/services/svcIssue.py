@@ -122,7 +122,7 @@ def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
     if jira_rsp.get('total') is None:
         raise Exception(str(jira_rsp))
     summary_dict[dict_key] = int(jira_rsp['total'])
-    logging.debug('Succeed to get %s issue count: %s' % (dict_key, summary_dict[dict_key]))
+    logging.info('Succeed to get %s issue count: %s' % (dict_key, summary_dict[dict_key]))
     return True
 
 

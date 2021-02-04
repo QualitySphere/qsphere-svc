@@ -17,9 +17,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image for branch
       run: |
-        git_ref_type=$(echo "${{ github.ref }}" | awk -F '/' '{print $2}')
-        git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
-        if [[ "${git_ref_type}" == "heads" ]]; then
+        if [[ "$(echo \"${{ github.ref }}\" | awk -F '/' '{print $2}')" == "heads" ]]; then
+            git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
             echo -e "\nTriggered by branch ${git_ref_name}\n"
             if [[ "${git_ref_name}" == "master" ]]; then
                 echo -e "Skip build since master branch"
@@ -41,9 +40,8 @@ jobs:
         fi
     - name: Build the Docker image for tag
       run: |
-        git_ref_type=$(echo "${{ github.ref }}" | awk -F '/' '{print $2}')
-        git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
-        if [[ "${git_ref_type}" == "tags" ]]; then
+        if [[ "$(echo \"${{ github.ref }}\" | awk -F '/' '{print $2}')" == "tags" ]]; then
+            git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
             echo -e "\nTriggered by tag ${git_ref_name}"
             echo -e "Build ${TAG_PREFIX}-${git_ref_name} image\n"
             tag_0=${git_ref_name}
@@ -74,3 +72,20 @@ jobs:
         else
             echo -e "\nSkip this step\n"
         fi
+  build-next-base-image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image for service base image
+      run : |
+        if [[ "$(echo \"${{ github.ref }}\" | awk -F '/' '{print $2}')" == "tags" ]]; then
+            git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
+            if [[ "$(echo ${git_ref_name} | awk -F '.' '{print $3}'))" == "0" ]]; then
+                cd ./${CODE_ROOT}
+                docker build . --file Dockerfile-svc-base --tag ${IMG}:svc-base
+                echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+                docker push ${IMG}:svc-base
+        else
+            echo -e "\nSkip this step\n"
+        fi
+

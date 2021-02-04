@@ -155,7 +155,7 @@ def __get_issue_count_from_jira(jira_info, jqls):
     logging.info('Access JIRA and JQL search issue data')
     with JiraSession(jira_info['host'], jira_info['account'], jira_info['password']) as jira_session:
         for key, jql in jqls.items():
-            logging.info('Get issue count via JQL[%s]' % jql)
+            # logging.info('Get issue count via JQL[%s]' % jql)
             jira_rsp = jira_session.search_issues(jql)
             issue_summary[key] = int(jira_rsp['total'])
             logging.info('Succeed to get %s issue count: %s' % (key, issue_summary[key]))
@@ -173,7 +173,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     :param source_req:
     :return:
     """
-    logging.info('Init formatted data')
+    logging.info('Init formatted issue data')
     formatted_data = {
         'sprint': {
             'status': {
@@ -250,6 +250,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     formatted_data['static']['project.from_customer'] = {
         'total': formatted_data['sprint']['since']['customer'],
     }
+    logging.info('Complete to format issue data')
     return formatted_data
 
 
@@ -468,7 +469,7 @@ def sync_issue_data(sprint_id=None):
     for t in threads:
         t.join()
     logging.info('Check all sync task results')
-    assert False in threads_result.values(), 'Failed to complete sync data for all sprints: %s' % threads_result
+    assert False not in threads_result.values(), 'Failed to complete sync data for all sprints: %s' % threads_result
     logging.info('Complete to sync data for sprints')
     return True
 

@@ -4,6 +4,7 @@
 
 from pony.orm import db_session, select, get
 from models.models import Tracker, Project, Sprint, IssueCaptureSprintLevel, IssueConfig, CaseConfig
+from datetime import datetime
 import logging
 
 
@@ -42,6 +43,13 @@ def get_sprint(sprint_id: str):
     for capture in select(i for i in IssueCaptureSprintLevel
                           if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time):
         capture_time_list.append(capture.capture_time)
+    if len(capture_time_list) > 0:
+        capture_start = int(capture_time_list[0].timestamp())
+        capture_end = int(datetime.now().timestamp()) if sprint.status == 'active' \
+            else int(capture_time_list[-1].timestamp())
+    else:
+        capture_start = ''
+        capture_end = ''
     return {
         'id': sprint.uuid,
         'name': sprint.name,
@@ -55,12 +63,12 @@ def get_sprint(sprint_id: str):
             'type': sprint.issue_config.type,
             'since': sprint.issue_config.since,
             'category': sprint.issue_config.category,
-            'status': sprint.issue_config.sprint,
+            'status': sprint.issue_config.status,
         },
         'case_config': {},
         'status': sprint.status,
-        'start_time': int(capture_time_list[0].timestamp()) if len(capture_time_list) > 0 else '',
-        'end_time': int(capture_time_list[-1].timestamp()) if len(capture_time_list) > 0 else '',
+        'start_time': capture_start,
+        'end_time': capture_end
     }
 
 

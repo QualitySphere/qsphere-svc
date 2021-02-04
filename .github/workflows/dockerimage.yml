@@ -86,6 +86,7 @@ jobs:
                 docker build . --file Dockerfile-svc-base --tag ${IMG}:svc-base
                 echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
                 docker push ${IMG}:svc-base
+            fi
         else
             echo -e "\nSkip this step\n"
         fi

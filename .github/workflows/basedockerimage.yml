@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image for service base image
-       run : |
+      run : |
          cd ./${CODE_ROOT}
          docker build . --file Dockerfile-svc-base --tag ${IMG}:svc-base
          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin

@@ -132,22 +132,33 @@ def __get_issue_count_from_jira(jira_info, jqls):
     :return:
     """
     issue_summary = dict()
-    logging.info('Access JIRA and JQL search issue data via multi-thread')
-    threads = list()
-    for key, jql in jqls.items():
-        threads.append(
-            Thread(
-                name='SearchJiraThread-%s' % key,
-                target=__get_issue_count_from_jira_thread,
-                args=(jira_info, jql, issue_summary, key)
-            )
-        )
-    for t in threads:
-        t.setDaemon(True)
-        t.start()
-    for t in threads:
-        t.join()
-    logging.info('Check all threads results')
+    # logging.info('Access JIRA and JQL search issue data via multi-thread')
+    # threads = list()
+    # for key, jql in jqls.items():
+    #     threads.append(
+    #         Thread(
+    #             name='SearchJiraThread-%s' % key,
+    #             target=__get_issue_count_from_jira_thread,
+    #             args=(jira_info, jql, issue_summary, key)
+    #         )
+    #     )
+    # for t in threads:
+    #     t.setDaemon(True)
+    #     t.start()
+    # for t in threads:
+    #     t.join()
+    # logging.info('Check all threads results')
+    # for key, jql in jqls.items():
+    #     assert issue_summary.get(key) is not None, 'Failed to get value of %s' % key
+    # logging.info('Jira issue data collection complete')
+    # return issue_summary
+    logging.info('Access JIRA and JQL search issue data')
+    with JiraSession(jira_info['host'], jira_info['account'], jira_info['password']) as jira_session:
+        for key, jql in jqls.items():
+            logging.info('Get issue count via JQL[%s]' % jql)
+            jira_rsp = jira_session.search_issues(jql)
+            issue_summary[key] = int(jira_rsp['total'])
+            logging.info('Succeed to get %s issue count: %s' % (key, issue_summary[key]))
     for key, jql in jqls.items():
         assert issue_summary.get(key) is not None, 'Failed to get value of %s' % key
     logging.info('Jira issue data collection complete')

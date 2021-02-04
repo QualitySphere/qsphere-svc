@@ -4,7 +4,6 @@
 
 from pony.orm import db_session, select, get
 from models.models import Tracker, Project, Sprint, IssueCaptureSprintLevel, IssueConfig, CaseConfig
-from datetime import datetime
 import logging
 
 
@@ -45,7 +44,7 @@ def get_sprint(sprint_id: str):
         capture_time_list.append(capture.capture_time)
     if len(capture_time_list) > 0:
         capture_start = int(capture_time_list[0].timestamp())
-        capture_end = int(datetime.now().timestamp()) if sprint.status == 'active' \
+        capture_end = 'now' if sprint.status == 'active' \
             else int(capture_time_list[-1].timestamp())
     else:
         capture_start = ''
@@ -214,6 +213,13 @@ def update_sprint(sprint_id: str, body: dict):
     for capture in select(i for i in IssueCaptureSprintLevel
                           if str(i.sprint.uuid) == sprint_id).order_by(IssueCaptureSprintLevel.capture_time):
         capture_time_list.append(capture.capture_time)
+    if len(capture_time_list) > 0:
+        capture_start = int(capture_time_list[0].timestamp())
+        capture_end = 'now' if sprint.status == 'active' \
+            else int(capture_time_list[-1].timestamp())
+    else:
+        capture_start = ''
+        capture_end = ''
     project = get(p for p in Project if str(p.uuid) == body.get('project_id'))
     sprint.name = body.get('name')
     sprint.project = project
@@ -243,8 +249,8 @@ def update_sprint(sprint_id: str, body: dict):
         },
         'case_config': {},
         'status': sprint.status,
-        'start_time': int(capture_time_list[0].timestamp()) if len(capture_time_list) > 0 else '',
-        'end_time': int(capture_time_list[-1].timestamp()) if len(capture_time_list) > 0 else '',
+        'start_time': capture_start,
+        'end_time': capture_end,
     }
 
 

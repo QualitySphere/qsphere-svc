@@ -72,12 +72,13 @@ jobs:
         else
             echo -e "\nSkip this step\n"
         fi
+
   build-next-base-image:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image for service base image
-      run : |
+      run: |
         if [[ "$(echo \"${{ github.ref }}\" | awk -F '/' '{print $2}')" == "tags" ]]; then
             git_ref_name=$(echo "${{ github.ref }}" | awk -F '/' '{print $NF}')
             if [[ "$(echo ${git_ref_name} | awk -F '.' '{print $3}'))" == "0" ]]; then

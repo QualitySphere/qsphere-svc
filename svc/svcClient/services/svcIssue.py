@@ -389,7 +389,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
         }
 
     static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
-    items = select(s for s in IssueCaptureStaticProject if str(s.project.uuid) == str(project.uuid))
+    items = select(s for s in IssueCaptureStaticProject if str(s.sprint.project.uuid) == str(project.uuid))
     from_customer_total = list()
     for item in items:
         from_customer_total.append(int(item.from_customer['total']))

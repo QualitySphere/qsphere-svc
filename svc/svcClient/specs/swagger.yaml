@@ -533,6 +533,8 @@ paths:
                     project_value:
                       type: string
                       example: "QSphere"
+                case_tracker:
+                  type: object
       responses:
         200:
           description: "succeed to update project"

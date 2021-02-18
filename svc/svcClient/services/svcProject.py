@@ -83,7 +83,7 @@ def get_project(project_id: str):
             'case_tracker': {
                 'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
                 'tracker_name': project.case_tracker.name if project.case_tracker else '',
-                'project_key': project.case_project.get('project_value'),
+                'project_key': project.case_project.get('project_key'),
                 'project_value': project.case_project.get('project_value'),
             },
             'status': project.status
@@ -137,7 +137,7 @@ def add_project(body: dict):
         'case_tracker': {
             'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
             'tracker_name': project.case_tracker.name if project.case_tracker else '',
-            'project_key': project.case_project.get('project_value'),
+            'project_key': project.case_project.get('project_key'),
             'project_value': project.case_project.get('project_value'),
         },
         'status': project.status
@@ -193,7 +193,7 @@ def update_project(project_id: str, body: dict):
         'case_tracker': {
             'tracker_id': project.case_tracker.uuid if project.case_tracker else '',
             'tracker_name': project.case_tracker.name if project.case_tracker else '',
-            'project_key': project.case_project.get('project_value'),
+            'project_key': project.case_project.get('project_key'),
             'project_value': project.case_project.get('project_value'),
         },
         'status': project.status

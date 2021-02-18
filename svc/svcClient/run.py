@@ -15,7 +15,7 @@ import requests
 from utils.wechatRobot import WechatRobotSender
 
 
-if os.getenv('LOG_DEBUG').lower() == 'true':
+if os.getenv('LOG_DEBUG') and os.getenv('LOG_DEBUG').lower() == 'true':
     logging.basicConfig(level=logging.DEBUG, format='[ %(asctime)s ] %(levelname)s %(message)s')
 else:
     logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
@@ -110,5 +110,5 @@ if __name__ == '__main__':
     # Start flask app
     app.run(
         port=80,
-        debug=True if os.getenv('LOG_DEBUG').lower() == 'true' else False
+        debug=True if os.getenv('LOG_DEBUG') and os.getenv('LOG_DEBUG').lower() == 'true' else False
     )

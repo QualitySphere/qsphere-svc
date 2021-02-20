@@ -258,12 +258,11 @@ class GradePolicy(db.Entity):
     """
     _table_ = 'grade_policy'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    name = Required(str)
     create_time = Required(datetime, default=datetime.now())
     update_time = Required(datetime, default=datetime.now())
-    # Grade Policy Configuration for issue
-    issue_policy = Required(Json, default={})
-    # Grade Policy Configuration for case
-    case_policy = Required(Json, default={})
+    # Grade Policy Configuration
+    policy_conf = Required(Json, default={})
     # Status: active, delete
     status = Required(str, default='active')
     grade_report_project = Set('GradeReportProject')

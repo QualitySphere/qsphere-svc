@@ -7,6 +7,7 @@ from utils.jiraClient import JiraSession
 from threading import Thread
 from datetime import datetime
 import logging
+import numpy
 
 
 def __jql_condition(field_name: str, field_value_list: list):
@@ -199,18 +200,23 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     }
 
     logging.info('Calculate for sprint.status.total')
-    formatted_data['sprint']['status']['total'] = sum(formatted_data['sprint']['status'].values())
+    formatted_data['sprint']['status']['total'] = numpy.sum(formatted_data['sprint']['status'].values())
 
     logging.info('Calculate for sprint.category.others')
-    formatted_data['sprint']['category']['others'] = \
-        formatted_data['sprint']['status']['total'] - sum(formatted_data['sprint']['category'].values())
+    formatted_data['sprint']['category']['others'] = numpy.subtract(
+        formatted_data['sprint']['status']['total'],
+        numpy.sum(formatted_data['sprint']['category'].values())
+    )
 
     logging.info('Calculate for sprint.since.others')
-    formatted_data['sprint']['since']['others'] = \
-        formatted_data['sprint']['status']['total'] - \
-        formatted_data['sprint']['since']['newfeature'] - \
-        formatted_data['sprint']['since']['improve'] - \
-        formatted_data['sprint']['since']['qamissed']
+    formatted_data['sprint']['since']['others'] = numpy.subtract(
+        formatted_data['sprint']['status']['total'],
+        numpy.sum([
+            formatted_data['sprint']['since']['newfeature'],
+            formatted_data['sprint']['since']['improve'],
+            formatted_data['sprint']['since']['qamissed']
+        ])
+    )
 
     for __rc in source_rc:
         logging.info('Calculate for sprint.rc.%s' % __rc)
@@ -233,7 +239,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     logging.info('Update static sprint.in_req')
     formatted_data['static']['sprint.in_req'] = dict()
     for __req in source_req:
-        formatted_data['static']['sprint.in_req'][__req] = sum(formatted_data['requirement'][__req]['status'].values())
+        formatted_data['static']['sprint.in_req'][__req] = numpy.sum(formatted_data['requirement'][__req]['status'].values())
 
     logging.info('Update static sprint.found_since')
     formatted_data['static']['sprint.found_since'] = formatted_data['sprint']['since']
@@ -339,10 +345,10 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             in_release_total.append(int(item.in_release['total']))
             from_customer_total.append(int(item.from_customer['total']))
         static_overview.in_release = {
-            'total': sum(in_release_total)
+            'total': numpy.sum(in_release_total)
         }
         static_overview.from_customer = {
-            'total': sum(from_customer_total)
+            'total': numpy.sum(from_customer_total)
         }
     else:
         logging.info('Update overview static data into DB')
@@ -397,7 +403,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
         logging.info('Update overview static data into DB')
         static_overview.capture_time = capture_time
         static_overview.from_customer = {
-            'total': sum(from_customer_total)
+            'total': numpy.sum(from_customer_total)
         }
 
     return True

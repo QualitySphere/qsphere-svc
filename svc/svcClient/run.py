@@ -15,12 +15,19 @@ import requests
 from utils.wechatRobot import WechatRobotSender
 
 
-logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
+if os.getenv('LOG_DEBUG') and os.getenv('LOG_DEBUG').lower() == 'true':
+    logging.basicConfig(level=logging.DEBUG, format='[ %(asctime)s ] %(levelname)s %(message)s')
+else:
+    logging.basicConfig(level=logging.INFO, format='[ %(asctime)s ] %(levelname)s %(message)s')
 
 
 def svc_job():
+    """
+    Trigger svc job to sync issue from tracker
+    :return:
+    """
     # 调用同步接口
-    requests.get(url='http://127.0.0.1:6001/api/issue/sync', timeout=30)
+    requests.get(url='http://127.0.0.1/api/issue/sync', timeout=30)
 
 
 def _generate_bug_status_markdown_text(bug_info: dict):
@@ -39,7 +46,7 @@ def wechat_robot_job():
     # 微信机器人消息
     if os.getenv('WECHAT_ROBOT_KEY'):
         try:
-            bugs = requests.get(url='http://127.0.0.1:6001/api/issue/status', timeout=30).json()
+            bugs = requests.get(url='http://127.0.0.1/api/issue/status', timeout=30).json()
             robot = WechatRobotSender(robot_key=os.getenv('WECHAT_ROBOT_KEY'))
             markdown_text = ''
             for bug in bugs.get('detail'):
@@ -86,18 +93,22 @@ if __name__ == '__main__':
         specification_dir='specs/',
         options=options
     )
-    app.add_api("svc-client.yaml")
+    app.add_api("swagger.yaml")
 
     # DB mapping
     set_sql_debug(True)
     db.generate_mapping(create_tables=True)
 
-    # 创建定时任务, 每小时执行一次同步
-    scheduler = APScheduler()
-    scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
-    # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
-    scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
-    scheduler.start()
+    # Schedule Task/h
+    if os.getenv('AUTO_SYNC').lower() == 'true':
+        scheduler = APScheduler()
+        scheduler.add_job(func=svc_job, id='svc_job', trigger='interval', hours=1, replace_existing=True)
+        # scheduler.add_job(func=machine_check_job, id='machine_check_job', trigger='interval', seconds=600, replace_existing=True)
+        # scheduler.add_job(func=wechat_robot_job, id='wechat_robot_job', trigger='cron', hour=1, minute=30, replace_existing=True)  # UTC Date
+        scheduler.start()
 
     # Start flask app
-    app.run(port=6001, debug=True)
+    app.run(
+        port=80,
+        debug=True if os.getenv('LOG_DEBUG') and os.getenv('LOG_DEBUG').lower() == 'true' else False
+    )

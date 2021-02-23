@@ -3,112 +3,288 @@
 
 
 from db.db import db
-from pony.orm import Database, Required, PrimaryKey, Set, StrArray, IntArray, Json, Optional
+from pony.orm import Required, PrimaryKey, Set, Json, Optional
 import uuid
 from datetime import datetime
 
 
 class Tracker(db.Entity):
-    # Tracker Information
+    """
+    Tracker Information
+    """
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
+
+    # Type: jira
     type = Required(str)
-    info = Optional(Json)  # JIRA: {host: '', account: ''}
-    secret = Optional(str)  # JIRA: 'password'
-    status = Required(str, default='active')  # active, disable, delete
+
+    # jira: {'host': 'string', 'account': 'string'}
+    info = Required(Json, default={'host': '', 'account': ''})
+
+    # jira: password
+    token = Required(str)
+
+    # Status: active, disable, delete
+    status = Required(str, default='active')
+
+    issue_projects = Set('Project', reverse='issue_tracker')
+    case_projects = Set('Project', reverse='case_tracker')
 
 
 class Project(db.Entity):
-    # Project Information
+    """
+    Project Information
+    """
     _table_ = 'project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-    tracker = Optional(Json)    # {'issue': {'id': 'UUID'}, 'case': {'id': 'UUID'}}
-    project = Optional(Json)    # {'issue': {'key': ''}, 'case': {'key': ''}}
-    status = Required(str, default='active')  # active, disable, delete
+
+    # Issue Tracker
+    issue_tracker = Optional(Tracker)
+
+    # Issue Project Info: {'project_key': 'string', 'project_value': 'string'}
+    issue_project = Required(Json, default={'project_key': '', 'project_value': ''})
+
+    # Case Tracker
+    case_tracker = Optional(Tracker)
+
+    # Case Project Info: {'project_key': 'string', 'project_value': 'string'}
+    case_project = Required(Json, default={'project_key': '', 'project_value': ''})
+
+    # Status: active, disable, delete
+    status = Required(str, default='active')
+
+    sprints = Set('Sprint')
+    issue_capture_static_overview = Set('IssueCaptureStaticOverview')
+    case_capture_static_overview = Set('CaseCaptureStaticOverview')
+    grade_report = Set('GradeReportProject')
+
+
+class IssueConfig(db.Entity):
+    """
+    Sprint Issue Configuration
+    """
+    _table_ = 'issue_config'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+
+    # Issue Found in Sprint
+    sprint = Required(Json, default={'field': '', 'value': []})
+
+    # Issue Found in Requirement
+    requirement = Required(Json, default={'field': '', 'value': []})
+
+    # Issue Found in Version
+    version = Required(Json, default={'field': '', 'value': []})
+
+    # Issue Found in RC
+    rc = Required(Json, default={'field': '', 'value': []})
+
+    # Issue Type
+    type = Required(Json, default={'field': '', 'value': []})
+
+    # Issue Found Since
+    since = Required(Json, default={'field': '', 'newfeature': [], 'improve': [], 'customer': [], 'qamissed': []})
+
+    # Issue Category
+    category = Required(Json, default={'field': '', 'newfeature': [], 'regression': [], 'previous': []})
+
+    # Issue Status
+    status = Required(Json, default={'field': '', 'fixing': [], 'fixed': [], 'verified': []})
+
+    sprints = Set('Sprint')
+
+
+class CaseConfig(db.Entity):
+    """
+    Sprint Case Configuration
+    """
+    _table_ = 'case_config'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    """Case Created in Sprint"""
+    sprint = Required(Json, default={'field': '', 'value': []})
+
+    # Case Created in Requirement
+    requirement = Required(Json, default={'field': '', 'value': []})
+
+    # Case Created in Version
+    version = Required(Json, default={'field': '', 'value': []})
+
     sprints = Set('Sprint')
 
 
 class Sprint(db.Entity):
-    # Sprint Information
+    """
+    Sprint Information
+    """
     _table_ = 'sprint'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
     project = Required(Project)
-    version = Required(str)  # sprint version tag
-    requirements = Required(StrArray)   # list(): req1, req2
-    rcs = Required(StrArray)  # RC tags list: RC1, RC2
-    issue = Optional(Json)   # dict(): keys: types, found_since, statuses, categories
-    case = Optional(Json)
-    queries = Optional(Json)  # dict(): keys: case, issue
-    status = Required(str, default='active')  # active, disable, delete
-    issue_project_latest = Set('IssueProjectLatest')
-    issue_customer_latest = Set('IssueCustomerLatest')
-    issue_sprint_latest = Set('IssueSprintLatest')
-    issue_req_latest = Set('IssueReqLatest')
-    issue_sprint = Set('IssueSprint')
-    issue_req = Set('IssueReq')
+    issue_config = Required(IssueConfig)
+    case_config = Required(CaseConfig)
+
+    # Status: active, disable, delete
+    status = Required(str, default='active')
+
+    issue_capture_sprint_level = Set('IssueCaptureSprintLevel')
+    issue_capture_req_level = Set('IssueCaptureReqLevel')
+    issue_capture_static_project = Set('IssueCaptureStaticProject')
+    issue_capture_static_sprint = Set('IssueCaptureStaticSprint')
+    case_capture_sprint_level = Set('CaseCaptureSprintLevel')
+    case_capture_req_level = Set('CaseCaptureReqLevel')
+    case_capture_static_project = Set('CaseCaptureStaticProject')
+    case_capture_static_sprint = Set('CaseCaptureStaticSprint')
+    grade_report = Set('GradeReportSprint')
 
 
-class IssueProjectLatest(db.Entity):
-    # 项目维度 最新缺陷数据
-    _table_ = 'issue_project_latest'
+class IssueCaptureSprintLevel(db.Entity):
+    """
+    Capture for Sprint Level Issue Data
+    """
+    _table_ = 'issue_capture_sprint_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-    categories = Required(Json)  # 缺陷类别:
-    found_since = Required(Json)  # 缺陷发现来源: new_feature: '', regression_improve: '', qa_missed: ''
+
+    # Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}
+    status = Required(Json)
+
+    # Issue Category: {'newfeature': int, 'regression': int, 'previous': int, 'others': int}
+    category = Required(Json)
+
+    # Issue Found Since: {'newfeature': int, 'improve': int, 'qamissed': int, 'customer': int, 'others': int}
+    since = Required(Json)
+
+    # Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}
+    rc = Required(Json)
 
 
-class IssueCustomerLatest(db.Entity):
-    # 项目维度 最新客户反馈缺陷数量
-    _table_ = 'issue_customer_latest'
+class IssueCaptureReqLevel(db.Entity):
+    """
+    Capture for Sprint Requirement Level Issue Data
+    """
+    _table_ = 'issue_capture_req_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-    count = Required(int)  # 客户反馈的缺陷数量, 缺陷发现来源: customer
+
+    # Requirement Name
+    name = Required(str)
+
+    # Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}
+    status = Required(Json, default={"total": 0, "fixing": 0, "fixed": 0, "verified": 0})
+
+    # Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}
+    rc = Required(Json, default={})
 
 
-class IssueSprint(db.Entity):
-    # 迭代版本维度 缺陷数据
-    _table_ = 'issue_sprint'
+class IssueCaptureStaticOverview(db.Entity):
+    """
+    Capture Static Data for Overview
+    """
+    _table_ = 'issue_capture_static_overview'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
-    sprint = Required(Sprint)
-    status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
-    categories = Required(Json)  # 缺陷类别: regression: '', previous: '', new_feature: '', others: ''
-    found_since = Required(Json)  # 缺陷发现来源: new_feature: '', regression_improve: '', qa_missed: ''
-    found_in_rcs = Required(Json)  # 缺陷发现版本: rc1: '', rc2: '', rc3: '', . . .
+    capture_time = Required(datetime, default=datetime.now())
+    project = Required(Project)
+    in_release = Required(Json, default={"total": 0})
+    from_customer = Required(Json, default={"total": 0})
 
 
-class IssueSprintLatest(db.Entity):
-    # 迭代版本维度 最新缺陷数据
-    _table_ = 'issue_sprint_latest'
+class IssueCaptureStaticProject(db.Entity):
+    """
+    Capture Static Data for Project
+    """
+    _table_ = 'issue_capture_static_project'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-    rc = Required(str)  # 迭代版本 RC
-    count = Required(int)  # 缺陷数量
+    in_release = Required(Json, default={"total": 0})
+    from_customer = Required(Json, default={"total": 0})
 
 
-class IssueReq(db.Entity):
-    # 迭代版本需求维度 缺陷数据
-    _table_ = 'issue_req'
+class IssueCaptureStaticSprint(db.Entity):
+    """
+    Capture Static Data for Sprint
+    """
+    _table_ = 'issue_capture_static_sprint'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-    name = Required(str)  # 需求名称
-    status = Required(Json)  # 缺陷状态: total, fixing, fixed, verified
-    # found_in_rcs = Required(Json)  # rc1, rc2, rc3, rc4, rc5
+    in_rc = Required(Json, default={})
+    found_since = Required(Json, default={"newfeature": 0, "improve": 0, "qamissed": 0, "others": 0})
+    in_req = Required(Json, default={})
 
 
-class IssueReqLatest(db.Entity):
-    # 迭代版本需求维度 最新缺陷数据
-    _table_ = 'issue_req_latest'
+class CaseCaptureSprintLevel(db.Entity):
+    _table_ = 'case_capture_sprint_level'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime)
+    capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-    name = Required(str)  # 需求名称
-    status = Required(Json)  # 缺陷状态: total: '', fixing: '', fixed: '', verified: ''
 
+
+class CaseCaptureReqLevel(db.Entity):
+    _table_ = 'case_capture_req_level'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class CaseCaptureStaticOverview(db.Entity):
+    _table_ = 'case_capture_static_overview'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    project = Required(Project)
+
+
+class CaseCaptureStaticProject(db.Entity):
+    _table_ = 'case_capture_static_project'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class CaseCaptureStaticSprint(db.Entity):
+    _table_ = 'case_capture_static_sprint'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    sprint = Required(Sprint)
+
+
+class GradePolicy(db.Entity):
+    """
+    Grade Policy
+    """
+    _table_ = 'grade_policy'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    name = Required(str)
+    create_time = Required(datetime, default=datetime.now())
+    update_time = Required(datetime, default=datetime.now())
+    # Grade Policy Configuration
+    policy_conf = Required(Json, default={})
+    # Status: active, delete
+    status = Required(str, default='active')
+    grade_report_sprint = Set('GradeReportSprint')
+    # grade_report_project = Set('GradeReportProject')
+
+
+class GradeReportProject(db.Entity):
+    _table_ = 'grade_report_project'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    policy = Required(GradePolicy)
+    project = Required(Project)
+    report = Required(Json)
+    # Status: active, delete
+    status = Required(str, default='active')
+
+
+# class GradeReportSprint(db.Entity):
+#     _table_ = 'grade_report_sprint'
+#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+#     capture_time = Required(datetime, default=datetime.now())
+#     policy = Required(GradePolicy)
+#     sprint = Required(Sprint)
+#     report = Required(Json)
+#     # Status: active, delete
+#     status = Required(str, default='active')

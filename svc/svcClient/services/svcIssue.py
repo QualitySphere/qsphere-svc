@@ -7,232 +7,466 @@ from utils.jiraClient import JiraSession
 from threading import Thread
 from datetime import datetime
 import logging
+import numpy
 
 
-def _search_jira_issues(server, account, password, key_jql, value_jql, issues):
+def __jql_condition(field_name: str, field_value_list: list):
     """
-    INTERNAL FUNCTION: Search JIRA Issues
-    :param server: JIRA server
-    :param account: JIRA account
-    :param password: JIRA password
-    :param key_jql: Key
-    :param value_jql: JIRA JQL
-    :param issues: issues
+    Generate JQL Condition
+    :param field_name:
+    :param field_value_list:
+    :return: 'filed IN (value_1, value_2)'
+    """
+    return '%s IN (%s)' % (field_name, str(field_value_list).strip('[|]'))
+
+
+def __generate_jql(sprint):
+    """
+    Generate JQLs for sprint
+    :param sprint: object in DB
     :return:
     """
-    with JiraSession(server, account, password) as jira_session:
-        issues[str(key_jql)] = jira_session.search_issues(value_jql).get('total')
+    logging.info('Start to generate JQL for %s' % sprint.uuid)
+    customer_jql_base = ' AND '.join([
+        'project = %s' % sprint.project.issue_project['project_key'],
+        __jql_condition(sprint.issue_config.type['field'], sprint.issue_config.type['value']),
+        __jql_condition(sprint.issue_config.version['field'], sprint.issue_config.version['value']),
+        __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['customer'])
+        ])
+    sprint_jql_base = ' AND '.join([
+        'project = %s' % sprint.project.issue_project['project_key'],
+        '%s = %s' % (sprint.issue_config.sprint['field'], sprint.issue_config.sprint['value'][0]),
+        __jql_condition(sprint.issue_config.type['field'], sprint.issue_config.type['value']),
+        __jql_condition(sprint.issue_config.version['field'], sprint.issue_config.version['value'])
+    ])
+    jqls = {
+        'sprint.status.fixing': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixing'])
+        ]),
+        'sprint.status.fixed': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixed'])
+        ]),
+        'sprint.status.verified': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['verified'])
+        ]),
+        'sprint.category.newfeature': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['newfeature'])
+        ]),
+        'sprint.category.regression': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['regression'])
+        ]),
+        'sprint.category.previous': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.category['field'], sprint.issue_config.category['previous'])
+        ]),
+        'sprint.since.newfeature': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['newfeature'])
+        ]),
+        'sprint.since.improve': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['improve'])
+        ]),
+        'sprint.since.qamissed': ' AND '.join([
+            sprint_jql_base,
+            __jql_condition(sprint.issue_config.since['field'], sprint.issue_config.since['qamissed'])
+        ]),
+        'project.since.customer': customer_jql_base,  # Customer issue should be tracked out of Sprint
+    }
+    for rc in sprint.issue_config.rc['value']:
+        jqls['sprint.rc.%s' % rc] = ' AND '.join([
+            sprint_jql_base,
+            '%s IN ("%s")' % (sprint.issue_config.rc['field'], rc)
+        ])
+    for req in sprint.issue_config.requirement['value']:
+        jqls['req.%s.status.fixing' % req] = ' AND '.join([
+            sprint_jql_base,
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixing'])
+        ])
+        jqls['req.%s.status.fixed' % req] = ' AND '.join([
+            sprint_jql_base,
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['fixed'])
+        ])
+        jqls['req.%s.status.verified' % req] = ' AND '.join([
+            sprint_jql_base,
+            '%s in ("%s")' % (sprint.issue_config.requirement['field'], req),
+            __jql_condition(sprint.issue_config.status['field'], sprint.issue_config.status['verified'])
+        ])
+        for rc in sprint.issue_config.rc['value']:
+            jqls['req.%s.rc.%s' % (req, rc)] = ' AND '.join([
+                jqls['sprint.rc.%s' % rc],
+                '%s in ("%s")' % (sprint.issue_config.requirement['field'], req)
+            ])
+    logging.info('JQLs: %s' % jqls)
+    return jqls
+
+
+def __get_issue_count_from_jira_thread(jira_info, jql, summary_dict, dict_key):
+    """
+    Single thread to get issue count from jira
+    :param jira_info:
+    :param jql:
+    :param summary_dict:
+    :param dict_key:
+    :return:
+    """
+    logging.info('Get issue count via JQL[%s]' % jql)
+    with JiraSession(jira_info['host'], jira_info['account'], jira_info['password']) as jira_session:
+        jira_rsp = jira_session.search_issues(jql)
+    summary_dict[dict_key] = int(jira_rsp['total'])
+    logging.info('Succeed to get %s issue count: %s' % (dict_key, summary_dict[dict_key]))
     return True
 
 
-@db_session
-def _sync_jira_data_for_sprint_all_issue(sprint_id: str):
+def __get_issue_count_from_jira(jira_info, jqls):
     """
-    INTERNAL FUNCTION: Sync Sprint All Issues From JIRA Server
+    Search JIRA Issues and return count summary
+    :param jira_info: JIRA info
+    :param jqls: JIRA JQLs
+    :return:
+    """
+    issue_summary = dict()
+    # logging.info('Access JIRA and JQL search issue data via multi-thread')
+    # threads = list()
+    # for key, jql in jqls.items():
+    #     threads.append(
+    #         Thread(
+    #             name='SearchJiraThread-%s' % key,
+    #             target=__get_issue_count_from_jira_thread,
+    #             args=(jira_info, jql, issue_summary, key)
+    #         )
+    #     )
+    # for t in threads:
+    #     t.setDaemon(True)
+    #     t.start()
+    # for t in threads:
+    #     t.join()
+    # logging.info('Check all threads results')
+    # for key, jql in jqls.items():
+    #     assert issue_summary.get(key) is not None, 'Failed to get value of %s' % key
+    # logging.info('Jira issue data collection complete')
+    # return issue_summary
+    logging.info('Access JIRA and JQL search issue data')
+    with JiraSession(jira_info['host'], jira_info['account'], jira_info['password']) as jira_session:
+        for key, jql in jqls.items():
+            # logging.info('Get issue count via JQL[%s]' % jql)
+            jira_rsp = jira_session.search_issues(jql)
+            issue_summary[key] = int(jira_rsp['total'])
+            logging.info('Succeed to get %s issue count: %s' % (key, issue_summary[key]))
+    for key, jql in jqls.items():
+        assert issue_summary.get(key) is not None, 'Failed to get value of %s' % key
+    logging.info('Jira issue data collection complete')
+    return issue_summary
+
+
+def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
+    """
+    Format issue source data
+    :param source_data:
+    :param source_rc:
+    :param source_req:
+    :return:
+    """
+    logging.info('Init formatted issue data')
+    formatted_data = {
+        'sprint': {
+            'status': {
+                'fixing': source_data['sprint.status.fixing'],
+                'fixed': source_data['sprint.status.fixed'],
+                'verified': source_data['sprint.status.verified'],
+            },
+            'category': {
+                'newfeature': source_data['sprint.category.newfeature'],
+                'regression': source_data['sprint.category.regression'],
+                'previous': source_data['sprint.category.previous'],
+            },
+            'since': {
+                'newfeature': source_data['sprint.since.newfeature'],
+                'improve': source_data['sprint.since.improve'],
+                'qamissed': source_data['sprint.since.qamissed'],
+                'customer': source_data['project.since.customer'],
+            },
+            'rc': dict(),
+        },
+        'requirement': dict(),
+        'static': dict(),
+    }
+
+    logging.info('Calculate for sprint.status.total')
+    formatted_data['sprint']['status']['total'] = numpy.sum(formatted_data['sprint']['status'].values())
+
+    logging.info('Calculate for sprint.category.others')
+    formatted_data['sprint']['category']['others'] = numpy.subtract(
+        formatted_data['sprint']['status']['total'],
+        numpy.sum(formatted_data['sprint']['category'].values())
+    )
+
+    logging.info('Calculate for sprint.since.others')
+    formatted_data['sprint']['since']['others'] = numpy.subtract(
+        formatted_data['sprint']['status']['total'],
+        numpy.sum([
+            formatted_data['sprint']['since']['newfeature'],
+            formatted_data['sprint']['since']['improve'],
+            formatted_data['sprint']['since']['qamissed']
+        ])
+    )
+
+    for __rc in source_rc:
+        logging.info('Calculate for sprint.rc.%s' % __rc)
+        formatted_data['sprint']['rc'][__rc] = source_data['sprint.rc.%s' % __rc]
+
+    for __req in source_req:
+        logging.info('Calculate for req.%s.status' % __req)
+        formatted_data['requirement'][__req] = {
+            'status': {
+                'fixing': source_data['req.%s.status.fixing' % __req],
+                'fixed': source_data['req.%s.status.fixed' % __req],
+                'verified': source_data['req.%s.status.verified' % __req],
+            },
+            'rc': dict(),
+        }
+        for __rc in source_rc:
+            logging.info('Calculate for req.%s.rc.%s' % (__req, __rc))
+            formatted_data['requirement'][__req]['rc'][__rc] = source_data['req.%s.rc.%s' % (__req, __rc)]
+
+    logging.info('Update static sprint.in_req')
+    formatted_data['static']['sprint.in_req'] = dict()
+    for __req in source_req:
+        formatted_data['static']['sprint.in_req'][__req] = numpy.sum(formatted_data['requirement'][__req]['status'].values())
+
+    logging.info('Update static sprint.found_since')
+    formatted_data['static']['sprint.found_since'] = formatted_data['sprint']['since']
+
+    logging.info('Update static sprint.in_rc')
+    formatted_data['static']['sprint.in_rc'] = formatted_data['sprint']['rc']
+
+    logging.info('Update static sprint.in_release')
+    formatted_data['static']['project.in_release'] = {
+        'total': formatted_data['sprint']['status']['total'],
+    }
+
+    logging.info('Update static project.from_customer')
+    formatted_data['static']['project.from_customer'] = {
+        'total': formatted_data['sprint']['since']['customer'],
+    }
+    logging.info('Complete to format issue data')
+    return formatted_data
+
+
+@db_session
+def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
+    """
+    Collect active sprint's issue data from JIRA Sprint
     :param sprint_id:
     :return:
     """
-    capture_time = datetime.utcnow()
-
-    # 获取 sprint 信息
+    logging.info('Start to collect ACTIVE sprint issue data: %s' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
-    server = _issue_tracker.info.get('host')
-    account = _issue_tracker.info.get('account')
-    password = _issue_tracker.secret
-    jqls = sprint.queries['issue']['jira']
+    project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
+    capture_time = datetime.now()
+    jqls = __generate_jql(sprint)
+    jira_info = {
+        'host': project.issue_tracker.info['host'],
+        'account': project.issue_tracker.info['account'],
+        'password': project.issue_tracker.token,
+    }
+    issue_data = __format_issue_data(
+        source_data=__get_issue_count_from_jira(jira_info, jqls),
+        source_rc=sprint.issue_config.rc['value'],
+        source_req=sprint.issue_config.requirement['value']
+    )
 
-    # 多线程登录 JIRA 用 JQL 收集所有数据
-    issues = dict()
-    threads = list()
-    for key, value in jqls.items():
-        issues[key] = dict()
-        for key_jql, value_jql in value.items():
-            threads.append(
-                Thread(
-                    target=_search_jira_issues,
-                    args=(server, account, password, key_jql, value_jql, issues[key])
-                )
-            )
-    for t in threads:
-        t.setDaemon(True)
-        t.start()
-    for t in threads:
-        t.join()
-    # 所有的数据组都计算出各自的 total 值
-    for key, value in jqls.items():
-        issues[key]['total'] = sum(issues[key].values())
-
-    # 额外对 categories 的数据进行处理, others 中存放的实际是 total 的值
-    # 因此真正的 others 是需要除去 regression,previous, newfeature
-    categories = issues['categories']
-    categories['total'] = categories['others']
-    categories['others'] = categories['total'] - categories['regression'] - categories['previous'] - categories['newfeature']
-    logging.debug(issues)
-
-    # 生成一条新的数据记录
-    logging.info('Start to update DB for sprint issues status')
-    IssueSprint(
+    logging.info('Insert capture data into DB')
+    IssueCaptureSprintLevel(
         capture_time=capture_time,
         sprint=sprint,
-        status=issues.get('overall'),
-        categories=issues.get('categories'),
-        found_since=issues.get('issue_found_since'),
-        found_in_rcs=issues.get('rcs')
+        status=issue_data['sprint']['status'],
+        category=issue_data['sprint']['category'],
+        since=issue_data['sprint']['since'],
+        rc=issue_data['sprint']['rc']
     )
-    logging.info('Complete update')
+    for __req in sprint.issue_config.requirement['value']:
+        IssueCaptureReqLevel(
+            capture_time=capture_time,
+            sprint=sprint,
+            name=__req,
+            status=issue_data['requirement'][__req]['status'],
+            rc=issue_data['requirement'][__req]['rc']
+        )
 
-    # 更新 issue_sprint_latest 表中的迭代维度最新 RC 数据
-    for rc_key, rc_value in issues.get('rcs').items():
-        if rc_key == 'total':
-            continue
-        logging.info('Start to update DB for latest sprint issues status')
-        issue_sprint = get(s for s in IssueSprintLatest if str(s.sprint.uuid) == sprint_id and s.rc == rc_key)
-        if issue_sprint:
-            issue_sprint.capture_time = capture_time
-            issue_sprint.sprint = sprint
-            issue_sprint.rc = rc_key
-            issue_sprint.count = rc_value
-        else:
-            IssueSprintLatest(
-                capture_time=capture_time,
-                sprint=sprint,
-                rc=rc_key,
-                count=rc_value
-            )
-        logging.info('Complete update')
-
-    # 更新 issue_project_latest 表中的项目维度最新数据
-    logging.info('Start to update DB for latest project issues status')
-    issue_project = get(p for p in IssueProjectLatest if str(p.sprint.uuid) == sprint_id)
-    if issue_project:
-        issue_project.capture_time = capture_time
-        issue_project.categories = issues.get('categories')
-        issue_project.found_since = issues.get('issue_found_since')
+    static_sprint = get(s for s in IssueCaptureStaticSprint if str(s.sprint.uuid) == str(sprint.uuid))
+    if static_sprint:
+        logging.info('Add sprint static data into DB')
+        static_sprint.capture_time = capture_time
+        static_sprint.in_rc = issue_data['static']['sprint.in_rc']
+        static_sprint.found_since = issue_data['static']['sprint.found_since']
+        static_sprint.in_req = issue_data['static']['sprint.in_req']
     else:
-        IssueProjectLatest(
+        logging.info('Update sprint %s static data into DB' % sprint.uuid)
+        IssueCaptureStaticSprint(
             capture_time=capture_time,
             sprint=sprint,
-            categories=issues.get('categories'),
-            found_since=issues.get('issue_found_since')
+            in_rc=issue_data['static']['sprint.in_rc'],
+            found_since=issue_data['static']['sprint.found_since'],
+            in_req=issue_data['static']['sprint.in_req']
         )
-    logging.info('Complete update')
 
-    # 更新 issue_customer_latest 表中的项目维度客户反馈缺陷最新数据
-    logging.info('Start to update DB for latest customer issues status')
-    issue_customer = get(c for c in IssueCustomerLatest if str(c.sprint.uuid) == sprint_id)
-    if issue_customer:
-        issue_customer.capture_time = capture_time
-        issue_customer.count = issues.get('issue_found_since').get('customer')
+    static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))
+    if static_project:
+        logging.info('Add project %s static data into DB' % project.uuid)
+        static_project.capture_time = capture_time
+        static_project.in_release = issue_data['static']['project.in_release']
+        static_project.from_customer = issue_data['static']['project.from_customer']
     else:
-        IssueCustomerLatest(
+        logging.info('Update project %s static data into DB' % project.uuid)
+        IssueCaptureStaticProject(
             capture_time=capture_time,
             sprint=sprint,
-            count=issues.get('issue_found_since').get('customer')
+            in_release=issue_data['static']['project.in_release'],
+            from_customer=issue_data['static']['project.from_customer']
         )
-    logging.info('Complete update')
 
-    for key in issues.keys():
-        if key in ['overall', 'categories', 'rcs', 'issue_found_since']:
-            continue
-        # 更新 issue_req 表中的需求数据
-        logging.info('Start to update DB for requirement issues status')
-        IssueReq(
+    static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
+    if static_overview:
+        logging.info('Add overview static data into DB')
+        static_overview.capture_time = capture_time
+        items = select(s for s in IssueCaptureStaticProject
+                       if str(s.sprint.project.uuid) == str(project.uuid))
+        in_release_total = list()
+        from_customer_total = list()
+        for item in items:
+            in_release_total.append(int(item.in_release['total']))
+            from_customer_total.append(int(item.from_customer['total']))
+        static_overview.in_release = {
+            'total': numpy.sum(in_release_total)
+        }
+        static_overview.from_customer = {
+            'total': numpy.sum(from_customer_total)
+        }
+    else:
+        logging.info('Update overview static data into DB')
+        IssueCaptureStaticOverview(
             capture_time=capture_time,
-            sprint=sprint,
-            name=key,
-            status=issues.get(key)
+            project=project,
+            in_release=issue_data['static']['project.in_release'],
+            from_customer=issue_data['static']['project.from_customer']
         )
-        logging.info('Complete update')
-
-        # 更新 issue_req_latest 表中的迭代维度的最新需求数据
-        logging.info('Start to update DB for latest requirement issues status')
-        issue_req = get(f for f in IssueReqLatest if str(f.sprint.uuid) == sprint_id and f.name == key)
-        if issue_req:
-            issue_req.capture_time = capture_time
-            issue_req.status = issues.get(key)
-        else:
-            IssueReqLatest(
-                capture_time=capture_time,
-                sprint=sprint,
-                name=key,
-                status=issues.get(key)
-            )
-        logging.info('Complete update')
 
     return True
 
 
 @db_session
-def _sync_jira_data_for_sprint_customer_issue(sprint_id: str):
+def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     """
-    INTERNAL FUNCTION: Sync Sprint Customer Issue From JIRA Server
+    Collect disabled sprint issue data from JIRA Sprint
     :param sprint_id:
     :return:
     """
-    capture_time = datetime.utcnow()
-
-    # 获取 sprint, connection 以及 bug from customer 的 JQL
+    logging.info('Start to collect DISABLE sprint issue data: %s' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
-    server = _issue_tracker.info.get('host')
-    account = _issue_tracker.info.get('account')
-    password = _issue_tracker.secret
-    jql = sprint.queries['issue']['jira'].get('issue_found_since').get('customer')
+    project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
+    capture_time = datetime.now()
+    customer_jql_base = ' AND '.join([
+        'project = %s' % sprint.project.issue_project['project_key'],
+        '%s IN (%s)' % (sprint.issue_config.type['field'], str(sprint.issue_config.type['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.version['field'], str(sprint.issue_config.version['value']).strip('[|]')),
+        '%s IN (%s)' % (sprint.issue_config.since['field'], str(sprint.issue_config.since['customer']).strip('[|]')),
+        ])
+    with JiraSession(
+        project.issue_tracker.info['host'],
+        project.issue_tracker.info['account'],
+        project.issue_tracker.token
+    ) as jira_session:
+        customer_total = jira_session.search_issues(customer_jql_base)['total']
 
-    # JQL 从 JIRA 中获取查询结果数量
-    with JiraSession(server, account, password) as jira_session:
-        count = jira_session.search_issues(jql).get('total')
+    static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))
+    if static_project:
+        logging.info('Update project %s static data into DB' % project.uuid)
+        static_project.capture_time = capture_time
+        static_project.from_customer = {
+            'total': int(customer_total)
+        }
 
-    # 更新 issue_customer_latest 表中的项目维度客户反馈缺陷最新数据
-    logging.info('Start to update DB for latest customer issues status')
-    issue_customer = get(c for c in IssueCustomerLatest if str(c.sprint.uuid) == sprint_id)
-    if issue_customer:
-        issue_customer.capture_time = capture_time
-        issue_customer.count = count
-    else:
-        IssueCustomerLatest(
-            capture_time=capture_time,
-            sprint=sprint,
-            count=count
-        )
-    logging.info('Complete update')
+    static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
+    items = select(s for s in IssueCaptureStaticProject if str(s.sprint.project.uuid) == str(project.uuid))
+    from_customer_total = list()
+    for item in items:
+        from_customer_total.append(int(item.from_customer['total']))
+    if static_overview:
+        logging.info('Update overview static data into DB')
+        static_overview.capture_time = capture_time
+        static_overview.from_customer = {
+            'total': numpy.sum(from_customer_total)
+        }
 
     return True
 
 
 @db_session
-def sync_sprint_issue_data(sprint_id: str):
+def __sync_sprint_issue_data(sprint_id: str, sync_result: dict):
     """
-    Sync Sprint Issue Data
+    Start to sync Sprint issue data
     :param sprint_id:
+    :param sync_result:
     :return:
     """
+    sync_result[sprint_id] = False
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    _issue_tracker = get(t for t in Tracker if str(t.uuid) == sprint.project.tracker['issue']['id'])
-    if sprint.status == 'active':
-        if _issue_tracker.type == 'jira':
-            _sync_jira_data_for_sprint_all_issue(sprint_id)
-    elif sprint.status == 'disable':
-        if _issue_tracker.type == 'jira':
-            _sync_jira_data_for_sprint_customer_issue(sprint_id)
+    tracker = get(t for t in Tracker if t.uuid == sprint.project.issue_tracker.uuid)
+    if tracker.type == 'jira':
+        with JiraSession(
+                server=tracker.info['host'],
+                account=tracker.info['account'],
+                password=tracker.token
+        ) as j_session:
+            assert j_session.get_user() == tracker.info['account']
+        if sprint.status == 'active':
+            __collect_active_sprint_issue_data_from_jira(sprint_id)
+        elif sprint.status == 'disable':
+            __collect_disable_sprint_issue_data_from_jira(sprint_id)
+    sync_result[sprint_id] = True
+    return True
 
 
 @db_session
-def sync_issue_data():
+def sync_issue_data(sprint_id=None):
     """
-    Sync All Sprints Issue Data
+    Start to sync Sprint(s) issue data
+    :param sprint_id:
     :return:
     """
-    # 同步数据库中所有存在的迭代
-    sprints = select(s for s in Sprint if s.status != 'delete')
+    logging.info('Start search from DB and sync ACTIVE/DISABLE sprint(s) data')
+    if sprint_id:
+        sprints = [
+            get(s for s in Sprint
+                if s.status != 'delete'
+                and s.project.status == 'active'
+                and s.project.issue_tracker.status == 'active')
+        ]
+    else:
+        sprints = select(s for s in Sprint
+                         if s.status != 'delete'
+                         and s.project.status == 'active'
+                         and s.project.issue_tracker.status == 'active')
+    if not sprints:
+        logging.info('No sprints need to be sync')
+        return True
     threads = list()
+    threads_result = dict()
     for sprint in sprints:
         logging.info('Start to sync data for sprint %s' % sprint.name)
         threads.append(
             Thread(
-                target=sync_sprint_issue_data,
-                args=(str(sprint.uuid),)
+                name='SyncIssueDataThread-%s' % str(sprint.uuid),
+                target=__sync_sprint_issue_data,
+                args=(str(sprint.uuid), threads_result)
             )
         )
     for t in threads:
@@ -240,42 +474,20 @@ def sync_issue_data():
         t.start()
     for t in threads:
         t.join()
+    logging.info('Check all sync task results')
+    assert False not in threads_result.values(), 'Failed to complete sync data for all sprints: %s' % threads_result
+    logging.info('Complete to sync data for sprints')
     return True
 
 
-@db_session
-def get_active_sprint_issue_status():
-    sprints = select(s for s in Sprint if s.status == 'active')
-    items = list()
-    bugs = list()
-    for sprint in sprints:
-        items.append(select(i for i in IssueSprint if i.sprint.uuid == sprint.uuid)
-                     .order_by(IssueSprint.capture_time)
-                     .first())
-    for item in items:
-        bugs.append({
-            'sprint_name': item.sprint.name,
-            'issue_status': item.status,
-        })
-    return bugs
-
-
-def sync_sprint_case_data(sprint_id: str):
+def get_issue_status(sprint_id=None):
     """
-    Sync Sprint Case Data
+    Get Sprint(s) issue verification status
     :param sprint_id:
-    :return:
-    """
-    pass
-
-
-def sync_case_data():
-    """
-    Sync All Sprint Case Data
     :return:
     """
     pass
 
 
 if __name__ == '__main__':
-    print(u'This is a service of issue')
+    print(u'This is SERVICE of issue')

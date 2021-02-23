@@ -101,8 +101,7 @@ class CaseConfig(db.Entity):
     """
     _table_ = 'case_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-
-    # Case Created in Sprint
+    """Case Created in Sprint"""
     sprint = Required(Json, default={'field': '', 'value': []})
 
     # Case Created in Requirement
@@ -265,8 +264,8 @@ class GradePolicy(db.Entity):
     policy_conf = Required(Json, default={})
     # Status: active, delete
     status = Required(str, default='active')
-    grade_report_project = Set('GradeReportProject')
     grade_report_sprint = Set('GradeReportSprint')
+    # grade_report_project = Set('GradeReportProject')
 
 
 class GradeReportProject(db.Entity):
@@ -280,12 +279,12 @@ class GradeReportProject(db.Entity):
     status = Required(str, default='active')
 
 
-class GradeReportSprint(db.Entity):
-    _table_ = 'grade_report_sprint'
-    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime, default=datetime.now())
-    policy = Required(GradePolicy)
-    sprint = Required(Sprint)
-    report = Required(Json)
-    # Status: active, delete
-    status = Required(str, default='active')
+# class GradeReportSprint(db.Entity):
+#     _table_ = 'grade_report_sprint'
+#     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+#     capture_time = Required(datetime, default=datetime.now())
+#     policy = Required(GradePolicy)
+#     sprint = Required(Sprint)
+#     report = Required(Json)
+#     # Status: active, delete
+#     status = Required(str, default='active')

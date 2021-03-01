@@ -10,6 +10,7 @@ servers:
 
 tags:
   - name: "check"
+  - name: "user"
   - name: "tracker"
   - name: "project"
   - name: "sprint"
@@ -56,6 +57,29 @@ paths:
                     status:
                       type: string
                       example: "online"
+
+
+  /user/login:
+    post:
+      tags:
+        - "user"
+      description: "Login QSphere"
+      operationId: api.apiUser.login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "admin"
+                password:
+                  type: string
+                  example: "password"
+      responses:
+        200:
+          description: "succeed to login QSphere"
 
 
   /trackers:

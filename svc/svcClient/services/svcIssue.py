@@ -199,14 +199,14 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
         'static': dict(),
     }
 
-    logging.info('Calculate for sprint.status.total')
-    formatted_data['sprint']['status']['total'] = numpy.sum(formatted_data['sprint']['status'].values())
+    formatted_data['sprint']['status']['total'] = numpy.sum(list(formatted_data['sprint']['status'].values()))
+    logging.info('Calculate sprint.status.total: %s' % formatted_data['sprint']['status']['total'])
 
-    logging.info('Calculate for sprint.category.others')
     formatted_data['sprint']['category']['others'] = numpy.subtract(
         formatted_data['sprint']['status']['total'],
-        numpy.sum(formatted_data['sprint']['category'].values())
+        numpy.sum(list(formatted_data['sprint']['category'].values()))
     )
+    logging.info('Calculate sprint.category.others: %s' % formatted_data['sprint']['category']['others'])
 
     logging.info('Calculate for sprint.since.others')
     formatted_data['sprint']['since']['others'] = numpy.subtract(
@@ -239,7 +239,9 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     logging.info('Update static sprint.in_req')
     formatted_data['static']['sprint.in_req'] = dict()
     for __req in source_req:
-        formatted_data['static']['sprint.in_req'][__req] = numpy.sum(formatted_data['requirement'][__req]['status'].values())
+        formatted_data['static']['sprint.in_req'][__req] = numpy.sum(
+            list(formatted_data['requirement'][__req]['status'].values())
+        )
 
     logging.info('Update static sprint.found_since')
     formatted_data['static']['sprint.found_since'] = formatted_data['sprint']['since']

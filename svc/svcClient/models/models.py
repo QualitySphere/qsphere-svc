@@ -58,7 +58,7 @@ class Project(db.Entity):
     sprints = Set('Sprint')
     issue_capture_static_overview = Set('IssueCaptureStaticOverview')
     case_capture_static_overview = Set('CaseCaptureStaticOverview')
-    grade_report = Set('GradeReportProject')
+    # grade_report = Set('GradeReportProject')
 
 
 class IssueConfig(db.Entity):

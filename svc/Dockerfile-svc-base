@@ -6,7 +6,7 @@ COPY requirements.txt .
 
 RUN apk add --no-cache --update libpq \
     && apk add --no-cache --virtual temp-apks \
-        gcc g++ tzdata musl-dev python3-dev postgresql-dev libffi-dev rust \
+        gcc g++ tzdata musl-dev python3-dev postgresql-dev libffi-dev openssl-dev cargo rust \
     && python -m pip install --upgrade pip \
     && pip install -r requirements.txt \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \

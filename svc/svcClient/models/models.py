@@ -67,31 +67,22 @@ class IssueConfig(db.Entity):
     """
     _table_ = 'issue_config'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-
-    # Issue Found in Sprint
+    """Issue Found in Sprint"""
     sprint = Required(Json, default={'field': '', 'value': []})
-
-    # Issue Found in Requirement
+    """Issue Found in Requirement"""
     requirement = Required(Json, default={'field': '', 'value': []})
-
-    # Issue Found in Version
+    """Issue Found in Version"""
     version = Required(Json, default={'field': '', 'value': []})
-
-    # Issue Found in RC
+    """Issue Found in RC"""
     rc = Required(Json, default={'field': '', 'value': []})
-
-    # Issue Type
+    """Issue Type"""
     type = Required(Json, default={'field': '', 'value': []})
-
-    # Issue Found Since
+    """Issue Found Since"""
     since = Required(Json, default={'field': '', 'newfeature': [], 'improve': [], 'customer': [], 'qamissed': []})
-
-    # Issue Category
+    """Issue Category"""
     category = Required(Json, default={'field': '', 'newfeature': [], 'regression': [], 'previous': []})
-
-    # Issue Status
+    """Issue Status"""
     status = Required(Json, default={'field': '', 'fixing': [], 'fixed': [], 'verified': []})
-
     sprints = Set('Sprint')
 
 
@@ -268,23 +259,23 @@ class GradePolicy(db.Entity):
     # grade_report_project = Set('GradeReportProject')
 
 
-class GradeReportProject(db.Entity):
-    _table_ = 'grade_report_project'
-    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
-    capture_time = Required(datetime, default=datetime.now())
-    policy = Required(GradePolicy)
-    project = Required(Project)
-    report = Required(Json)
-    # Status: active, delete
-    status = Required(str, default='active')
-
-
-# class GradeReportSprint(db.Entity):
-#     _table_ = 'grade_report_sprint'
+# class GradeReportProject(db.Entity):
+#     _table_ = 'grade_report_project'
 #     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
 #     capture_time = Required(datetime, default=datetime.now())
 #     policy = Required(GradePolicy)
-#     sprint = Required(Sprint)
+#     project = Required(Project)
 #     report = Required(Json)
 #     # Status: active, delete
 #     status = Required(str, default='active')
+
+
+class GradeReportSprint(db.Entity):
+    _table_ = 'grade_report_sprint'
+    uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
+    capture_time = Required(datetime, default=datetime.now())
+    policy = Required(GradePolicy)
+    sprint = Required(Sprint)
+    report = Required(Json)
+    # Status: active, delete
+    status = Required(str, default='active')

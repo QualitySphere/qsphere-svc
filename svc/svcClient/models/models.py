@@ -111,8 +111,6 @@ class Sprint(db.Entity):
     case_config = Required(CaseConfig)
     """Status: active, disable, delete"""
     status = Required(str, default='active')
-    """Sync Status: notrun, pass, fail"""
-    sync_status = Required(str, default='notrun')
     issue_capture_sprint_level = Set('IssueCaptureSprintLevel')
     issue_capture_req_level = Set('IssueCaptureReqLevel')
     issue_capture_static_project = Set('IssueCaptureStaticProject')

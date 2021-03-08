@@ -271,8 +271,6 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     """
     logging.info('Start to collect ACTIVE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    # 初始化 sync 状态
-    sprint.sync_status = 'fail'
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
     jqls = __generate_jql(sprint)
@@ -363,7 +361,6 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             from_customer=issue_data['static']['project.from_customer']
         )
 
-    sprint.sync_status = 'pass'
     return True
 
 
@@ -376,8 +373,6 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     """
     logging.info('Start to collect DISABLE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    # 初始化 sync 状态
-    sprint.sync_status = 'fail'
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
     customer_jql_base = ' AND '.join([
@@ -413,17 +408,18 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
             'total': numpy.sum(from_customer_total)
         }
 
-    sprint.sync_status = 'pass'
     return True
 
 
 @db_session
-def __sync_sprint_issue_data(sprint_id: str):
+def __sync_sprint_issue_data(sprint_id: str, sync_result: dict):
     """
     Start to sync Sprint issue data
     :param sprint_id:
+    :param sync_result:
     :return:
     """
+    sync_result[sprint_id] = False
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     tracker = get(t for t in Tracker if t.uuid == sprint.project.issue_tracker.uuid)
     if tracker.type == 'jira':
@@ -434,9 +430,11 @@ def __sync_sprint_issue_data(sprint_id: str):
         ) as j_session:
             assert j_session.get_user() == tracker.info['account']
         if sprint.status == 'active':
-            return __collect_active_sprint_issue_data_from_jira(sprint_id)
+            __collect_active_sprint_issue_data_from_jira(sprint_id)
         elif sprint.status == 'disable':
-            return __collect_disable_sprint_issue_data_from_jira(sprint_id)
+            __collect_disable_sprint_issue_data_from_jira(sprint_id)
+    sync_result[sprint_id] = True
+    return sync_result[sprint_id]
 
 
 @db_session
@@ -465,28 +463,30 @@ def sync_issue_data(sprint_id=None):
         logging.info('No sprints need to be sync')
         return True
     # 多线程并行同步 sprint 数据
-    # threads = list()
+    threads = list()
+    threads_result = dict()
+    for sprint in sprints:
+        logging.info('Start to sync data for sprint %s:%s' % (sprint.uuid, sprint.name))
+        threads.append(
+            Thread(
+                name='SyncIssueDataThread-%s' % str(sprint.uuid),
+                target=__sync_sprint_issue_data,
+                args=(str(sprint.uuid), threads_result)
+            )
+        )
+    for t in threads:
+        t.setDaemon(True)
+        t.start()
+    for t in threads:
+        t.join()
+    # # 单线程同步 Sprint 数据
     # for sprint in sprints:
     #     logging.info('Start to sync data for sprint %s' % sprint.name)
-    #     threads.append(
-    #         Thread(
-    #             name='SyncIssueDataThread-%s' % str(sprint.uuid),
-    #             target=__sync_sprint_issue_data,
-    #             args=(str(sprint.uuid),)
-    #         )
-    #     )
-    # for t in threads:
-    #     t.setDaemon(True)
-    #     t.start()
-    # for t in threads:
-    #     t.join()
-    # 单线程同步 Sprint 数据
-    for sprint in sprints:
-        logging.info('Start to sync data for sprint %s' % sprint.name)
-        __sync_sprint_issue_data(str(sprint.uuid))
+    #     __sync_sprint_issue_data(str(sprint.uuid))
     logging.info('Check all sync task results')
-    for sprint in sprints:
-        assert sprint.sync_status == 'pass', 'Failed to complete sync data for sprint: %s' % str(sprint.uuid)
+    assert False not in threads_result.values(), 'Failed to complete sync data for sprint: %s' % threads_result
+    # for sprint in sprints:
+    #     assert sprint.sync_status == 'pass', 'Failed to complete sync data for sprint: %s' % str(sprint.uuid)
     logging.info('Complete to sync data for sprints')
     return True
 

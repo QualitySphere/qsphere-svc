@@ -130,17 +130,13 @@ class IssueCaptureSprintLevel(db.Entity):
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     capture_time = Required(datetime, default=datetime.now())
     sprint = Required(Sprint)
-
-    # Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}
+    """Issue Status: {'total': int, 'fixing': int, 'fixed': int, 'verified': int}"""
     status = Required(Json)
-
-    # Issue Category: {'newfeature': int, 'regression': int, 'previous': int, 'others': int}
+    """Issue Category: {'newfeature': int, 'regression': int, 'previous': int, 'others': int}"""
     category = Required(Json)
-
-    # Issue Found Since: {'newfeature': int, 'improve': int, 'qamissed': int, 'customer': int, 'others': int}
+    """Issue Found Since: {'newfeature': int, 'improve': int, 'qamissed': int, 'customer': int, 'others': int}"""
     since = Required(Json)
-
-    # Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}
+    """Issue Found in RC: {'rc1': int, 'rc2': int, 'rc3': int, ...}"""
     rc = Required(Json)
 
 

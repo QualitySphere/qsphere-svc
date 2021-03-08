@@ -199,19 +199,19 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
         'static': dict(),
     }
 
-    formatted_data['sprint']['status']['total'] = numpy.sum(list(formatted_data['sprint']['status'].values()))
+    formatted_data['sprint']['status']['total'] = sum(formatted_data['sprint']['status'].values())
     logging.info('Calculate sprint.status.total: %s' % formatted_data['sprint']['status']['total'])
 
     formatted_data['sprint']['category']['others'] = numpy.subtract(
         formatted_data['sprint']['status']['total'],
-        numpy.sum(list(formatted_data['sprint']['category'].values()))
+        sum(formatted_data['sprint']['category'].values())
     )
     logging.info('Calculate sprint.category.others: %s' % formatted_data['sprint']['category']['others'])
 
     logging.info('Calculate for sprint.since.others')
     formatted_data['sprint']['since']['others'] = numpy.subtract(
         formatted_data['sprint']['status']['total'],
-        numpy.sum([
+        sum([
             formatted_data['sprint']['since']['newfeature'],
             formatted_data['sprint']['since']['improve'],
             formatted_data['sprint']['since']['qamissed']
@@ -239,8 +239,8 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     logging.info('Update static sprint.in_req')
     formatted_data['static']['sprint.in_req'] = dict()
     for __req in source_req:
-        formatted_data['static']['sprint.in_req'][__req] = numpy.sum(
-            list(formatted_data['requirement'][__req]['status'].values())
+        formatted_data['static']['sprint.in_req'][__req] = sum(
+            formatted_data['requirement'][__req]['status'].values()
         )
 
     logging.info('Update static sprint.found_since')
@@ -347,10 +347,10 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             in_release_total.append(int(item.in_release['total']))
             from_customer_total.append(int(item.from_customer['total']))
         static_overview.in_release = {
-            'total': numpy.sum(in_release_total)
+            'total': sum(in_release_total)
         }
         static_overview.from_customer = {
-            'total': numpy.sum(from_customer_total)
+            'total': sum(from_customer_total)
         }
     else:
         logging.info('Add overview static data into DB')
@@ -405,7 +405,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
         logging.info('Update overview static data into DB')
         static_overview.capture_time = capture_time
         static_overview.from_customer = {
-            'total': numpy.sum(from_customer_total)
+            'total': sum(from_customer_total)
         }
 
     return True
@@ -479,15 +479,9 @@ def sync_issue_data(sprint_id=None):
         t.start()
     for t in threads:
         t.join()
-    # # 单线程同步 Sprint 数据
-    # for sprint in sprints:
-    #     logging.info('Start to sync data for sprint %s' % sprint.name)
-    #     __sync_sprint_issue_data(str(sprint.uuid))
-    logging.info('Check all sync task results')
-    assert False not in threads_result.values(), 'Failed to complete sync data for sprint: %s' % threads_result
-    # for sprint in sprints:
-    #     assert sprint.sync_status == 'pass', 'Failed to complete sync data for sprint: %s' % str(sprint.uuid)
-    logging.info('Complete to sync data for sprints')
+    logging.info('Check all sync task results: %s' % threads_result)
+    assert False not in threads_result.values(), 'Failed to complete sync data for all sprints'
+    logging.info('Complete to sync data for all sprints')
     return True
 
 

@@ -448,7 +448,8 @@ def sync_issue_data(sprint_id=None):
     if sprint_id:
         sprints = [
             get(s for s in Sprint
-                if s.status != 'delete'
+                if str(s.uuid) == sprint_id
+                and s.status != 'delete'
                 and s.project.status == 'active'
                 and s.project.issue_tracker.status == 'active')
         ]

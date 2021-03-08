@@ -269,7 +269,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     :param sprint_id:
     :return:
     """
-    logging.info('Start to collect ACTIVE sprint issue data: %s' % sprint_id)
+    logging.info('Start to collect ACTIVE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
@@ -305,13 +305,13 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
 
     static_sprint = get(s for s in IssueCaptureStaticSprint if str(s.sprint.uuid) == str(sprint.uuid))
     if static_sprint:
-        logging.info('Add sprint static data into DB')
+        logging.info('Update sprint %s static data into DB' % sprint.uuid)
         static_sprint.capture_time = capture_time
         static_sprint.in_rc = issue_data['static']['sprint.in_rc']
         static_sprint.found_since = issue_data['static']['sprint.found_since']
         static_sprint.in_req = issue_data['static']['sprint.in_req']
     else:
-        logging.info('Update sprint %s static data into DB' % sprint.uuid)
+        logging.info('Add sprint %s static data into DB' % sprint.uuid)
         IssueCaptureStaticSprint(
             capture_time=capture_time,
             sprint=sprint,
@@ -322,12 +322,12 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
 
     static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))
     if static_project:
-        logging.info('Add project %s static data into DB' % project.uuid)
+        logging.info('Update project %s static data into DB' % project.uuid)
         static_project.capture_time = capture_time
         static_project.in_release = issue_data['static']['project.in_release']
         static_project.from_customer = issue_data['static']['project.from_customer']
     else:
-        logging.info('Update project %s static data into DB' % project.uuid)
+        logging.info('Add project %s static data into DB' % project.uuid)
         IssueCaptureStaticProject(
             capture_time=capture_time,
             sprint=sprint,
@@ -337,7 +337,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
 
     static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
     if static_overview:
-        logging.info('Add overview static data into DB')
+        logging.info('Update overview static data into DB')
         static_overview.capture_time = capture_time
         items = select(s for s in IssueCaptureStaticProject
                        if str(s.sprint.project.uuid) == str(project.uuid))
@@ -353,7 +353,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             'total': numpy.sum(from_customer_total)
         }
     else:
-        logging.info('Update overview static data into DB')
+        logging.info('Add overview static data into DB')
         IssueCaptureStaticOverview(
             capture_time=capture_time,
             project=project,
@@ -371,7 +371,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     :param sprint_id:
     :return:
     """
-    logging.info('Start to collect DISABLE sprint issue data: %s' % sprint_id)
+    logging.info('Start to collect DISABLE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
     capture_time = datetime.now()
@@ -444,8 +444,8 @@ def sync_issue_data(sprint_id=None):
     :param sprint_id:
     :return:
     """
-    logging.info('Start search from DB and sync ACTIVE/DISABLE sprint(s) data')
     if sprint_id:
+        logging.info('Search sprint %s from DB' % sprint_id)
         sprints = [
             get(s for s in Sprint
                 if str(s.uuid) == sprint_id
@@ -454,6 +454,7 @@ def sync_issue_data(sprint_id=None):
                 and s.project.issue_tracker.status == 'active')
         ]
     else:
+        logging.info('Search all sprints from DB')
         sprints = select(s for s in Sprint
                          if s.status != 'delete'
                          and s.project.status == 'active'

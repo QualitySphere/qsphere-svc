@@ -15,19 +15,14 @@ class Tracker(db.Entity):
     _table_ = 'tracker'
     uuid = PrimaryKey(uuid.UUID, default=uuid.uuid4)
     name = Required(str)
-
-    # Type: jira
+    """Type: jira"""
     type = Required(str)
-
-    # jira: {'host': 'string', 'account': 'string'}
+    """jira: {'host': 'string', 'account': 'string'}"""
     info = Required(Json, default={'host': '', 'account': ''})
-
-    # jira: password
+    """jira: password"""
     token = Required(str)
-
-    # Status: active, disable, delete
+    """Status: active, disable, delete"""
     status = Required(str, default='active')
-
     issue_projects = Set('Project', reverse='issue_tracker')
     case_projects = Set('Project', reverse='case_tracker')
 

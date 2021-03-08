@@ -464,21 +464,26 @@ def sync_issue_data(sprint_id=None):
     if not sprints:
         logging.info('No sprints need to be sync')
         return True
-    threads = list()
+    # 多线程并行同步 sprint 数据
+    # threads = list()
+    # for sprint in sprints:
+    #     logging.info('Start to sync data for sprint %s' % sprint.name)
+    #     threads.append(
+    #         Thread(
+    #             name='SyncIssueDataThread-%s' % str(sprint.uuid),
+    #             target=__sync_sprint_issue_data,
+    #             args=(str(sprint.uuid),)
+    #         )
+    #     )
+    # for t in threads:
+    #     t.setDaemon(True)
+    #     t.start()
+    # for t in threads:
+    #     t.join()
+    # 单线程同步 Sprint 数据
     for sprint in sprints:
         logging.info('Start to sync data for sprint %s' % sprint.name)
-        threads.append(
-            Thread(
-                name='SyncIssueDataThread-%s' % str(sprint.uuid),
-                target=__sync_sprint_issue_data,
-                args=(str(sprint.uuid),)
-            )
-        )
-    for t in threads:
-        t.setDaemon(True)
-        t.start()
-    for t in threads:
-        t.join()
+        __sync_sprint_issue_data(str(sprint.uuid))
     logging.info('Check all sync task results')
     for sprint in sprints:
         assert sprint.sync_status == 'pass', 'Failed to complete sync data for sprint: %s' % str(sprint.uuid)

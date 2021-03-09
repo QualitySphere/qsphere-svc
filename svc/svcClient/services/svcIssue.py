@@ -272,6 +272,9 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
     logging.info('Start to collect ACTIVE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
     project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
+    static_sprint = get(s for s in IssueCaptureStaticSprint if s.sprint.uuid == sprint.uuid)
+    static_project = get(p for p in IssueCaptureStaticProject if p.sprint.uuid == sprint.uuid)
+    static_overview = get(o for o in IssueCaptureStaticOverview if o.project.uuid == project.uuid)
     capture_time = datetime.now()
     jqls = __generate_jql(sprint)
     jira_info = {
@@ -285,7 +288,9 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         source_req=sprint.issue_config.requirement['value']
     )
 
-    logging.info('Insert capture data into DB')
+    logging.info('Start to insert capture data into DB')
+
+    logging.info('Insert capture data into DB:issue_capture_sprint_level')
     IssueCaptureSprintLevel(
         capture_time=capture_time,
         sprint=sprint,
@@ -295,6 +300,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         rc=issue_data['sprint']['rc']
     )
     for __req in sprint.issue_config.requirement['value']:
+        logging.info('Insert capture data into DB:issue_capture_req_level:%s' % __req)
         IssueCaptureReqLevel(
             capture_time=capture_time,
             sprint=sprint,
@@ -303,7 +309,6 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             rc=issue_data['requirement'][__req]['rc']
         )
 
-    static_sprint = get(s for s in IssueCaptureStaticSprint if str(s.sprint.uuid) == str(sprint.uuid))
     if static_sprint:
         logging.info('Update sprint %s static data into DB' % sprint.uuid)
         static_sprint.capture_time = capture_time
@@ -320,7 +325,6 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             in_req=issue_data['static']['sprint.in_req']
         )
 
-    static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))
     if static_project:
         logging.info('Update project %s static data into DB' % project.uuid)
         static_project.capture_time = capture_time
@@ -335,17 +339,14 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             from_customer=issue_data['static']['project.from_customer']
         )
 
-    static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
     if static_overview:
         logging.info('Update overview static data into DB')
-        static_overview.capture_time = capture_time
-        items = select(s for s in IssueCaptureStaticProject
-                       if str(s.sprint.project.uuid) == str(project.uuid))
         in_release_total = list()
         from_customer_total = list()
-        for item in items:
+        for item in select(s for s in IssueCaptureStaticProject if s.sprint.project.uuid == project.uuid):
             in_release_total.append(int(item.in_release['total']))
             from_customer_total.append(int(item.from_customer['total']))
+        static_overview.capture_time = capture_time
         static_overview.in_release = {
             'total': sum(in_release_total)
         }
@@ -361,6 +362,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             from_customer=issue_data['static']['project.from_customer']
         )
 
+    logging.info('Complete to insert capture data into DB')
     return True
 
 
@@ -373,7 +375,9 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     """
     logging.info('Start to collect DISABLE sprint %s issue data' % sprint_id)
     sprint = get(s for s in Sprint if str(s.uuid) == sprint_id)
-    project = get(p for p in Project if str(p.uuid) == str(sprint.project.uuid))
+    project = get(p for p in Project if p.uuid == sprint.project.uuid)
+    static_project = get(p for p in IssueCaptureStaticProject if p.sprint.uuid == sprint.uuid)
+    static_overview = get(o for o in IssueCaptureStaticOverview if o.project.uuid == project.uuid)
     capture_time = datetime.now()
     customer_jql_base = ' AND '.join([
         'project = %s' % sprint.project.issue_project['project_key'],
@@ -388,7 +392,6 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
     ) as jira_session:
         customer_total = jira_session.search_issues(customer_jql_base)['total']
 
-    static_project = get(p for p in IssueCaptureStaticProject if str(p.sprint.uuid) == str(sprint.uuid))
     if static_project:
         logging.info('Update project %s static data into DB' % project.uuid)
         static_project.capture_time = capture_time
@@ -396,13 +399,11 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
             'total': int(customer_total)
         }
 
-    static_overview = get(o for o in IssueCaptureStaticOverview if str(o.project.uuid) == str(project.uuid))
-    items = select(s for s in IssueCaptureStaticProject if str(s.sprint.project.uuid) == str(project.uuid))
-    from_customer_total = list()
-    for item in items:
-        from_customer_total.append(int(item.from_customer['total']))
     if static_overview:
         logging.info('Update overview static data into DB')
+        from_customer_total = list()
+        for item in select(s for s in IssueCaptureStaticProject if s.sprint.project.uuid == project.uuid):
+            from_customer_total.append(int(item.from_customer['total']))
         static_overview.capture_time = capture_time
         static_overview.from_customer = {
             'total': sum(from_customer_total)
@@ -479,9 +480,9 @@ def sync_issue_data(sprint_id=None):
         t.start()
     for t in threads:
         t.join()
-    logging.info('Check all sync task results: %s' % threads_result)
-    assert False not in threads_result.values(), 'Failed to complete sync data for all sprints'
-    logging.info('Complete to sync data for all sprints')
+    logging.info('Check all sync task results')
+    assert False not in threads_result.values(), 'Failed to complete sync data for all sprints: %s' % threads_result
+    logging.info('Complete to sync data for all sprints: %s' % threads_result)
     return True
 
 

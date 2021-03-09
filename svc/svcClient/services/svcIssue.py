@@ -162,7 +162,7 @@ def __get_issue_count_from_jira(jira_info, jqls):
             logging.info('Succeed to get %s issue count: %s' % (key, issue_summary[key]))
     for key, jql in jqls.items():
         assert issue_summary.get(key) is not None, 'Failed to get value of %s' % key
-    logging.info('Jira issue data collection complete')
+    logging.info('GREAT! Jira issue data collection complete')
     return issue_summary
 
 
@@ -174,7 +174,6 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     :param source_req:
     :return:
     """
-    logging.info('Init formatted issue data')
     formatted_data = {
         'sprint': {
             'status': {
@@ -198,6 +197,7 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
         'requirement': dict(),
         'static': dict(),
     }
+    logging.info('Init formatted issue data: %s' % formatted_data['sprint'])
 
     formatted_data['sprint']['status']['total'] = sum(formatted_data['sprint']['status'].values())
     logging.info('Calculate sprint.status.total: %s' % formatted_data['sprint']['status']['total'])
@@ -208,7 +208,6 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     )
     logging.info('Calculate sprint.category.others: %s' % formatted_data['sprint']['category']['others'])
 
-    logging.info('Calculate for sprint.since.others')
     formatted_data['sprint']['since']['others'] = numpy.subtract(
         formatted_data['sprint']['status']['total'],
         sum([
@@ -217,13 +216,13 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
             formatted_data['sprint']['since']['qamissed']
         ])
     )
+    logging.info('Calculate sprint.since.others: %s' % formatted_data['sprint']['since']['others'])
 
     for __rc in source_rc:
-        logging.info('Calculate for sprint.rc.%s' % __rc)
         formatted_data['sprint']['rc'][__rc] = source_data['sprint.rc.%s' % __rc]
+        logging.info('Calculate sprint.rc.%s:%s' % (__rc, formatted_data['sprint']['rc'][__rc]))
 
     for __req in source_req:
-        logging.info('Calculate for req.%s.status' % __req)
         formatted_data['requirement'][__req] = {
             'status': {
                 'fixing': source_data['req.%s.status.fixing' % __req],
@@ -232,33 +231,35 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
             },
             'rc': dict(),
         }
+        logging.info('Calculate req.%s.status:%s' % (__req, formatted_data['requirement'][__req]['status']))
         for __rc in source_rc:
-            logging.info('Calculate for req.%s.rc.%s' % (__req, __rc))
             formatted_data['requirement'][__req]['rc'][__rc] = source_data['req.%s.rc.%s' % (__req, __rc)]
+            logging.info('Calculate req.%s.rc.%s:%s' % (__req, __rc, formatted_data['requirement'][__req]['rc'][__rc]))
 
-    logging.info('Update static sprint.in_req')
     formatted_data['static']['sprint.in_req'] = dict()
     for __req in source_req:
         formatted_data['static']['sprint.in_req'][__req] = sum(
             formatted_data['requirement'][__req]['status'].values()
         )
+        logging.info('Calculate static sprint.in_req.%s:%s' % (__req, formatted_data['static']['sprint.in_req'][__req]))
 
-    logging.info('Update static sprint.found_since')
     formatted_data['static']['sprint.found_since'] = formatted_data['sprint']['since']
+    logging.info('Calculate static sprint.found_since:%s' % formatted_data['static']['sprint.found_since'])
 
-    logging.info('Update static sprint.in_rc')
     formatted_data['static']['sprint.in_rc'] = formatted_data['sprint']['rc']
+    logging.info('Calculate static sprint.in_rc:%s' % formatted_data['static']['sprint.in_rc'])
 
-    logging.info('Update static sprint.in_release')
     formatted_data['static']['project.in_release'] = {
         'total': formatted_data['sprint']['status']['total'],
     }
+    logging.info('Calculate static sprint.in_release:%s' % formatted_data['static']['project.in_release'])
 
-    logging.info('Update static project.from_customer')
     formatted_data['static']['project.from_customer'] = {
         'total': formatted_data['sprint']['since']['customer'],
     }
-    logging.info('Complete to format issue data')
+    logging.info('Calculate static project.from_customer:%s' % formatted_data['static']['project.from_customer'])
+
+    logging.info('GREAT! Complete to format issue data')
     return formatted_data
 
 
@@ -288,8 +289,6 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         source_req=sprint.issue_config.requirement['value']
     )
 
-    logging.info('Start to insert capture data into DB')
-
     logging.info('Insert capture data into DB:issue_capture_sprint_level')
     IssueCaptureSprintLevel(
         capture_time=capture_time,
@@ -310,13 +309,13 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         )
 
     if static_sprint:
-        logging.info('Update sprint %s static data into DB' % sprint.uuid)
+        logging.info('Update sprint %s static data into DB:issue_capture_static_sprint' % sprint.uuid)
         static_sprint.capture_time = capture_time
         static_sprint.in_rc = issue_data['static']['sprint.in_rc']
         static_sprint.found_since = issue_data['static']['sprint.found_since']
         static_sprint.in_req = issue_data['static']['sprint.in_req']
     else:
-        logging.info('Add sprint %s static data into DB' % sprint.uuid)
+        logging.info('Add sprint %s static data into DB:issue_capture_static_sprint' % sprint.uuid)
         IssueCaptureStaticSprint(
             capture_time=capture_time,
             sprint=sprint,
@@ -326,12 +325,12 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         )
 
     if static_project:
-        logging.info('Update project %s static data into DB' % project.uuid)
+        logging.info('Update project %s static data into DB:issue_capture_static_project' % project.uuid)
         static_project.capture_time = capture_time
         static_project.in_release = issue_data['static']['project.in_release']
         static_project.from_customer = issue_data['static']['project.from_customer']
     else:
-        logging.info('Add project %s static data into DB' % project.uuid)
+        logging.info('Add project %s static data into DB:issue_capture_static_project' % project.uuid)
         IssueCaptureStaticProject(
             capture_time=capture_time,
             sprint=sprint,
@@ -340,7 +339,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
         )
 
     if static_overview:
-        logging.info('Update overview static data into DB')
+        logging.info('Update overview static data into DB:issue_capture_static_overview')
         in_release_total = list()
         from_customer_total = list()
         for item in select(s for s in IssueCaptureStaticProject if s.sprint.project.uuid == project.uuid):
@@ -354,7 +353,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             'total': sum(from_customer_total)
         }
     else:
-        logging.info('Add overview static data into DB')
+        logging.info('Add overview static data into DB:issue_capture_static_overview')
         IssueCaptureStaticOverview(
             capture_time=capture_time,
             project=project,
@@ -362,7 +361,7 @@ def __collect_active_sprint_issue_data_from_jira(sprint_id: str):
             from_customer=issue_data['static']['project.from_customer']
         )
 
-    logging.info('Complete to insert capture data into DB')
+    logging.info('GREAT! Complete to insert capture data into DB')
     return True
 
 
@@ -409,6 +408,7 @@ def __collect_disable_sprint_issue_data_from_jira(sprint_id: str):
             'total': sum(from_customer_total)
         }
 
+    logging.info('GREAT! Complete to insert capture data into DB')
     return True
 
 
@@ -467,7 +467,7 @@ def sync_issue_data(sprint_id=None):
     threads = list()
     threads_result = dict()
     for sprint in sprints:
-        logging.info('Start to sync data for sprint %s:%s' % (sprint.uuid, sprint.name))
+        logging.info('Start to sync data for sprint %s:%s' % (sprint.name, sprint.uuid))
         threads.append(
             Thread(
                 name='SyncIssueDataThread-%s' % str(sprint.uuid),

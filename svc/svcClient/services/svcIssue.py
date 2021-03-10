@@ -202,20 +202,20 @@ def __format_issue_data(source_data: dict, source_rc: list, source_req: list):
     formatted_data['sprint']['status']['total'] = sum(formatted_data['sprint']['status'].values())
     logging.info('Calculate sprint.status.total: %s' % formatted_data['sprint']['status']['total'])
 
-    formatted_data['sprint']['category']['others'] = numpy.subtract(
+    formatted_data['sprint']['category']['others'] = int(numpy.subtract(
         formatted_data['sprint']['status']['total'],
         sum(formatted_data['sprint']['category'].values())
-    )
+    ))
     logging.info('Calculate sprint.category.others: %s' % formatted_data['sprint']['category']['others'])
 
-    formatted_data['sprint']['since']['others'] = numpy.subtract(
+    formatted_data['sprint']['since']['others'] = int(numpy.subtract(
         formatted_data['sprint']['status']['total'],
         sum([
             formatted_data['sprint']['since']['newfeature'],
             formatted_data['sprint']['since']['improve'],
             formatted_data['sprint']['since']['qamissed']
         ])
-    )
+    ))
     logging.info('Calculate sprint.since.others: %s' % formatted_data['sprint']['since']['others'])
 
     for __rc in source_rc:
